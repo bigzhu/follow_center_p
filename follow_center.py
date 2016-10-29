@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import public
-public.setLib()
+import sys
+sys.path.append("../lib_p_bz")
 
 import json
 import public_bz
