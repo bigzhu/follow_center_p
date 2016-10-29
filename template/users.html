@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}每个人都是一个品牌{% end %}
+{% block js %}
+<script src="/static/users.js"></script>
+{% end %}
+{% block css %}
+<link href="/static/message.css" rel="stylesheet" type="text/css" />
+{% end %}
+
+{% block body %}
+<div id="v_users">
+    {% from base64 import encodestring %}
+    {% for user in users %}
+
+    {% set avatar_url = '/lib_static/images/avatar.svg' %}
+
+    {%if user.picture %}
+    {% set avatar_url = user.picture %}
+    {%elif user.github_user%}
+    {% set avatar_url = user.github_user.get('avatar_url') %}
+    {%elif user.twitter_user%}
+    {% set avatar_url = user.twitter_user.get('profile_image_url_https') %}
+    {% set avatar_url = '/sp/'+encodestring(encodestring(avatar_url)) %}
+
+    {%elif user.instagram_user%}
+
+    {%set avatar_url = '/sp/'+encodestring(encodestring(user.instagram_user.get('profile_picture')))%}
+    {%end%}
+
+    {%if user.slogan %}
+    {% set description = user.slogan %}
+    {%elif user.twitter_user%}
+    {% set description = user.twitter_user.get('description') %}
+    {%else%}
+    {% set description = '' %}
+    {%end%}
+
+    <div  class="box box-solid item">
+        <div class="box-header">
+            <h3 class="box-title">
+                <a href="/#/god/{{user.user_name}}">
+                    <img src="{{avatar_url}}" class="direct-chat-img">
+                    <div class="name">
+                        {{user.user_name}}
+                    </div>
+                </a>
+            </h3>
+            <div class="box-tools pull-right">
+                {%if user.twitter_user %}
+                <a class="a-icon" target="_blank" href="https://twitter.com/{{user.twitter}}">
+                    <span class="round-icon bg-icon-blue">
+                        <i class="fa fa-twitter"></i>
+                    </span>
+                </a>
+                {{user.twitter_user.get('followers_count')}}
+                {%end%}
+
+                {%if user.github_user%}
+                <a class="a-icon" target="_blank" href="https://github.com/{{user.github}}">
+                    <span class="round-icon bg-icon-black">
+                        <i class="fa fa-github"></i>
+                    </span>
+                </a>
+                {{user.github_user.get('followers')}}
+                {%end%}
+
+                {%if user.instagram_user %}
+                <a class="a-icon" target="_blank" href="https://instagram.com/{{user.instagram}}">
+                    <span class="round-icon bg-icon-orange">
+                        <i class="fa fa-instagram"></i>
+                    </span>
+                </a>
+                {{user.instagram_user.get('counts').get('followed_by')}}
+                {%end%}
+            </div>
+        </div>
+        <div class="box-body">
+            {{description}}
+        </div>
+        <div class="box-footer">
+            <follow followed="{{user.followed}}" god_id="{{user.god_id}}"></follow>
+        </div>
+    </div>
+    {% end %}
+</div>
+{% end %}

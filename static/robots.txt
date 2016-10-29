@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: <http://follow.center/sitemap.xml>

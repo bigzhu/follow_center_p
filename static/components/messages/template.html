@@ -1,0 +1,25 @@
+
+<div class="ui center aligned basic segment">
+    <a @click="old" href='javascript:void(0);' class="ui basic button" v-bind:class="{ 'loading': old_loading}">
+        <i class="icon history"></i>
+        历史消息
+    </a>
+</div>
+<div v-show="show_info && !new_loading" class="ui warning message">
+    <i class="close icon"></i>
+    <div class="header">{{info_header}}</div>
+    {{info}}
+</div>
+
+<!--
+    <div v-show="messages.length != 0 " class="ui center aligned basic segment">
+    <input @click="toggleFilterPic" type="checkbox"> 要有图</input>
+    </div>
+-->
+<message v-for="message in messages" :message="message" v-ref:c_messages>
+</message>
+
+<div class="ui active centered inline loader" v-bind:class="{ 'invisible_bz': !new_loading}"></div>
+<br>
+<br>
+<br>

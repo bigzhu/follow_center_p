@@ -1,0 +1,33 @@
+{% import oper %}
+{%set img_url = oper.encodeUrl(message.extended_entities['url']) %}
+{%set avatar_url = oper.encodeUrl(message.avatar)%}
+<div id="instagram_{{message.id}}" class="box box-solid item">
+    <div class="box-header">
+        <h2 class="box-title">
+            <a href="/user?god_name={{message.user_name}}">
+                <img src="/sp/{{avatar_url}}" class="direct-chat-img">
+                <div class="name">
+                    {{message.name}}
+                </div>
+            </a>
+
+        </h2>
+        <div class="box-tools pull-right">
+            <a class="a-icon" target="_blank" href="{{message.href}}">
+                <span class="round-icon bg-icon-orange">
+                    <i class="fa fa-instagram"></i>
+                </span>
+            </a>
+            <a href="/message?t={{message.m_type}}&id={{message.id}}">
+                <sub>{{message.created_at}}</sub>
+            </a>
+        </div>
+    </div>
+    <div class="box-body">
+        <p class="description_bz">{{message.text or ''}}</p>
+        <a href="/sp/{{img_url}}">
+            <img src="/sp/{{img_url}}" class="img-responsive">
+            <br>
+        </a>
+    </div>
+</div>

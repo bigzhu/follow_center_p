@@ -1,0 +1,19 @@
+<div id="id_{{message.id}}" class="ui fluid card">
+    <div class="content">
+        <a href="/message?t={{message.m_type}}&id={{message.id}}">
+            <div v-time-len="message.created_at" class="right floated meta"></div>
+        </a>
+        <a target="_blank" href="{{message.href}}">
+            <i class="right floated {{message.m_type}} icon"></i>
+        </a>
+        <img :src="avatar" class="ui avatar image show-god-info">
+        <a  href="#/god/{{message.user_name}}">
+            {{message.name}}
+        </a>
+        <div class="ui popup transition">
+            <god :god="god">
+            </god>
+        </div>
+        <component :is="message.m_type" :message="message"></component>
+    </div>
+</div>

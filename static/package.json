@@ -1,0 +1,26 @@
+{
+  "name": "bigzhu-base-vue-project",
+  "version": "0.0.0",
+  "main": "main.coffee",
+  "scripts": {
+    "server": "webpack-dev-server --devtool eval --progress --colors --content-base build",
+    "min": "webpack --progress --watch --optimize-minimize --optimize-dedupe",
+    "dev": "webpack --progress --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.9.3",
+    "css-loader": "^0.16.0",
+    "file-loader": "^0.8.4",
+    "html-loader": "^0.3.0",
+    "less": "^2.5.1",
+    "less-loader": "^2.2.0",
+    "semantic-ui": "^2.1.7",
+    "style-loader": "^0.12.3",
+    "vue": "^1.0.8",
+    "vue-router": "vuejs/vue-router",
+    "webpack": "^2.0.5-beta"
+  }
+}

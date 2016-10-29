@@ -1,0 +1,88 @@
+{%set repo_url = message.content['repo']['url'].replace('api.github.com/repos', 'github.com') %}
+<div id="github_{{message.id}}" class="box box-solid item">
+    <div class="box-header">
+        <h2 class="box-title">
+            <a href="/user?god_name={{message.user_name}}">
+                <img src="/ProxyHandler/{{message.avatar}}" class="direct-chat-img">
+                <div class="name">
+                    {{message.name}}
+                </div>
+            </a>
+        </h2>
+        <div class="box-tools pull-right">
+            <a class="a-icon" target="_blank" href="{{repo_url}}">
+                <span class="round-icon bg-icon-black">
+                    <i class="fa fa-github"></i>
+                </span>
+            </a>
+            <a href="/message?t={{message.m_type}}&id={{message.id}}">
+                <sub>{{message.created_at}}</sub>
+            </a>
+        </div>
+    </div>
+    <div class="box-body">
+        {%set repo_name = message.content['repo']['name'] %}
+        {%set repo_link = '<a href="%s" target="_blank">%s</a>'%(repo_url, repo_name) %}
+
+        {%if message.content['type']=='PushEvent'%}
+        Push {{repo_link}}
+        {%for commit in message.content['payload']['commits'] %}
+        <li>
+            <a target="_blank" href="{{commit['url'].replace('api.github.com/repos', 'github.com')}}">
+                <xmp class="description_bz">{{commit['message']}}</xmp>
+            </a>
+        </li>
+        {%end%}
+
+        {%elif message.content['type']=='IssueCommentEvent'%}
+        {%set payload = message.content['payload'] %}
+        {%set issue_url = payload['issue']['html_url']%}
+        {%set issue_title = payload['issue']['title']%}
+        {%set issue_comment_url = payload['comment']['html_url']%}
+        {%set issue_comment_body = payload['comment']['body']%}
+        <a target="_blank" href="{{issue_comment_url}}" >{{issue_title}}</a>
+
+        <xmp class="description_bz">{{issue_comment_body}}</xmp>
+
+        {%elif message.content['type']=='WatchEvent'%}
+        {%set payload = message.content['payload'] %}
+        {{message.content['payload']['action']}} {{repo_link}}
+
+        {%elif message.content['type']=='IssuesEvent'%}
+        {%set payload = message.content['payload'] %}
+        {%set issue_url = payload['issue']['html_url']%}
+        {%set issue_title = payload['issue']['title']%}
+        {{repo_link}}
+        <br>
+        {{message.content['payload']['action']}} issue <a target="_blank" href="{{issue_url}}" >{{issue_title}}</a>
+
+        {%elif message.content['type']=='PullRequestEvent'%}
+        {%set payload = message.content['payload'] %}
+        {%set pull_request = payload['pull_request'] %}
+        {%set pull_request_link = '<a target="_blank" href="%s">%s</a>'%(pull_request['html_url'], pull_request['title']) %}
+        {{payload['action']}} {{repo_link}} PullRequest {{pull_request_link}}
+
+        {%elif message.content['type']=='PullRequestReviewCommentEvent'%}
+        {%set payload = message.content['payload'] %}
+        {%set pull_request = payload['pull_request'] %}
+        {%set pull_comment_url = payload['comment']['html_url']%}
+        {%set pull_comment_link = '<a target="_blank" href="%s">%s</a>'%(pull_comment_url, pull_request['title']) %}
+        {%set pull_comment_body = payload['comment']['body']%}
+        {{payload['action']}} {{repo_link}} PullRequestReviewComment {{pull_comment_link}}
+        <p class="description_bz">{{pull_comment_body}}</p>
+
+        {%elif message.content['type']=='CreateEvent'%}
+        {%set payload = message.content['payload'] %}
+        created Repository {{repo_link}}
+        <p class="description_bz">{{payload['description']}}</p>
+
+        {%elif message.content['type']=='ReleaseEvent'%}
+        {%set payload = message.content['payload'] %}
+        {%set release = payload['release'] %}
+        {%set version_link = '<a target="_blank" href="%s">%s</a>'%(release['html_url'], release['name']) %}
+        {{payload['action']}} Repository {{repo_link}} {{version_link}}
+        <br>
+        {{release['body']}}
+        {%end%}
+    </div>
+</div>

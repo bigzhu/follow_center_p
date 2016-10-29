@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block body %}
+
+{% if messages %}
+{%include messages.html %}
+{%else%}
+<div class="box box-warning box-solid text-center">
+    <div class="box-header with-border">
+        <h3 class="box-title">无数据</h3>
+        <div class="box-tools pull-right">
+            <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        你还没有<a href="/users">Follow </a> 任何人, 去<a href="/users">Follow </a> !
+    </div><!-- /.box-body -->
+</div>
+{% end %}
+
+{% end %}

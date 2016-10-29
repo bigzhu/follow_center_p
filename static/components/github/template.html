@@ -1,0 +1,16 @@
+<div>
+    <div class="meta">github</div>
+    <div class="description">
+        {{type}} <a :href='repo_url' target='_blank'>{{repo_name}}</a>
+        <p v-html="issue_content">
+        </p>
+        <li v-for="commit in commits">
+            <a target="_blank" :href="commit.url.replace('api.github.com/repos', 'github.com')">
+                {{commit.message}}
+            </a>
+        </li>
+        <p v-html="issue_comment_link">
+        </p>
+        <p v-show="issue_comment_body" v-html="issue_comment_body" ></p>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="ui stackable grid">
+    <div class="row">
+        <div class="eleven wide column no-padding-bz">
+            <messages></messages>
+        </div>
+        <div class="five wide column computer only">
+            <user_info v-show='user_info' :user_info.sync="user_info" :is_my="true"></user_info>
+            <!--
+                <add_god></add_god>
+            -->
+            <god_list></god_list>
+        </div>
+    </div>
+</div>

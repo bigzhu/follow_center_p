@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block body %}
+
+<div id="app" class="row">
+    <router-view></router-view>
+</div>
+{% end %}
+{% block js%}
+<script src="{{static_url('build/app.js')}}"></script>
+{% end %}

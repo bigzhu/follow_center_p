@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block body %}
+
+{% from public_bz import storage%}
+{% set country_code_count = [] %}
+{% set country_code_count.append(storage(country_code='CN', count=10)) %}
+{% set country_code_count.append(storage(country_code='US', count=20)) %}
+{% set country_code_count.append(storage(country_code='JP', count=5)) %}
+{% set country_code_count.append(storage(country_code='IN', count=40)) %}
+{% set country_code_count.append(storage(country_code='SN', count=80)) %}
+
+{% module world_map_m(country_code_count, background_color='#EDEDED', fill_color="#B4B4B4", color_array=' "#8EB1A7", "#58A38E", "#4E8878", "#2F7C67", "#286856" ') %}
+
+{% end %}
