@@ -423,7 +423,7 @@ class api_get_user_info(web_bz.get_user_info):
     pass
 
 
-class api_login(web_bz.login):
+class api_login(web_bz.api_login):
     pass
 
 
