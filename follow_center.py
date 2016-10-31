@@ -423,14 +423,8 @@ class api_get_user_info(web_bz.get_user_info):
     pass
 
 
-class login(web_bz.login):
-
-    '''
-    要用自已的template，得重载
-    '''
-
-    def get(self):
-        self.render(self.template)
+class api_login(web_bz.login):
+    pass
 
 
 class signup(web_bz.signup):
