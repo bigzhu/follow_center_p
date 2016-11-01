@@ -216,8 +216,12 @@ class api_not_my_gods(tornado_bz.UserInfoHandler):
     create by bigzhu at 16/03/24 23:19:19
     '''
     @tornado_bz.handleError
-    def get(self, cat):
+    def get(self, parm):
+
         self.set_header("Content-Type", "application/json")
+        parm = json.loads(parm)
+        cat = parm['cat']
+
         recommand = None
         if cat == 'recommand':
             cat = None
