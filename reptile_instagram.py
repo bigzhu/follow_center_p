@@ -138,4 +138,6 @@ if __name__ == '__main__':
             print e
         except ValueError as e:
             print e
+        except requests.exceptions.ChunkedEncodingError as e:
+            print e
         time.sleep(1200)

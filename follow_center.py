@@ -151,7 +151,8 @@ class api_collect(BaseHandler):
     @tornado_bz.mustLoginApi
     def post(self):
         self.set_header("Content-Type", "application/json")
-        message_id = self.request.body
+        parm = json.loads(self.request.body)
+        message_id = parm['message_id']
         oper.collect(message_id, self.current_user)
         self.write(json.dumps({'error': '0'}))
 
@@ -243,8 +244,10 @@ class api_my_gods(tornado_bz.UserInfoHandler):
     '''
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
-    def get(self, cat):
+    def get(self, parm):
         self.set_header("Content-Type", "application/json")
+        parm = json.loads(parm)
+        cat = parm['cat']
         if cat == 'all':
             cat = None
         gods = oper.getGods(self.current_user, is_my=True, cat=cat)
@@ -341,7 +344,8 @@ class api_god(tornado_bz.UserInfoHandler):
     @tornado_bz.handleError
     def get(self, parm):
         self.set_header("Content-Type", "application/json")
-        god_name = parm
+        parm = json.loads(parm)
+        god_name = parm['god_name']
         god_info = oper.getGodInfo(god_name, self.current_user)
         self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
 
