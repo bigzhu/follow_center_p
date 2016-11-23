@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 '''
 '''
-import public
-public.setLib()
+import sys
+sys.path.append("../lib_p_bz")
 import public_db
 
 import sys

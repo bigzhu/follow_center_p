@@ -3,8 +3,8 @@
 '''
 create by bigzhu at 15/07/15 17:17:29 取github的动态
 '''
-import public
-public.setLib()
+import sys
+sys.path.append("../lib_p_bz")
 
 import requests
 from oper import sync

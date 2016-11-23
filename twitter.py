@@ -6,8 +6,8 @@ modify by bigzhu at 15/07/17 16:49:58 添加pytz来修正crated_at的时区
 modify by bigzhu at 15/07/17 17:08:38 存进去还是不对,手工来来修正吧
 modify by bigzhu at 15/11/28 11:36:18 可以查某个用户
 '''
-import public
-public.setLib()
+import sys
+sys.path.append("../lib_p_bz")
 
 import sys
 import oper

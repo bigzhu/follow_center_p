@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # encoding=utf-8
-import public
-public.setLib()
+import sys
+sys.path.append("../lib_p_bz")
 
 import sys
 reload(sys)

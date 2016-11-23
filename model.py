@@ -3,8 +3,8 @@
 '''
 初始化数据库
 '''
-import public
-public.setLib()
+import sys
+sys.path.append("../lib_p_bz")
 
 import model_oper_bz
 from peewee import TextField, IntegerField, BooleanField, DateTimeField
