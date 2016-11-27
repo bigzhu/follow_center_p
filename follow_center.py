@@ -281,7 +281,8 @@ class api_follow(tornado_bz.UserInfoHandler):
     @tornado_bz.mustLoginApi
     def post(self):
         self.set_header("Content-Type", "application/json")
-        god_id = self.request.body
+        data = json.loads(self.request.body)
+        god_id = data['god_id']
         oper.follow(self.current_user, god_id)
         self.write(json.dumps({'error': '0'}))
 
