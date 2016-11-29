@@ -128,4 +128,6 @@ if __name__ == '__main__':
             sync('tumblr', main, must_followed=True)
         except requests.exceptions.ConnectionError:
             print public_bz.getExpInfoAll()
+        except requests.exceptions.ChunkedEncodingError as e:
+            print e
         time.sleep(1200)
