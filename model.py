@@ -16,6 +16,10 @@ import model_bz
 db_name = 'follow_center'
 
 
+class block(model_oper_bz.base):
+    god_id = IntegerField()
+
+
 class apply_del(model_oper_bz.base):
 
     '''
@@ -256,4 +260,4 @@ if __name__ == '__main__':
         the_db = config.get('db', 'db')
         user = config.get('db', 'user')
         pw = config.get('db', 'pw')
-    model_oper_bz.reCreateTable(apply_del, db_name, user=user, password=pw, host=host)
+    model_oper_bz.createTable(block, db_name, user=user, password=pw, host=host)
