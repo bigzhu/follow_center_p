@@ -7,6 +7,14 @@ from webpy_db import SQLLiteral
 user_oper = user_bz.UserOper(pg)
 
 
+def addBlockSql(sql, user_id):
+    # block
+    sql = '''
+        select * from (%s) s where s.god_id not in (select god_id from block where user_id=%s)
+    ''' % (sql, user_id)
+    return sql
+
+
 def getSocialUser(name, type):
     '''
     create by bigzhu at 16/04/07 11:38:48 代替那些冗余的
@@ -259,6 +267,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
             select * from   (%s) ut left join (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=%s) f on ut.god_id=f.followed_god_id
             order by ut.u_stat_date desc
         ''' % (sql, user_id)
+        sql = addBlockSql(sql, user_id)
         # remark info
         sql = '''
             select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where user_id=%s) r on s.god_id=r.god_id

@@ -24,6 +24,7 @@ import proxy
 import web_bz
 from public_bz import storage
 from bs4 import BeautifulSoup
+import god
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -38,6 +39,29 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     consumer_secret = config.get('secret', 'consumer_secret')
     access_token = config.get('secret', 'access_token')
     access_token_secret = config.get('secret', 'access_token_secret')
+
+
+class api_block(tornado_bz.UserInfoHandler):
+
+    '''
+    '''
+    @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
+    def post(self):
+        self.set_header("Content-Type", "application/json")
+        data = json.loads(self.request.body)
+        god_id = data['god_id']
+        oper.block(self.current_user, god_id)
+        self.write(json.dumps({'error': '0'}))
+
+    @tornado_bz.mustLoginApi
+    @tornado_bz.handleError
+    def delete(self, id):
+        self.set_header("Content-Type", "application/json")
+        count = pg.delete('block', where="user_id=%s and god_id=%s" % (self.current_user, id))
+        if count != 1:
+            raise Exception('没有正确的Unblcok, Unblock %s 人' % count)
+        self.write(json.dumps({'error': '0'}))
 
 
 class web_socket(web_bz.web_socket):
@@ -616,7 +640,12 @@ class api_new(tornado_bz.UserInfoHandler):
                 after = time_bz.getBeforeDay(-3)
 
         messages = public_db.getNewMessages(user_id=user_id, after=after, limit=limit, god_name=god_name, search_key=search_key)
-        self.write(json.dumps({'error': '0', 'messages': messages}, cls=public_bz.ExtEncoder))
+        data = storage()
+        data.error = OK
+        data.messages = messages
+        if (messages.length == 0):
+            data.followed_god_count = god.getFollowedGodCount(user_id)
+        self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 
 class api_old(tornado_bz.UserInfoHandler):

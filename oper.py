@@ -8,6 +8,15 @@ import time_bz
 import datetime
 
 
+def block(user_id, god_id, make_sure=True):
+    '''
+    屏蔽某人
+    '''
+    id = db_bz.insertIfNotExist(pg, 'block', {'user_id': user_id, 'god_id': god_id}, "user_id=%s and god_id=%s" % (user_id, god_id))
+    if id is None and make_sure:
+        raise Exception('没有正确的Block, 似乎已经Block过了呢')
+
+
 def checkSocialData(data, type):
     name = data.get(type)
     god_name = data.get('name')
