@@ -231,7 +231,7 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     return pg.query(sql)
 
 
-def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, cat=None, is_public=None):
+def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, cat=None, is_public=None, limit=None, before=None):
     '''
     modify by bigzhu at 15/08/06 17:05:22 可以根据god_name来取
     modify by bigzhu at 15/08/28 17:09:31 推荐模式就是只查随机5个
@@ -309,7 +309,13 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
             ''' % sql
 
     # sql += "  order by followed_count desc "
+    if before:
+        sql = '''
+        select * from (%s) s where created_at < '%s'
+        ''' % (sql, before)
     sql += "  order by created_date desc "
+    if limit:
+        sql += ' limit %s ' % limit
     print sql
     return pg.query(sql)
 

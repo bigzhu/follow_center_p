@@ -41,6 +41,29 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     access_token_secret = config.get('secret', 'access_token_secret')
 
 
+class api_public_gods(BaseHandler):
+
+    '''
+    create by bigzhu at 16/12/11 22:32:39 公开推荐的god
+    '''
+
+    @tornado_bz.handleError
+    def get(self, parm):
+
+        self.set_header("Content-Type", "application/json")
+        parm = json.loads(parm)
+        cat = parm['cat']
+        before = parm.get('before')
+        limit = parm('limit')
+
+        if before:
+            before = time_bz.timestampToDateTime(before, True)
+
+        gods = oper.getGods(self.current_user, cat=cat, is_public=True, limite=limit, before=before)
+
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
+
+
 class api_block(tornado_bz.UserInfoHandler):
 
     '''
@@ -643,7 +666,7 @@ class api_new(tornado_bz.UserInfoHandler):
         data = storage()
         data.error = OK
         data.messages = messages
-        if (messages.length == 0):
+        if (len(messages) == 0):
             data.followed_god_count = god.getFollowedGodCount(user_id)
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 

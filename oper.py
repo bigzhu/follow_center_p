@@ -140,7 +140,7 @@ def isHaveGoodSocial(god):
         return False
 
 
-def getGods(user_id=None, recommand=False, is_my=None, cat=None, is_public=None):
+def getGods(user_id=None, recommand=False, is_my=None, cat=None, is_public=None, limit=None, before=None):
     '''
     create by bigzhu at 15/07/12 23:43:54 显示所有的大神, 关联twitter
     modify by bigzhu at 15/07/17 15:20:26 关联其他的,包括 github
@@ -149,15 +149,10 @@ def getGods(user_id=None, recommand=False, is_my=None, cat=None, is_public=None)
     modify by bigzhu at 16/04/11 11:47:54 查看我的关注时候，不要限定关注数
     modify by bigzhu at 16/05/27 21:52:06 让所有god都能看到
     '''
-    gods = list(public_db.getGodInfoFollow(user_id=user_id, recommand=recommand, is_my=is_my, cat=cat, is_public=is_public))
+    gods = list(public_db.getGodInfoFollow(user_id=user_id, recommand=recommand, is_my=is_my, cat=cat, is_public=is_public, limit=limit, before=before))
     # have_social_gods = []
     for god in gods:
         god = getGodSocialInfo(god)
-        # if isHaveGoodSocial(god):
-        #    have_social_gods.append(god)
-    # if my:
-    #     return gods
-    # return have_social_gods
     return gods
 
 
