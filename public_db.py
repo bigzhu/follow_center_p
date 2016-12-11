@@ -299,14 +299,17 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
         select * from (%s) s where lower(name)=lower('%s')
         ''' % (sql, god_name)
     if is_public:
-        if user_id:
-            sql = '''
-            select * from (%s) s where  is_public = 1 or s.god_id in (select god_id from who_add_god where user_id=%s)
-            ''' % (sql, user_id)
-        else:
-            sql = '''
-            select * from (%s) s where is_public = 1
-            ''' % sql
+        sql = '''
+        select * from (%s) s where is_public = 1
+        ''' % sql
+        # if user_id:
+        #     sql = '''
+        #     select * from (%s) s where  is_public = 1 or s.god_id in (select god_id from who_add_god where user_id=%s)
+        #     ''' % (sql, user_id)
+        # else:
+        #     sql = '''
+        #     select * from (%s) s where is_public = 1
+        #     ''' % sql
 
     # sql += "  order by followed_count desc "
     if before:

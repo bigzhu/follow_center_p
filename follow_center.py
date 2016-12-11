@@ -52,14 +52,14 @@ class api_public_gods(BaseHandler):
 
         self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
-        cat = parm['cat']
+        cat = parm.get('cat')
         before = parm.get('before')
-        limit = parm('limit')
+        limit = parm.get('limit')
 
         if before:
             before = time_bz.timestampToDateTime(before, True)
 
-        gods = oper.getGods(self.current_user, cat=cat, is_public=True, limite=limit, before=before)
+        gods = oper.getGods(self.current_user, cat=cat, is_public=True, limit=limit, before=before)
 
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
