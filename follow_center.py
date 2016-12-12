@@ -178,8 +178,11 @@ class api_cat(BaseHandler):
             select count(id),cat from god where is_public=1 and cat not in('18+') group by cat
         '''
         if user_id:
+            # sql = '''
+            #     select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
+            # ''' % user_id
             sql = '''
-                select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
+                select count(id),cat from god where cat!='18+' and is_public=1 group by cat
             ''' % user_id
         if just_my:
             sql = '''

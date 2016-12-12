@@ -314,7 +314,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     # sql += "  order by followed_count desc "
     if before:
         sql = '''
-        select * from (%s) s where created_at < '%s'
+        select * from (%s) s where created_date < '%s'
         ''' % (sql, before)
     sql += "  order by created_date desc "
     if limit:
