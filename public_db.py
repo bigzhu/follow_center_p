@@ -152,7 +152,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         sql += " where lower(s.user_name)=lower('%s') " % god_name
     elif search_key:
         # sql += " where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%' " % (search_key.upper(), search_key.upper())
-        sql += getMessageSearchSql(search_key)
+        sql = filterSearchKey(sql, search_key)
     else:
         if user_id:
             sql += '''
@@ -175,15 +175,6 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     return pg.query(sql)
 
 
-def getMessageSearchSql(search_key):
-    '''
-    '''
-    if search_key:
-        return " where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%' " % (search_key.upper(), search_key.upper())
-    else:
-        return ''
-
-
 def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=None, m_type=None):
     '''
     create by bigzhu at 16/05/29 08:06:28 查老的
@@ -204,12 +195,12 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
         sql += " and lower(name) not in (select lower(name) from god where cat='18+') "
     # 封住，以直接加where
     sql = ''' select * from (%s) s ''' % sql
+
     # 互斥的filter
     if god_name:
         sql += " where lower(s.name)=lower('%s') " % god_name
     elif search_key:
-        # sql += " where s.text like '%%%s%%' or s.content::text like '%%%s%%' " % (search_key, search_key)
-        sql += getMessageSearchSql(search_key)
+        sql = filterSearchKey(sql, search_key)
     else:
         if user_id:
             sql += '''
@@ -220,10 +211,9 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
             )
             ''' % user_id
 
-    if m_type:
-        sql += " and s.m_type='%s' " % m_type
-    # before
-    sql += " and created_at < '%s' " % before
+    sql = filterMTYpe(sql, m_type)
+    sql = filterBefore(sql, before)
+
     # order by
     if search_key is None:
         sql += ' order by created_at desc '
@@ -233,6 +223,30 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     sql += ' limit %s ' % limit
     print sql
     return pg.query(sql)
+
+
+def filterSearchKey(sql, search_key):
+    if search_key:
+        sql = '''
+            select * from (%s) s where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%'
+            ''' % (sql, search_key.upper(), search_key.upper())
+    return sql
+
+
+def filterMTYpe(sql, m_type):
+    if m_type:
+        sql = '''
+            select * from (%s) s where s.m_type = '%s'
+        ''' % (sql, m_type)
+    return sql
+
+
+def filterBefore(sql, before):
+    if before:
+        sql = '''
+            select * from (%s) s where s.created_at < '%s'
+        ''' % (sql, before)
+    return sql
 
 
 def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, cat=None, is_public=None, limit=None, before=None):
