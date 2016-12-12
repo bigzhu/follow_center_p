@@ -666,7 +666,10 @@ class api_new(tornado_bz.UserInfoHandler):
         data.error = OK
         data.messages = messages
         if (len(messages) == 0):
-            data.followed_god_count = god.getFollowedGodCount(user_id)
+            if (user_id):
+                data.followed_god_count = god.getFollowedGodCount(user_id)
+            else:
+                data.followed_god_count = -1
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 
