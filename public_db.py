@@ -189,8 +189,8 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     create by bigzhu at 16/05/29 08:06:28 查老的
     '''
     sql = '''
-    select * from all_message m where created_at < '%s'
-    ''' % before
+    select * from all_message m where 1=1
+    '''
     # 关联collect表
     if user_id:
         sql = '''
@@ -222,12 +222,16 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
 
     if m_type:
         sql += " and s.m_type='%s' " % m_type
+    # before
+    sql += " and created_at < '%s' " % before
     # order by
-    sql += ' order by created_at desc '
+    if search_key is None:
+        sql += ' order by created_at desc '
     # limit
     if limit is None:
         limit = 10
     sql += ' limit %s ' % limit
+    print sql
     return pg.query(sql)
 
 
