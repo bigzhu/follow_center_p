@@ -170,20 +170,16 @@ class api_cat(BaseHandler):
     @tornado_bz.handleError
     def get(self, parm):
         self.set_header("Content-Type", "application/json")
-        user_id = self.current_user
 
         parm = json.loads(parm)
         just_my = parm['just_my']
         sql = '''
             select count(id),cat from god where is_public=1 and cat not in('18+') group by cat
         '''
-        if user_id:
-            # sql = '''
-            #     select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
-            # ''' % user_id
-            sql = '''
-                select count(id),cat from god where cat!='18+' and is_public=1 group by cat
-            ''' % user_id
+        # if user_id:
+        #     # sql = '''
+        #     #     select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
+        #     # ''' % user_id
         if just_my:
             sql = '''
                 select count(id),cat from god where id in(select god_id from follow_who where user_id=%s) group by cat
