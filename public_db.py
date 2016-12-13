@@ -7,11 +7,47 @@ from webpy_db import SQLLiteral
 user_oper = user_bz.UserOper(pg)
 
 
-def addBlockSql(sql, user_id):
-    # block
+def filter(sql, where):
     sql = '''
-        select * from (%s) s where s.god_id not in (select god_id from block where user_id=%s)
-    ''' % (sql, user_id)
+        select * from (%s) s where %s
+    ''' % (sql, where)
+    return sql
+
+
+def filterBlock(sql, user_id):
+    # block
+    if user_id:
+        where = '''
+            s.god_id not in (select god_id from block where user_id=%s)
+        ''' % user_id
+        sql = filter(sql, where)
+    return sql
+
+
+def filterSearchKey(sql, search_key):
+    if search_key:
+        where = '''
+            upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%'
+            ''' % (search_key.upper(), search_key.upper())
+        sql = filter(sql, where)
+    return sql
+
+
+def filterMTYpe(sql, m_type):
+    if m_type:
+        where = '''
+            s.m_type = '%s'
+        ''' % m_type
+        sql = filter(sql, where)
+    return sql
+
+
+def filterBefore(sql, before):
+    if before:
+        where = '''
+            s.created_at < '%s'
+        ''' % before
+        sql = filter(sql, where)
     return sql
 
 
@@ -225,30 +261,6 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     return pg.query(sql)
 
 
-def filterSearchKey(sql, search_key):
-    if search_key:
-        sql = '''
-            select * from (%s) s where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%'
-            ''' % (sql, search_key.upper(), search_key.upper())
-    return sql
-
-
-def filterMTYpe(sql, m_type):
-    if m_type:
-        sql = '''
-            select * from (%s) s where s.m_type = '%s'
-        ''' % (sql, m_type)
-    return sql
-
-
-def filterBefore(sql, before):
-    if before:
-        sql = '''
-            select * from (%s) s where s.created_at < '%s'
-        ''' % (sql, before)
-    return sql
-
-
 def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, cat=None, is_public=None, limit=None, before=None):
     '''
     modify by bigzhu at 15/08/06 17:05:22 可以根据god_name来取
@@ -285,7 +297,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
             select * from   (%s) ut left join (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=%s) f on ut.god_id=f.followed_god_id
             order by ut.u_stat_date desc
         ''' % (sql, user_id)
-        sql = addBlockSql(sql, user_id)
+        sql = filterBlock(sql, user_id)
         # remark info
         sql = '''
             select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where user_id=%s) r on s.god_id=r.god_id
