@@ -73,14 +73,23 @@ def filterBefore(sql, before):
     return sql
 
 
+def wrapCount(sql):
+    sql = '''
+    select count(s.id) from (%s) s
+    ''' % sql
+    return sql
+
+
 def getUnreadCount(after, user_id=None):
     '''
     create by bigzhu at 16/12/14 17:14:49 取未读数
     '''
-    sql = ' select count(id) from all_message m '
+    sql = ' select * from all_message s '
     # print sql
     sql = filterFollowedMessages(sql, user_id)
     sql = filterAfterMessages(sql, after)
+    sql = wrapCount(sql)
+    print sql
 
     return pg.query(sql)[0].count
 

@@ -665,7 +665,7 @@ class api_new(tornado_bz.UserInfoHandler):
         data = storage()
         data.error = OK
         data.messages = messages
-        data.unread_count = public_db.getUnreadCount(after, user_id)
+        data.unread_message_count = public_db.getUnreadCount(after, user_id)
         if (len(messages) == 0):
             if (user_id):
                 data.followed_god_count = god.getFollowedGodCount(user_id)
