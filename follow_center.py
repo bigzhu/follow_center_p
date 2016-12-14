@@ -662,7 +662,7 @@ class api_new(tornado_bz.UserInfoHandler):
             if last:
                 after = last.last_time
             else:  # 未登录 or 第一次进来
-                after = time_bz.getBeforeDay(-3)
+                after = time_bz.getBeforeDay(-1)
 
         messages = public_db.getNewMessages(user_id=user_id, after=after, limit=limit, god_name=god_name, search_key=search_key)
         data = storage()
