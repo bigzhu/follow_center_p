@@ -4,7 +4,6 @@ import db_bz
 import pg
 import public_db
 import base64
-import time_bz
 import datetime
 
 
@@ -174,9 +173,6 @@ def saveLast(last_time, user_id):
     '''
     create by bigzhu at 15/08/16 16:22:39 保存最后一条的message
     '''
-    last_time = int(last_time)
-    last_time = time_bz.timestampToDateTime(last_time, millisecond=True)
-
     id = db_bz.insertIfNotExist(pg, 'last', {'user_id': user_id, 'last_time': last_time}, "user_id=%s" % user_id)
     if id is None:
         count = pg.update('last', where="last_time< '%s'  and user_id=%s" % (last_time, user_id), last_time=last_time)
