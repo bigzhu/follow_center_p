@@ -14,6 +14,28 @@ def filter(sql, where):
     return sql
 
 
+def filterAfterMessages(sql, after):
+    if after:
+        where = '''
+            s.created_at > '%s'
+        ''' % after
+        sql = filter(sql, where)
+    return sql
+
+
+def filterFollowedMessages(sql, user_id):
+    if user_id:
+        where = '''
+        lower(s.name) in (
+            select lower(name) from god where id in(
+                    select god_id from follow_who where user_id=%s
+                )
+        )
+        ''' % user_id
+        sql = filter(sql, where)
+    return sql
+
+
 def filterBlock(sql, user_id):
     # block
     if user_id:
@@ -49,6 +71,18 @@ def filterBefore(sql, before):
         ''' % before
         sql = filter(sql, where)
     return sql
+
+
+def getUnreadCount(after, user_id=None):
+    '''
+    create by bigzhu at 16/12/14 17:14:49 取未读数
+    '''
+    sql = ' select count(id) from all_message m '
+    # print sql
+    sql = filterFollowedMessages(sql, user_id)
+    sql = filterAfterMessages(sql, after)
+
+    return pg.query(sql)[0].count
 
 
 def getSocialUser(name, type):
@@ -190,14 +224,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         # sql += " where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%' " % (search_key.upper(), search_key.upper())
         sql = filterSearchKey(sql, search_key)
     else:
-        if user_id:
-            sql += '''
-            where lower(s.name) in (
-                select lower(name) from god where id in(
-                        select god_id from follow_who where user_id=%s
-                    )
-            )
-            ''' % user_id
+        sql = filterFollowedMessages(sql, user_id)
 
     if m_type:
         sql += " and s.m_type='%s' " % m_type
