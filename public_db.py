@@ -14,6 +14,22 @@ def filter(sql, where):
     return sql
 
 
+def filterPublicGod(sql):
+    where = '''
+        s.is_public in (1, 2)
+    '''
+    sql = filter(sql, where)
+    return sql
+
+
+def filterPublicGodMessages(sql):
+    where = '''
+        lower(s.name) in (select lower(name) from god where is_public in (1,2) )
+    '''
+    sql = filter(sql, where)
+    return sql
+
+
 def filterAfterMessages(sql, after):
     if after:
         where = '''
@@ -218,7 +234,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         # 不给看18+
         sql += " where lower(name) not in (select lower(name) from god where cat='18+') "
         # 只能看 public god 的 message
-        sql += " and lower(name) in (select lower(name) from god where is_public=1) "
+        sql = filterPublicGodMessages(sql)
     # 封住，以直接加where
     sql = ''' select * from (%s) s ''' % sql
     # 查比这个时间新的
@@ -365,19 +381,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
         select * from (%s) s where lower(name)=lower('%s')
         ''' % (sql, god_name)
     if is_public:
-        sql = '''
-        select * from (%s) s where is_public = 1
-        ''' % sql
-        # if user_id:
-        #     sql = '''
-        #     select * from (%s) s where  is_public = 1 or s.god_id in (select god_id from who_add_god where user_id=%s)
-        #     ''' % (sql, user_id)
-        # else:
-        #     sql = '''
-        #     select * from (%s) s where is_public = 1
-        #     ''' % sql
-
-    # sql += "  order by followed_count desc "
+        sql = filterPublicGod(sql)
     if before:
         sql = '''
         select * from (%s) s where created_date < '%s'

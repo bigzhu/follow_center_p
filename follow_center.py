@@ -177,9 +177,9 @@ class api_cat(BaseHandler):
             select count(id),cat from god where is_public=1 and cat not in('18+') group by cat
         '''
         # if user_id:
-        #     # sql = '''
-        #     #     select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
-        #     # ''' % user_id
+        # sql = '''
+        # select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
+        # ''' % user_id
         if just_my:
             sql = '''
                 select count(id),cat from god where id in(select god_id from follow_who where user_id=%s) group by cat
@@ -380,6 +380,15 @@ class api_apply_del(tornado_bz.UserInfoHandler):
             raise Exception("修改失败" + count)
 
         self.write(json.dumps({'error': '0', 'count': count}, cls=public_bz.ExtEncoder))
+
+    @tornado_bz.mustLoginApi
+    @tornado_bz.handleError
+    def delete(self, id):
+        self.set_header("Content-Type", "application/json")
+        count = pg.delete('apply_del', where="id=%s" % id)
+        if count != 1:
+            raise Exception('没有正确的reject del apply, reject %s 人' % count)
+        self.write(json.dumps({'error': '0'}))
 
 
 class api_god(tornado_bz.UserInfoHandler):
@@ -662,7 +671,7 @@ class api_new(tornado_bz.UserInfoHandler):
             if last:
                 after = last.last_time
             else:  # 未登录 or 第一次进来
-                after = time_bz.getBeforeDay(-1)
+                after = time_bz.getBeforeDay()
 
         messages = public_db.getNewMessages(user_id=user_id, after=after, limit=limit, god_name=god_name, search_key=search_key)
         data = storage()
