@@ -595,14 +595,15 @@ class api_last(tornado_bz.UserInfoHandler):
         last_time = time_bz.timestampToDateTime(last_time, True)
         # last_message_id = data.get('message_id')
         user_id = self.current_user
-        if user_id is None:
-            self.write(json.dumps({'error': '0', 'count': 0}, cls=public_bz.ExtEncoder))
-            return
 
-        oper.saveLast(last_time, user_id)
+        if user_id is None:
+            pass
+        else:
+            oper.saveLast(last_time, user_id)
         data = storage()
         data.error = OK
         data.unread_message_count = oper.getUnreadCount(user_id)
+
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 

@@ -204,6 +204,7 @@ def getLastTime(user_id):
 
 def getUnreadCount(user_id):
     after = getLastTime(user_id)
+    print after
     return public_db.queryUnreadCount(after, user_id)
 
 

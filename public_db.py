@@ -101,7 +101,6 @@ def queryUnreadCount(after, user_id=None):
     create by bigzhu at 16/12/14 17:14:49 取未读数
     '''
     sql = ' select * from all_message s '
-    # print sql
     sql = filterFollowedMessages(sql, user_id)
     sql = filterAfterMessages(sql, after)
     sql = wrapCount(sql)
