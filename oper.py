@@ -5,6 +5,7 @@ import pg
 import public_db
 import base64
 import datetime
+import time_bz
 
 
 def block(user_id, god_id, make_sure=True):
@@ -192,22 +193,18 @@ def getLast(user_id):
     if last:
         return last[0]
 
-    # info = ''
-    # 上次看到哪条？
-    # last = public_db.getLast(user_id)
-    # if last:
-    #     last_message_id = last.last_message_id
-    # limit = None  # 查出看到上次的所有
-    # else:
-    #     if user_id:
-    #         followed_who = public_db.followedWho(user_id)
-    #         if not followed_who:
-    #             info = 'not followed any one'
-    # 没有关注任何用户，就按未登录来取message
-    #             user_id = None
-    #     last_message_id = None
-    # limit = 100  # 第一次看，就查最新的100条出来
-    # return info, limit, last_message_id
+
+def getLastTime(user_id):
+    last = getLast(user_id)
+    if last:
+        return last.last_time
+    else:  # 未登录 or 第一次进来
+        return time_bz.getBeforeDay()
+
+
+def getUnreadCount(user_id):
+    after = getLastTime(user_id)
+    return public_db.queryUnreadCount(after, user_id)
 
 
 def collect(message_id, user_id):

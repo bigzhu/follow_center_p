@@ -18,7 +18,6 @@ with open('conf/db.ini', 'r') as cfg_file:
     the_db = config.get('db', 'db')
     user = config.get('db', 'user')
     pw = config.get('db', 'pw')
-host = "www.follow.center"
 
 now_day = time_bz.getYearMonthDay()
 file_name = 'db_bak/%s.%s.dump' % (the_db, now_day)

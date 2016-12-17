@@ -96,7 +96,7 @@ def wrapCount(sql):
     return sql
 
 
-def getUnreadCount(after, user_id=None):
+def queryUnreadCount(after, user_id=None):
     '''
     create by bigzhu at 16/12/14 17:14:49 取未读数
     '''

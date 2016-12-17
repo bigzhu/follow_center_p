@@ -602,7 +602,7 @@ class api_last(tornado_bz.UserInfoHandler):
         oper.saveLast(last_time, user_id)
         data = storage()
         data.error = OK
-        data.unread_message_count = public_db.getUnreadCount(last_time, user_id)
+        data.unread_message_count = oper.getUnreadCount(user_id)
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 
@@ -657,7 +657,6 @@ class api_new(tornado_bz.UserInfoHandler):
         god_name = None
         if parm:
             parm = json.loads(parm)
-
             after = parm.get('after')  # 晚于这个时间的
             limit = parm.get('limit')
             search_key = parm.get('search_key')
@@ -667,17 +666,13 @@ class api_new(tornado_bz.UserInfoHandler):
         if after:
             after = time_bz.timestampToDateTime(after, True)
         elif search_key is None and god_name is None:  # 这些条件查询不能卡上次看到那条的时间
-            last = oper.getLast(user_id)
-            if last:
-                after = last.last_time
-            else:  # 未登录 or 第一次进来
-                after = time_bz.getBeforeDay()
+            after = oper.getLastTime(user_id)
 
         messages = public_db.getNewMessages(user_id=user_id, after=after, limit=limit, god_name=god_name, search_key=search_key)
         data = storage()
         data.error = OK
         data.messages = messages
-        data.unread_message_count = public_db.getUnreadCount(after, user_id)
+        data.unread_message_count = oper.getUnreadCount(user_id)
         if (len(messages) == 0):
             if (user_id):
                 data.followed_god_count = god.getFollowedGodCount(user_id)
