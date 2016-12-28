@@ -41,14 +41,15 @@ def main(user):
     create by bigzhu at 16/06/10 14:01:16 facebook
     '''
     etag = None
-    name = user['name']
-    where = "type='facebook' and name='%s'" % name
+    social_name = user['facebook']
+    god_name = user['name']
+    where = "type='facebook' and name='%s'" % social_name
     social_user = list(pg.db.select('social_user', where=where))
     if social_user:
         user_id = social_user[0].out_id
         etag = social_user[0].sync_key
     else:
-        user_id = getFaceBookUserId(name)
+        user_id = getFaceBookUserId(social_name)
 
     params = {'access_token': access_token,
               'fields': 'username,link,bio,picture,feed{created_time,full_picture,message,link,description}'}
@@ -67,7 +68,7 @@ def main(user):
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        public_db.sendDelApply('facebook', name, '404')
+        public_db.sendDelApply('facebook', god_name, social_name, '404')
     else:
         print r.status_code
 
@@ -116,7 +117,6 @@ def run(god_name=None):
     '''
     sql = '''
     select * from god where facebook is not null and facebook != ''
-    and id in (select god_id from follow_who)
     '''
     if god_name:
         sql += " and name='%s'" % god_name

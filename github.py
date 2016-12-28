@@ -46,7 +46,7 @@ def main(user, wait):
         messages = r.json()
         if not messages:
             # 没有这个github用户, 删除
-            public_db.sendDelApply('github', user.github, 'not have user')
+            public_db.sendDelApply('github', user.name, user.github, 'not have user')
             return
         actor = messages[0]['actor']
         # actor不定是作者名字，有可能org才是

@@ -30,6 +30,7 @@ def main(user):
     create by bigzhu at 16/06/12 16:19:09 api disabled
     '''
     name = user['instagram']
+    god_name = user['name']
     etag = None
 
     where = "type='instagram' and name='%s'" % name
@@ -60,7 +61,7 @@ def main(user):
         pass
     elif r.status_code == 404:
         # public_db.delNoName('instagram', name)
-        public_db.sendDelApply('instagram', name, '404')
+        public_db.sendDelApply('instagram', god_name, name, '404')
     else:
         print r.status_code
     # oper.noMessageTooLong(M_TYPE, user.instagram)

@@ -26,6 +26,7 @@ class apply_del(model_oper_bz.base):
     create by bigzhu at 16/08/19 10:39:42 申请删除没有用的社交帐号
     '''
     god_name = TextField()  # god name
+    social_name = TextField()  # 社交帐号名
     type = TextField()  # 类别
     stat = IntegerField(null=True)  # 1 已删 0 不能删
     count = IntegerField(null=True, default=0)  # 申请次数
@@ -260,4 +261,4 @@ if __name__ == '__main__':
         the_db = config.get('db', 'db')
         user = config.get('db', 'user')
         pw = config.get('db', 'pw')
-    model_oper_bz.createTable(block, db_name, user=user, password=pw, host=host)
+    model_oper_bz.reCreateTable(apply_del, db_name, user=user, password=pw, host=host)

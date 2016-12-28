@@ -106,7 +106,7 @@ def callGetMeidaApi(user_name, offset=0, limit=20):
 def main(user, wait):
     blogs = callGetMeidaApi(user_name=user.tumblr, limit=1)
     if blogs is None:
-        public_db.sendDelApply('tumblr', user.tumblr, 'not have user')
+        public_db.sendDelApply('tumblr', user.name, user.tumblr, 'not have user')
     else:
         response = blogs['response']
         tumblr_user = response['blog']

@@ -47,7 +47,7 @@ def main(user, wait):
         if twitter_user:
             twitter_user = saveUser(twitter_user)
         else:
-            public_db.sendDelApply('twitter', user.twitter, 'User not found.')
+            public_db.sendDelApply('twitter', user.name, user.twitter, 'User not found.')
             return
         public_tweets = api.user_timeline(screen_name=user.twitter, include_rts=False, exclude_replies=True)
         for tweet in public_tweets:
