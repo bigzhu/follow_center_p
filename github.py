@@ -138,5 +138,5 @@ if __name__ == '__main__':
         sync('github', main, user_name)
         exit(0)
     while True:
-        sync('github', main, must_followed=True)
+        sync('github', main, must_followed=False)
         time.sleep(1200)

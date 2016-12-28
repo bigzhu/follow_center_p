@@ -60,7 +60,7 @@ def main(user, wait):
         print error_info
 
         if 'User not found.' in error_info:
-            public_db.sendDelApply('twitter', user.twitter, 'User not found.')
+            public_db.sendDelApply('twitter', user.name, user.twitter, 'User not found.')
         if 'Rate limit exceeded' in error_info:  # 调用太多
             if wait:
                 waitReset(user)
@@ -68,11 +68,11 @@ def main(user, wait):
                 raise Exception('Twitter api 的调用次数用完了，请等个10分钟再添加!')
             return 'Rate limit exceeded'
         if 'User has been suspended.' in error_info:  # 帐号被冻结了
-            public_db.sendDelApply('twitter', user.twitter, 'User has been suspended.')
+            public_db.sendDelApply('twitter', user.name, user.twitter, 'User has been suspended.')
         if 'Not authorized.' in error_info:  # 私有
-            public_db.sendDelApply('twitter', user.twitter, 'Not authorized.')
+            public_db.sendDelApply('twitter', user.name, user.twitter, 'Not authorized.')
         if 'Sorry, that page does not exist.' in error_info:  # 没用户
-            public_db.sendDelApply('twitter', user.twitter, 'Sorry, that page does not exist.')
+            public_db.sendDelApply('twitter', user.name, user.twitter, 'Sorry, that page does not exist.')
 
 
 def saveUser(twitter_user):
