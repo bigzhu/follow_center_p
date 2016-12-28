@@ -162,7 +162,6 @@ def run(god_name=None, wait=None):
     '''
     sql = '''
     select * from god where twitter is not null and twitter != ''
-    and id in (select god_id from follow_who)
     '''
     if god_name:
         sql += " and name='%s'" % god_name

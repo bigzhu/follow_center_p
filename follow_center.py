@@ -187,6 +187,8 @@ class api_cat(BaseHandler):
         if is_my:
             sql = filter_bz.filterMyGod(sql, user_id)
 
+        sql = filter_bz.filter18God(sql)
+
         sql = '''
             select count(id),cat from (%s) s group by cat
         ''' % sql

@@ -26,6 +26,14 @@ def filterHaveSocialGod(sql):
     return sql
 
 
+def filter18God(sql):
+    where = '''
+        s.cat != '18+'
+    '''
+    sql = filter(sql, where)
+    return sql
+
+
 def filterMyGod(sql, user_id):
     if user_id:
         where = '''
