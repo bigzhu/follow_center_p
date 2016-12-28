@@ -65,7 +65,7 @@ def sendDelApply(type, god_name, social_name, reason=None):
     '''
     data = {'type': type, 'god_name': god_name, 'social_name': social_name, 'reason': reason}
     table_name = 'apply_del'
-    where = "lower(god_name)=lower('%s') and and lower(social_name)=lower('%s') type='%s'" % (god_name, social_name, type)
+    where = "lower(god_name)=lower('%s') and lower(social_name)=lower('%s') and type='%s'" % (god_name, social_name, type)
     id = db_bz.insertIfNotExist(pg, table_name, data, where)
     if id is None:
         pg.db.update(table_name, where=where, count=SQLLiteral('count+1'), stat=None)

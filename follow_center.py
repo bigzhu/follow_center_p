@@ -367,18 +367,18 @@ class api_apply_del(tornado_bz.UserInfoHandler):
     def put(self):
         self.set_header("Content-Type", "application/json")
         data = json.loads(self.request.body)
-        god_name = data['god_name']
-        if god_name == '' or god_name is None:
+        social_name = data['social_name']
+        if social_name == '' or social_name is None:
             raise Exception('必须有god名字才能修改')
         type = data['type']
         if type == '' or type is None:
             raise Exception('必须有type才能修改')
 
-        count = public_db.delNoName(type, god_name)
+        count = public_db.delNoName(type, social_name)
         if count != 1:
-            raise Exception("修改失败 type:%s god_name: %s count: %s" % (type, god_name, count))
+            raise Exception("修改失败 type:%s social_name: %s count: %s" % (type, social_name, count))
 
-        sql = ''' update apply_del set stat=1 where god_name='%s' and type='%s' and stat is null''' % (god_name, type)
+        sql = ''' update apply_del set stat=1 where social_name='%s' and type='%s' and stat is null''' % (social_name, type)
         count = self.pg.query(sql)
         if count != 1:
             raise Exception("修改失败" + count)
