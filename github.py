@@ -60,7 +60,7 @@ def main(user, wait):
                 # the_user['url'] = "https://api.github.com/users/" + user.github
 
                 # 对org用户不同步,当作没有github处理，否则杂乱信息太多
-                public_db.sendDelApply('github', user.github, 'is org user')
+                public_db.sendDelApply('github', user.name, user.github, 'is org user')
                 return
             else:
                 raise "in this github can't find user_name=%s" % user.github
@@ -82,7 +82,7 @@ def main(user, wait):
         saveUser(github_user, etag)
         oper.noMessageTooLong('github', user.github)
     if r.status_code == 404:
-        public_db.sendDelApply('github', user.github, '404')
+        public_db.sendDelApply('github', user.name, user.github, '404')
 
 
 def saveMessage(message, user):
