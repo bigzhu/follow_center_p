@@ -181,7 +181,7 @@ class api_cat(BaseHandler):
         select * from god
         '''
         if is_public:
-            sql = filter_bz.filterPublicGod(sql, user_id)
+            sql = filter_bz.filterPublicGod(sql)
         if is_my:
             sql = filter_bz.filterMyGod(sql, user_id)
 
@@ -313,11 +313,9 @@ class api_gods(BaseHandler):
     @tornado_bz.mustLoginApi
     def get(self, parm):
         parm = json.loads(parm)
-        cat = parm['cat']
+        cat = parm.get('cat')
         is_my = parm.get('is_my')
         self.set_header("Content-Type", "application/json")
-        if cat == 'all':
-            cat = None
         gods = oper.getGods(cat=cat, is_my=is_my)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
