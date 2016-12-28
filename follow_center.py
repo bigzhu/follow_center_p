@@ -8,6 +8,7 @@ import public_bz
 import sys
 from oper import sync
 
+import datetime
 import db_bz
 import time_bz
 import tornado.ioloop
@@ -19,6 +20,7 @@ from webpy_db import SQLLiteral
 
 import oper
 import pg
+import filter_bz
 import public_db
 import proxy
 import web_bz
@@ -172,18 +174,20 @@ class api_cat(BaseHandler):
         self.set_header("Content-Type", "application/json")
 
         parm = json.loads(parm)
-        just_my = parm['just_my']
+        is_my = parm.get('is_my', None)
+        is_public = parm.get('is_public', None)
+        user_id = self.current_user
         sql = '''
-            select count(id),cat from god where is_public=1 and cat not in('18+') group by cat
+        select * from god
         '''
-        # if user_id:
-        # sql = '''
-        # select count(id),cat from god where cat!='18+' and (is_public=1 or id in(select god_id from who_add_god where user_id=%s)) group by cat
-        # ''' % user_id
-        if just_my:
-            sql = '''
-                select count(id),cat from god where id in(select god_id from follow_who where user_id=%s) group by cat
-            ''' % self.current_user
+        if is_public:
+            sql = filter_bz.filterPublicGod(sql, user_id)
+        if is_my:
+            sql = filter_bz.filterMyGod(sql, user_id)
+
+        sql = '''
+            select count(id),cat from (%s) s group by cat
+        ''' % sql
         cats = list(self.pg.db.query(sql))
         self.write(json.dumps({'error': '0', 'cats': cats}, cls=public_bz.ExtEncoder))
 
@@ -651,6 +655,7 @@ class api_new(tornado_bz.UserInfoHandler):
 
     def get(self, parm=None):
 
+        starttime = datetime.datetime.now()
         self.set_header("Content-Type", "application/json")
         after = None
         limit = None
@@ -679,6 +684,11 @@ class api_new(tornado_bz.UserInfoHandler):
                 data.followed_god_count = god.getFollowedGodCount(user_id)
             else:
                 data.followed_god_count = -1
+
+        endtime = datetime.datetime.now()
+
+        print 'api_new cost'
+        print (endtime - starttime).seconds
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 

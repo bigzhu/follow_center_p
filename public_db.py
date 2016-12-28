@@ -3,90 +3,9 @@
 import pg
 import user_bz
 import db_bz
+import filter_bz
 from webpy_db import SQLLiteral
 user_oper = user_bz.UserOper(pg)
-
-
-def filter(sql, where):
-    sql = '''
-        select * from (%s) s where %s
-    ''' % (sql, where)
-    return sql
-
-
-def filterPublicGod(sql):
-    where = '''
-        s.is_public in (1, 2)
-    '''
-    sql = filter(sql, where)
-    return sql
-
-
-def filterPublicGodMessages(sql):
-    where = '''
-        lower(s.name) in (select lower(name) from god where is_public in (1,2) )
-    '''
-    sql = filter(sql, where)
-    return sql
-
-
-def filterAfterMessages(sql, after):
-    if after:
-        where = '''
-            s.created_at > '%s'
-        ''' % after
-        sql = filter(sql, where)
-    return sql
-
-
-def filterFollowedMessages(sql, user_id):
-    if user_id:
-        where = '''
-        lower(s.name) in (
-            select lower(name) from god where id in(
-                    select god_id from follow_who where user_id=%s
-                )
-        )
-        ''' % user_id
-        sql = filter(sql, where)
-    return sql
-
-
-def filterBlock(sql, user_id):
-    # block
-    if user_id:
-        where = '''
-            s.god_id not in (select god_id from block where user_id=%s)
-        ''' % user_id
-        sql = filter(sql, where)
-    return sql
-
-
-def filterSearchKey(sql, search_key):
-    if search_key:
-        where = '''
-            upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%'
-            ''' % (search_key.upper(), search_key.upper())
-        sql = filter(sql, where)
-    return sql
-
-
-def filterMTYpe(sql, m_type):
-    if m_type:
-        where = '''
-            s.m_type = '%s'
-        ''' % m_type
-        sql = filter(sql, where)
-    return sql
-
-
-def filterBefore(sql, before):
-    if before:
-        where = '''
-            s.created_at < '%s'
-        ''' % before
-        sql = filter(sql, where)
-    return sql
 
 
 def wrapCount(sql):
@@ -101,8 +20,8 @@ def queryUnreadCount(after, user_id=None):
     create by bigzhu at 16/12/14 17:14:49 取未读数
     '''
     sql = ' select * from all_message s '
-    sql = filterFollowedMessages(sql, user_id)
-    sql = filterAfterMessages(sql, after)
+    sql = filter_bz.filterFollowedMessages(sql, user_id)
+    sql = filter_bz.filterAfterMessages(sql, after)
     sql = wrapCount(sql)
     print sql
 
@@ -233,7 +152,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         # 不给看18+
         sql += " where lower(name) not in (select lower(name) from god where cat='18+') "
         # 只能看 public god 的 message
-        sql = filterPublicGodMessages(sql)
+        sql = filter_bz.filterPublicGodMessages(sql)
     # 封住，以直接加where
     sql = ''' select * from (%s) s ''' % sql
     # 查比这个时间新的
@@ -241,14 +160,14 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         sql += " where created_at > '%s' " % after
         # 再封
         sql = ''' select * from (%s) s ''' % sql
-    # 互斥的filter
+    # 互斥的filter_bz.filter
     if god_name:
         sql += " where lower(s.user_name)=lower('%s') " % god_name
     elif search_key:
         # sql += " where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%' " % (search_key.upper(), search_key.upper())
-        sql = filterSearchKey(sql, search_key)
+        sql = filter_bz.filterSearchKey(sql, search_key)
     else:
-        sql = filterFollowedMessages(sql, user_id)
+        sql = filter_bz.filterFollowedMessages(sql, user_id)
 
     if m_type:
         sql += " and s.m_type='%s' " % m_type
@@ -258,7 +177,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     if limit is None and after is None:
         limit = 99
     sql += ' limit %s ' % limit
-    # print sql
+    print sql
     return pg.query(sql)
 
 
@@ -283,11 +202,11 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     # 封住，以直接加where
     sql = ''' select * from (%s) s ''' % sql
 
-    # 互斥的filter
+    # 互斥的filter_bz.filter
     if god_name:
         sql += " where lower(s.name)=lower('%s') " % god_name
     elif search_key:
-        sql = filterSearchKey(sql, search_key)
+        sql = filter_bz.filterSearchKey(sql, search_key)
     else:
         if user_id:
             sql += '''
@@ -298,8 +217,8 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
             )
             ''' % user_id
 
-    sql = filterMTYpe(sql, m_type)
-    sql = filterBefore(sql, before)
+    sql = filter_bz.filterMTYpe(sql, m_type)
+    sql = filter_bz.filterBefore(sql, before)
 
     # order by
     if search_key is None:
@@ -348,7 +267,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
             select * from   (%s) ut left join (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=%s) f on ut.god_id=f.followed_god_id
             order by ut.u_stat_date desc
         ''' % (sql, user_id)
-        sql = filterBlock(sql, user_id)
+        sql = filter_bz.filterBlock(sql, user_id)
         # remark info
         sql = '''
             select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where user_id=%s) r on s.god_id=r.god_id
@@ -380,7 +299,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
         select * from (%s) s where lower(name)=lower('%s')
         ''' % (sql, god_name)
     if is_public:
-        sql = filterPublicGod(sql)
+        sql = filter_bz.filterPublicGod(sql)
     if before:
         sql = '''
         select * from (%s) s where created_date < '%s'
