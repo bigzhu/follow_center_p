@@ -12,6 +12,20 @@ def filter(sql, where):
     return sql
 
 
+def filterHaveSocialGod(sql):
+    where = '''
+        not (
+            (tumblr is null or tumblr='')
+            and (twitter is null or twitter='')
+            and (github is null or github='')
+            and (instagram is null or instagram='')
+            and (facebook is null or facebook='')
+            )
+    '''
+    sql = filter(sql, where)
+    return sql
+
+
 def filterMyGod(sql, user_id):
     if user_id:
         where = '''

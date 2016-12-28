@@ -180,6 +180,8 @@ class api_cat(BaseHandler):
         sql = '''
         select * from god
         '''
+
+        sql = filter_bz.filterHaveSocialGod(sql)
         if is_public:
             sql = filter_bz.filterPublicGod(sql)
         if is_my:

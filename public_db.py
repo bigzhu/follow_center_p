@@ -245,9 +245,8 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     select  g.id as god_id,
             g.stat_date as u_stat_date,
     * from god g
-        where
-            not ((tumblr is null or tumblr='') and (twitter is null or twitter='') and (github is null or github='') and (instagram is null or instagram=''))
     '''
+    sql = filter_bz.filterHaveSocialGod(sql)
 
     sql = '''
         select s.*, coalesce(c.count,0) as followed_count from   (%s) s left join (select count(id) as count,god_id from follow_who group by god_id) c on s.god_id=c.god_id
