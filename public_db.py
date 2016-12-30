@@ -4,6 +4,7 @@ import pg
 import user_bz
 import db_bz
 import filter_bz
+import add_bz
 from webpy_db import SQLLiteral
 user_oper = user_bz.UserOper(pg)
 
@@ -23,7 +24,7 @@ def queryUnreadCount(after, user_id=None):
     sql = filter_bz.filterFollowedMessages(sql, user_id)
     sql = filter_bz.filterAfterMessages(sql, after)
     sql = wrapCount(sql)
-    print sql
+    # print sql
 
     return pg.query(sql)[0].count
 
@@ -177,7 +178,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     if limit is None and after is None:
         limit = 99
     sql += ' limit %s ' % limit
-    print sql
+    # print sql
     return pg.query(sql)
 
 
@@ -227,7 +228,7 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     if limit is None:
         limit = 10
     sql += ' limit %s ' % limit
-    print sql
+    # print sql
     return pg.query(sql)
 
 
@@ -247,19 +248,14 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     * from god g
     '''
     sql = filter_bz.filterHaveSocialGod(sql)
-
-    sql = '''
-        select s.*, coalesce(c.count,0) as followed_count from   (%s) s left join (select count(id) as count,god_id from follow_who group by god_id) c on s.god_id=c.god_id
-        ''' % sql
+    sql = add_bz.addGodFollowedCount(sql)
+    sql = add_bz.addGodRemark(sql)
 
     # 只查有人关注的
     # sql = '''
     #     select * from (%s) s  where s.id in (select god_id from follow_who)
     # ''' % sql
 
-    sql = '''
-        select s.*, r.remark as admin_remark from   (%s) s left join (select remark, god_id from remark where user_id=1) r on s.god_id=r.god_id
-        ''' % sql
     if user_id:
         # followed info
         sql = '''
@@ -306,7 +302,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     sql += "  order by created_date desc "
     if limit:
         sql += ' limit %s ' % limit
-    print sql
+    # print sql
     return pg.query(sql)
 
 

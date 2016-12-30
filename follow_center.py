@@ -190,8 +190,9 @@ class api_cat(BaseHandler):
         sql = filter_bz.filter18God(sql)
 
         sql = '''
-            select count(id),cat from (%s) s group by cat
+            select count(id) count,cat from (%s) s group by cat order by count desc,cat
         ''' % sql
+        print sql
         cats = list(self.pg.db.query(sql))
         self.write(json.dumps({'error': '0', 'cats': cats}, cls=public_bz.ExtEncoder))
 
