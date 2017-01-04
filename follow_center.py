@@ -425,9 +425,7 @@ class api_god(tornado_bz.UserInfoHandler):
         user_id = self.current_user
         data = json.loads(self.request.body)
         name = data['name']
-        cat = data['cat']
-        if cat == 'recommand':
-            cat = '大杂烩'
+        cat = data.get('cat', '大杂烩')
         data = {
             'name': name,
             'cat': cat,
@@ -686,7 +684,7 @@ class api_new(tornado_bz.UserInfoHandler):
             if (user_id):
                 data.followed_god_count = god.getFollowedGodCount(user_id)
             else:
-                data.followed_god_count = -1
+                data.followed_god_count = 0
 
         endtime = datetime.datetime.now()
 
