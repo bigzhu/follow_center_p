@@ -6,6 +6,7 @@ import sys
 sys.path.append("../lib_p_bz")
 import public_db
 
+import datetime
 import sys
 import time
 # from datetime import timedelta
@@ -134,4 +135,5 @@ if __name__ == '__main__':
             run()
         except Exception, e:
             print e
+        print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

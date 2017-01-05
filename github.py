@@ -6,6 +6,7 @@ create by bigzhu at 15/07/15 17:17:29 取github的动态
 import sys
 sys.path.append("../lib_p_bz")
 
+import datetime
 import requests
 from oper import sync
 import oper
@@ -139,4 +140,5 @@ if __name__ == '__main__':
         exit(0)
     while True:
         sync('github', main, must_followed=False)
+        print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

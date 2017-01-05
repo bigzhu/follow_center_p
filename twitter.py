@@ -9,6 +9,7 @@ modify by bigzhu at 15/11/28 11:36:18 可以查某个用户
 import sys
 sys.path.append("../lib_p_bz")
 
+import datetime
 import sys
 import oper
 import time
@@ -178,4 +179,5 @@ if __name__ == '__main__':
 
     while True:
         run(wait=True)
+        print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(2400)

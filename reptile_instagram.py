@@ -10,6 +10,7 @@ import sys
 sys.path.append("../lib_p_bz")
 import public_db
 import sys
+import datetime
 import time_bz
 import requests
 requests.adapters.DEFAULT_RETRIES = 5
@@ -141,4 +142,5 @@ if __name__ == '__main__':
             print e
         except requests.exceptions.ChunkedEncodingError as e:
             print e
+        print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

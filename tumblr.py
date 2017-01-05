@@ -6,6 +6,7 @@ create by bigzhu at 15/07/15 17:17:29 取github的动态
 import sys
 sys.path.append("../lib_p_bz")
 
+import datetime
 import requests
 import sys
 import pg
@@ -132,4 +133,5 @@ if __name__ == '__main__':
             print e
         except requests.exceptions.ReadTimeout as e:
             print e
+        print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

@@ -302,9 +302,7 @@ class api_my_gods(tornado_bz.UserInfoHandler):
     def get(self, parm):
         self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
-        cat = parm['cat']
-        if cat == 'all':
-            cat = None
+        cat = parm.get('cat')
         gods = oper.getGods(self.current_user, is_my=True, cat=cat)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
