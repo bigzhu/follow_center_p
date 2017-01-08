@@ -27,6 +27,7 @@ import web_bz
 from public_bz import storage
 from bs4 import BeautifulSoup
 import god
+import anki
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -41,6 +42,20 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     consumer_secret = config.get('secret', 'consumer_secret')
     access_token = config.get('secret', 'access_token')
     access_token_secret = config.get('secret', 'access_token_secret')
+
+
+class api_anki(tornado_bz.UserInfoHandler):
+
+    '''
+    '''
+    @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
+    def post(self):
+        self.set_header("Content-Type", "application/json")
+        data = json.loads(self.request.body)
+        front = data['front']
+        anki.addCard(front)
+        self.write(json.dumps({'error': '0'}))
 
 
 class api_public_gods(BaseHandler):
@@ -184,10 +199,9 @@ class api_cat(BaseHandler):
         sql = filter_bz.filterHaveSocialGod(sql)
         if is_public:
             sql = filter_bz.filterPublicGod(sql)
+            sql = filter_bz.filter18God(sql)
         if is_my:
             sql = filter_bz.filterMyGod(sql, user_id)
-
-        sql = filter_bz.filter18God(sql)
 
         sql = '''
             select count(id) count,cat from (%s) s group by cat order by count desc,cat

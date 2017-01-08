@@ -36,7 +36,7 @@ def main(user, wait):
     modify by bigzhu at 15/07/22 16:20:42 时间同样要加入8小时,否则不正确
     '''
     etag = oper.getSyncKey('github', user.github)
-    print 'check ', user.github
+    # print 'check ', user.github
     headers = {'If-None-Match': etag}
     try:
         r = requests.get('https://api.github.com/users/%s/events' % user.github, headers=headers, params=params)
