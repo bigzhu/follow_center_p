@@ -190,18 +190,18 @@ class api_cat(BaseHandler):
 
         parm = json.loads(parm)
         is_my = parm.get('is_my', None)
-        is_public = parm.get('is_public', None)
+        # is_public = parm.get('is_public', None)
         user_id = self.current_user
         sql = '''
         select * from god
         '''
 
         sql = filter_bz.filterHaveSocialGod(sql)
-        if is_public:
-            sql = filter_bz.filterPublicGod(sql)
-            sql = filter_bz.filter18God(sql)
         if is_my:
             sql = filter_bz.filterMyGod(sql, user_id)
+        else:
+            sql = filter_bz.filterPublicGod(sql)
+            sql = filter_bz.filter18God(sql)
 
         sql = '''
             select count(id) count,cat from (%s) s group by cat order by count desc,cat
