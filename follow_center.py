@@ -32,7 +32,9 @@ import anki
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-OK = '0' import ConfigParser config = ConfigParser.ConfigParser()
+OK = '0'
+import ConfigParser
+config = ConfigParser.ConfigParser()
 with open('conf/twitter.ini', 'r') as cfg_file:
     config.readfp(cfg_file)
     consumer_key = config.get('secret', 'consumer_key')
