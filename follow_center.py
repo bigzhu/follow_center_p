@@ -44,6 +44,30 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     access_token_secret = config.get('secret', 'access_token_secret')
 
 
+class api_black(tornado_bz.UserInfoHandler):
+
+    '''
+    '''
+    @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
+    def post(self):
+        self.set_header("Content-Type", "application/json")
+        data = json.loads(self.request.body)
+        god_id = data['god_id']
+        god_name = data['god_name']
+        oper.black(self.current_user, god_id, god_name)
+        self.write(json.dumps({'error': '0'}))
+
+    @tornado_bz.mustLoginApi
+    @tornado_bz.handleError
+    def delete(self, id):
+        self.set_header("Content-Type", "application/json")
+        count = pg.delete('black', where="god_id=%s" % id)
+        if count != 1:
+            raise Exception('没有正确的Unblack, Unblack %s 人' % count)
+        self.write(json.dumps({'error': '0'}))
+
+
 class api_anki(tornado_bz.UserInfoHandler):
 
     '''

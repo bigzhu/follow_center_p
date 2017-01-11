@@ -16,6 +16,14 @@ import model_bz
 db_name = 'follow_center'
 
 
+class black(model_oper_bz.base):
+    '''
+    黑名单,不再sync,也不能再add
+    '''
+    god_id = IntegerField()
+    god_name = TextField()  # god name
+
+
 class block(model_oper_bz.base):
     god_id = IntegerField()
 
@@ -261,4 +269,4 @@ if __name__ == '__main__':
         the_db = config.get('db', 'db')
         user = config.get('db', 'user')
         pw = config.get('db', 'pw')
-    model_oper_bz.reCreateTable(apply_del, db_name, user=user, password=pw, host=host)
+    model_oper_bz.reCreateTable(black, db_name, user=user, password=pw, host=host)
