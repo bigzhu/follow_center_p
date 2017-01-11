@@ -16,7 +16,7 @@ import tornado.web
 import tornado_bz
 from tornado_bz import UserInfoHandler
 from tornado_bz import BaseHandler
-from webpy_db import SQLLiteral
+# from webpy_db import SQLLiteral
 
 import oper
 import pg
@@ -32,10 +32,7 @@ import anki
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-OK = '0'
-
-import ConfigParser
-config = ConfigParser.ConfigParser()
+OK = '0' import ConfigParser config = ConfigParser.ConfigParser()
 with open('conf/twitter.ini', 'r') as cfg_file:
     config.readfp(cfg_file)
     consumer_key = config.get('secret', 'consumer_key')
@@ -457,13 +454,12 @@ class api_god(tornado_bz.UserInfoHandler):
         where = "name='%s'" % name
         god_info = self.pg.select('god', where=where)[0]
         god_id = god_info.id
+        if god_info.is_black == 1:
+            raise Exception('%s这是一个黑名名帐号,不允许添加!' % name)
 
-        if user_id == '1':  # admin 操作
-            self.pg.update('god', where=where, cat=cat, is_public=1, stat_date=SQLLiteral('NOW()'), user_id=self.current_user)
-        else:
-            if god_info.cat != cat:
-                where += " and is_public != 1"
-                self.pg.update('god', where=where, cat=cat, stat_date=SQLLiteral('NOW()'), user_id=self.current_user)
+        # if god_info.cat != cat:
+        #     where += " and is_public != 1"
+        #     self.pg.update('god', where=where, cat=cat, stat_date=SQLLiteral('NOW()'), user_id=self.current_user)
         # 加入自已的
         values = storage()
         values.god_id = god_id

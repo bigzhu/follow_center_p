@@ -15,6 +15,7 @@ requests.adapters.DEFAULT_RETRIES = 5
 import pg
 import json
 import public_bz
+import filter_bz
 import ConfigParser
 config = ConfigParser.ConfigParser()
 with open('conf/facebook.ini', 'r') as cfg_file:
@@ -121,6 +122,7 @@ def run(god_name=None):
     '''
     if god_name:
         sql += " and name='%s'" % god_name
+    sql = filter_bz.filterNotBlackGod(sql)
     users = pg.query(sql)
     for user in users:
         main(user)

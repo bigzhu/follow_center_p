@@ -13,6 +13,7 @@ import sys
 import datetime
 import time_bz
 import requests
+import filter_bz
 requests.adapters.DEFAULT_RETRIES = 5
 import time
 from public_bz import storage
@@ -123,6 +124,7 @@ def run(god_name=None):
     '''
     if god_name:
         sql += " and name='%s'" % god_name
+    sql = filter_bz.filterNotBlackGod(sql)
     users = pg.query(sql)
     for user in users:
         main(user)

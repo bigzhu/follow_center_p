@@ -6,6 +6,7 @@ import public_db
 import base64
 import datetime
 import time_bz
+import filter_bz
 
 
 def block(user_id, god_id, make_sure=True):
@@ -96,15 +97,18 @@ def sync(type, main, god_name=None, wait=None, must_followed=None):
     modify by bigzhu at 16/05/30 14:33:59 要有人关注的再sync
     modify by bigzhu at 16/05/30 17:12:36 加入参数
     '''
-    where = '''
-        %s is not null and %s!=''
+    sql = '''
+        select * from god where %s is not null and %s!=''
 
     ''' % (type, type)
     if must_followed:
-        where += " and id in (select god_id from follow_who) "
+        sql += " and id in (select god_id from follow_who) "
     if god_name:
-        where += " and name='%s'" % god_name
-    users = pg.select('god', what='*', where=where)
+        sql += " and name='%s'" % god_name
+
+    sql = filter_bz.filterNotBlackGod(sql)
+
+    users = pg.query(sql)
     for user in users:
         # print 'checking %s %s' % (type, user[type])
         main(user, wait)

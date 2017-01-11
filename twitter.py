@@ -19,6 +19,7 @@ import public_db
 import pg
 import json
 import public_bz
+import filter_bz
 import ConfigParser
 config = ConfigParser.ConfigParser()
 with open('conf/twitter.ini', 'r') as cfg_file:
@@ -164,6 +165,7 @@ def run(god_name=None, wait=None):
     sql = '''
     select * from god where twitter is not null and twitter != ''
     '''
+    sql = filter_bz.filterNotBlackGod(sql)
     if god_name:
         sql += " and name='%s'" % god_name
     users = pg.query(sql)

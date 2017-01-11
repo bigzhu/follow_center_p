@@ -12,6 +12,14 @@ def filter(sql, where):
     return sql
 
 
+def filterNotBlackGod(sql):
+    where = '''
+        s.is_black != 1
+    '''
+    sql = filter(sql, where)
+    return sql
+
+
 def filterHaveSocialGod(sql):
     where = '''
         not (
