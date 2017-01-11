@@ -14,7 +14,7 @@ def filter(sql, where):
 
 def filterNotBlackGod(sql):
     where = '''
-        s.is_black != 1
+        is_black !=1 or is_black is null
     '''
     sql = filter(sql, where)
     return sql
