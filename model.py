@@ -16,14 +16,6 @@ import model_bz
 db_name = 'follow_center'
 
 
-class black(model_oper_bz.base):
-    '''
-    黑名单,不再sync,也不能再add
-    '''
-    god_id = IntegerField()
-    god_name = TextField()  # god name
-
-
 class block(model_oper_bz.base):
     god_id = IntegerField()
 
@@ -75,6 +67,7 @@ class god(model_oper_bz.base):
     facebook = TextField(null=True)  #
     cat = TextField(null=True)  # 类别
     is_public = IntegerField(null=True)  # 是不是可以看到的，如果是，那么cat不能改
+    is_black = IntegerField(null=True)  # 是否黑名单
 
 
 class collect(model_oper_bz.base):
@@ -269,4 +262,4 @@ if __name__ == '__main__':
         the_db = config.get('db', 'db')
         user = config.get('db', 'user')
         pw = config.get('db', 'pw')
-    model_oper_bz.reCreateTable(black, db_name, user=user, password=pw, host=host)
+    model_oper_bz.createTable(block, db_name, user=user, password=pw, host=host)
