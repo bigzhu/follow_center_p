@@ -43,7 +43,7 @@ def login(username, password):
     cookies = r.cookies
 
 
-def getMidAndCsrfTokenHolder(user_id):
+def getMidAndCsrfTokenHolder(user_id, reset_cookie=False):
     sql = '''
     select * from anki where user_id=%s
     ''' % user_id
@@ -51,10 +51,9 @@ def getMidAndCsrfTokenHolder(user_id):
     if(len(datas) == 0):
         raise Exception('你还没有配置Anki信息')
     data = datas[0]
-    if data.mid is not None:
+    if data.mid is not None and not reset_cookie:
         return data.mid, data.csrf_token, data.cookie
     mid, csrf_token, cookie = getMidAndCsrfToken(data.user_name, data.password)
-    print cookie
     sql = '''
     update anki set mid='%s', csrf_token='%s', cookie='%s' where user_id=%s
     ''' % (mid, csrf_token, cookie, user_id)

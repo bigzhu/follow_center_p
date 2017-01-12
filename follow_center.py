@@ -57,7 +57,7 @@ class api_login_anki(tornado_bz.UserInfoHandler):
         anki_info.password = data['password']
         anki_info.user_id = self.current_user
         db_bz.insertOrUpdate(pg, 'anki', anki_info, "user_id=%s" % anki_info.user_id)
-        anki.getMidAndCsrfTokenHolder(anki_info.user_id)
+        anki.getMidAndCsrfTokenHolder(anki_info.user_id, reset_cookie=True)
         self.write(json.dumps({'error': '0'}))
 
 
