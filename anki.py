@@ -72,12 +72,20 @@ def getMidAndCsrfToken(user_name, password):
     edit_url = 'https://ankiweb.net/edit/'
     r = client.get(edit_url, cookies=cookies)
 
-    mid = re.findall(r'"mid": \d+', r.text)
-    if(len(mid) == 0):
-        mid = re.findall(r'"mid": "\d+"', r.text)
-    mid = mid[0]
-    mid = mid.replace('"mid": ', '')
-    mid = mid.replace('"', '')
+    mid = re.findall(r'editor.curModelID = "\d+"', r.text)
+    if len(mid) == 0:
+        raise Exception('找不到mid')
+    mid = mid[0].replace('editor.curModelID = "', '').replace('"', '')
+
+    # mid = re.findall(r'"mid": \d+', r.text)
+    # if len(mid) == 0:
+    #     mid = re.findall(r'"mid": "\d+"', r.text)
+    #     if len(mid) == 0:
+    #         print r.text
+    #         raise Exception('找不到mid')
+    # mid = mid[0]
+    # mid = mid.replace('"mid": ', '')
+    # mid = mid.replace('"', '')
 
     csrf_token = re.findall(r"editor.csrf_token2 = '\S+'", r.text)[0]
     csrf_token = csrf_token.replace("editor.csrf_token2 = '", '').replace("'", '')
@@ -103,6 +111,6 @@ def addCard(front, user_id):
         raise Exception('error: %s' % r.text)
 
 if __name__ == '__main__':
-    addCard('fuck', 680)
+    addCard('fuck', 404)
     # test('haha')
     # getCsrfToken()
