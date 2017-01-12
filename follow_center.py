@@ -43,6 +43,24 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     access_token_secret = config.get('secret', 'access_token_secret')
 
 
+class api_login_anki(tornado_bz.UserInfoHandler):
+
+    '''
+    '''
+    @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
+    def post(self):
+        self.set_header("Content-Type", "application/json")
+        data = json.loads(self.request.body)
+        anki_info = storage()
+        anki_info.user_name = data['user_name']
+        anki_info.password = data['password']
+        anki_info.user_id = self.current_user
+        db_bz.insertOrUpdate(pg, 'anki', anki_info, "user_id=%s" % anki_info.user_id)
+        anki.getMidAndCsrfTokenHolder(anki_info.user_id)
+        self.write(json.dumps({'error': '0'}))
+
+
 class api_anki(tornado_bz.UserInfoHandler):
 
     '''
@@ -53,7 +71,7 @@ class api_anki(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         data = json.loads(self.request.body)
         front = data['front']
-        anki.addCard(front)
+        anki.addCard(front, self.current_user)
         self.write(json.dumps({'error': '0'}))
 
 
@@ -389,8 +407,8 @@ class api_apply_del(tornado_bz.UserInfoHandler):
             raise Exception('必须有type才能修改')
 
         count = public_db.delNoName(type, social_name)
-        if count != 1:
-            raise Exception("修改失败 type:%s social_name: %s count: %s" % (type, social_name, count))
+        # if count != 1:
+        #     raise Exception("修改失败 type:%s social_name: %s count: %s" % (type, social_name, count))
 
         sql = ''' update apply_del set stat=1 where social_name='%s' and type='%s' and stat is null''' % (social_name, type)
         count = self.pg.query(sql)

@@ -16,6 +16,14 @@ import model_bz
 db_name = 'follow_center'
 
 
+class anki(model_oper_bz.base):
+    user_name = TextField()
+    password = TextField()
+    csrf_token = TextField(null=True)
+    mid = TextField(null=True)
+    cookie = TextField(null=True)
+
+
 class block(model_oper_bz.base):
     god_id = IntegerField()
 
@@ -262,4 +270,4 @@ if __name__ == '__main__':
         the_db = config.get('db', 'db')
         user = config.get('db', 'user')
         pw = config.get('db', 'pw')
-    model_oper_bz.createTable(block, db_name, user=user, password=pw, host=host)
+    model_oper_bz.reCreateTable(anki, db_name, user=user, password=pw, host=host)

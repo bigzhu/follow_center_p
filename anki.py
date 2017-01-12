@@ -1,28 +1,108 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+sys.path.append("../lib_p_bz")
+
 import requests
 import json
 import oper_bz
-deck = 'Default'
+import re
+from bs4 import BeautifulSoup
+import pg
+DECK = 'Default'
+URL = 'https://ankiweb.net/account/login'
+client = None
+cookies = None
 
 
-def getCookies(username, password):
-    url = 'https://ankiweb.net/account/login'
-    login_info = {'submitted': '1', 'username': username, 'password': password}
-    r = requests.post(url, data=login_info)
-    return r.cookies
+def getLoginCsrfToken():
+    '''
+    登录页的 csrf_token
+    '''
+
+    global client
+    global cookies
+    client = requests.session()
+    r = client.get(URL)
+    cookies = r.cookies
+    soup = BeautifulSoup(r.text)
+
+    csrf_token = soup.find('input', {'name': 'csrf_token'}).get('value')
+    return csrf_token
 
 
-def addCard(front):
-    cookies = getCookies('vermiliondun@gmail.com', 'z129854')
-    url = 'https://ankiweb.net/edit/save'
+def login(username, password):
+    global client
+    global cookies
+    csrf_token = getLoginCsrfToken()
+    login_info = {'submitted': '1', 'csrf_token': str(csrf_token), 'username': username, 'password': password}
+    print login_info
+    r = client.post(URL, data=login_info, cookies=cookies)
+    if 'the password you provided does not match our records' in r.text:
+        raise Exception('密码不正确')
+    cookies = r.cookies
+
+
+def getMidAndCsrfTokenHolder(user_id):
+    sql = '''
+    select * from anki where user_id=%s
+    ''' % user_id
+    datas = pg.query(sql)
+    if(len(datas) == 0):
+        raise Exception('你还没有配置Anki信息')
+    data = datas[0]
+    if data.mid is not None:
+        return data.mid, data.csrf_token, data.cookie
+    mid, csrf_token, cookie = getMidAndCsrfToken(data.user_name, data.password)
+    print cookie
+    sql = '''
+    update anki set mid='%s', csrf_token='%s', cookie='%s' where user_id=%s
+    ''' % (mid, csrf_token, cookie, user_id)
+    pg.query(sql)
+    return mid, csrf_token, cookie
+
+
+def getMidAndCsrfToken(user_name, password):
+    '''
+    添加时要取得一个mide参数,在登录后的页面有
+    '''
+    global client
+    global cookies
+    login(user_name, password)
+    edit_url = 'https://ankiweb.net/edit/'
+    r = client.get(edit_url, cookies=cookies)
+
+    mid = re.findall(r'"mid": \d+', r.text)
+    if(len(mid) == 0):
+        mid = re.findall(r'"mid": "\d+"', r.text)
+    mid = mid[0]
+    mid = mid.replace('"mid": ', '')
+    mid = mid.replace('"', '')
+
+    csrf_token = re.findall(r"editor.csrf_token2 = '\S+'", r.text)[0]
+    csrf_token = csrf_token.replace("editor.csrf_token2 = '", '').replace("'", '')
+    cookies = r.cookies
+    cookie = cookies['ankiweb']
+    return mid, csrf_token, cookie
+
+
+def getStrCookie(cookies):
+    return 'ankiweb=%s' % cookies['ankiweb']
+
+
+def addCard(front, user_id):
+    mid, csrf_token, cookie = getMidAndCsrfTokenHolder(user_id)
+
     front = oper_bz.relativePathToAbsolute(front, 'https://follow.center')
     data = [[front, ''], '']
     data = json.dumps(data)
-    save_info = {'data': data, 'mid': '1479215711126', 'deck': deck}
-    r = requests.post(url, cookies=cookies, data=save_info)
+    cookies = {'ankiweb': cookie}
+    save_info = {'data': data, 'mid': str(mid), 'deck': DECK, 'csrf_token': str(csrf_token)}
+    r = requests.post('https://ankiweb.net/edit/save', cookies=cookies, data=save_info)
     if r.text != '1':
         raise Exception('error: %s' % r.text)
 
 if __name__ == '__main__':
-    pass
+    addCard('fuck', 680)
+    # test('haha')
+    # getCsrfToken()
