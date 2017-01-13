@@ -296,7 +296,7 @@ class api_social(BaseHandler):
         if not info:  # 已有就直接返回了
             if type == 'twitter':
                 import twitter
-                sync(type, twitter.main, name)
+                twitter.getTwitterUser(name, name)
             if type == 'github':
                 import github
                 sync(type, github.main, name)
