@@ -71,8 +71,10 @@ class api_anki(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         data = json.loads(self.request.body)
         front = data['front']
+        message_id = data['message_id']
         anki.addCard(front, self.current_user)
-        self.write(json.dumps({'error': '0'}))
+        oper.anki_save(message_id, self.current_user)
+        self.write(json.dumps(self.data))
 
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi

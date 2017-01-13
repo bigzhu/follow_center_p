@@ -9,6 +9,14 @@ import time_bz
 import filter_bz
 
 
+def anki_save(message_id, user_id):
+    '''
+    create by bigzhu at 17/01/13 20:20:25 是否发到了anki
+    '''
+    id = db_bz.insertIfNotExist(pg, 'anki_save', {'user_id': user_id, 'message_id': message_id}, "user_id=%s and message_id=%s" % (user_id, message_id))
+    return id
+
+
 def unblock(user_id, god_id, make_sure=True):
     count = pg.delete('block', where="user_id=%s and god_id=%s" % (user_id, god_id))
     if count != 1 and make_sure:

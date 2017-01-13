@@ -16,6 +16,14 @@ import model_bz
 db_name = 'follow_center'
 
 
+class anki_save(model_oper_bz.base):
+
+    '''
+    标记是否发到anki
+    '''
+    message_id = IntegerField()
+
+
 class anki(model_oper_bz.base):
     user_name = TextField()
     password = TextField()
@@ -270,4 +278,4 @@ if __name__ == '__main__':
         the_db = config.get('db', 'db')
         user = config.get('db', 'user')
         pw = config.get('db', 'pw')
-    model_oper_bz.reCreateTable(anki, db_name, user=user, password=pw, host=host)
+    model_oper_bz.reCreateTable(anki_save, db_name, user=user, password=pw, host=host)
