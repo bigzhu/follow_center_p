@@ -11,7 +11,6 @@ sys.path.append("../lib_p_bz")
 
 import datetime
 import sys
-import oper
 import time
 from datetime import timedelta
 import tweepy
@@ -28,53 +27,19 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     consumer_secret = config.get('secret', 'consumer_secret')
     access_token = config.get('secret', 'access_token')
     access_token_secret = config.get('secret', 'access_token_secret')
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+
+api = tweepy.API(auth)
 
 
-def main(user, wait):
-    '''
-    create by bigzhu at 15/07/04 22:49:04
-        用 https://api.twitter.com/1.1/statuses/user_timeline.json 可以取到某个用户的信息
-        参看 https://dev.twitter.com/rest/reference/get/statuses/user_timeline
-    modify by bigzhu at 15/07/04 22:53:09
-        考虑使用 http://www.tweepy.org/ 来调用twitter api
-    modify by bigzhu at 15/08/02 21:35:46 避免批量微信通知
-    create by bigzhu at 16/04/30 09:56:02 不再取转发的消息
-    '''
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-
-    api = tweepy.API(auth)
-    try:
-        twitter_user = api.get_user(screen_name=user.twitter)
-        if twitter_user:
-            twitter_user = saveUser(twitter_user)
-        else:
-            public_db.sendDelApply('twitter', user.name, user.twitter, 'User not found.')
-            return
-        public_tweets = api.user_timeline(screen_name=user.twitter, include_rts=False, exclude_replies=True)
-        for tweet in public_tweets:
-            tweet.created_at += timedelta(hours=8)
-            saveMessage(twitter_user, user, tweet)
-        oper.noMessageTooLong('twitter', user.twitter)
-    except tweepy.error.TweepError:
-        print 'screen_name=', user.twitter
-        error_info = public_bz.getExpInfo()
-        print error_info
-
-        if 'User not found.' in error_info:
-            public_db.sendDelApply('twitter', user.name, user.twitter, 'User not found.')
-        if 'Rate limit exceeded' in error_info:  # 调用太多
-            if wait:
-                waitReset(user)
-            else:
-                raise Exception('Twitter api 的调用次数用完了，请等个10分钟再添加!')
-            return 'Rate limit exceeded'
-        if 'User has been suspended.' in error_info:  # 帐号被冻结了
-            public_db.sendDelApply('twitter', user.name, user.twitter, 'User has been suspended.')
-        if 'Not authorized.' in error_info:  # 私有
-            public_db.sendDelApply('twitter', user.name, user.twitter, 'Not authorized.')
-        if 'Sorry, that page does not exist.' in error_info:  # 没用户
-            public_db.sendDelApply('twitter', user.name, user.twitter, 'Sorry, that page does not exist.')
+def getTwitterUser(twitter_name, user_name):
+    twitter_user = api.get_user(screen_name=twitter_name)
+    if twitter_user:
+        twitter_user = saveUser(twitter_user)
+    else:
+        public_db.sendDelApply('twitter', user_name, twitter_name, 'User not found.')
+    return twitter_user
 
 
 def saveUser(twitter_user):
@@ -91,25 +56,60 @@ def saveUser(twitter_user):
     return social_user
 
 
-def saveMessage(twitter_user, user, tweet):
+def main(user_name, twitter_name, god_id, wait):
+    '''
+    create by bigzhu at 15/07/04 22:49:04
+        用 https://api.twitter.com/1.1/statuses/user_timeline.json 可以取到某个用户的信息
+        参看 https://dev.twitter.com/rest/reference/get/statuses/user_timeline
+    modify by bigzhu at 15/07/04 22:53:09
+        考虑使用 http://www.tweepy.org/ 来调用twitter api
+    modify by bigzhu at 15/08/02 21:35:46 避免批量微信通知
+    create by bigzhu at 16/04/30 09:56:02 不再取转发的消息
+    '''
+    try:
+        twitter_user = getTwitterUser(twitter_name, user_name)
+        if not twitter_user:
+            return
+        public_tweets = api.user_timeline(screen_name=twitter_name, include_rts=False, exclude_replies=True)
+        for tweet in public_tweets:
+            tweet.created_at += timedelta(hours=8)
+            saveMessage(user_name, twitter_name, god_id, tweet)
+        # oper.noMessageTooLong('twitter', user.twitter)
+    except tweepy.error.TweepError:
+        print 'twitter_name=', twitter_name
+        error_info = public_bz.getExpInfo()
+        print error_info
+
+        if 'User not found.' in error_info:
+            public_db.sendDelApply('twitter', user_name, twitter_name, 'User not found.')
+        if 'Rate limit exceeded' in error_info:  # 调用太多
+            if wait:
+                waitReset(user_name, twitter_name, god_id)
+            else:
+                raise Exception('Twitter api 的调用次数用完了，请等个10分钟再添加!')
+            return 'Rate limit exceeded'
+        if 'User has been suspended.' in error_info:  # 帐号被冻结了
+            public_db.sendDelApply('twitter', user_name, twitter_name, 'User has been suspended.')
+        if 'Not authorized.' in error_info:  # 私有
+            public_db.sendDelApply('twitter', user_name, twitter_name, 'Not authorized.')
+        if 'Sorry, that page does not exist.' in error_info:  # 没用户
+            public_db.sendDelApply('twitter', user_name, twitter_name, 'Sorry, that page does not exist.')
+
+
+def saveMessage(user_name, twitter_name, god_id, tweet):
     '''
     create by bigzhu at 15/07/10 14:39:48
         保存twitter
     create by bigzhu at 16/03/26 06:05:12 重构，改很多
     modify by bigzhu at 16/03/26 20:33:59 重构
-        twitter_user 社交帐号信息
         user 本系统用户信息
         tweet 消息本身
+    modify by bigzhu at 17/01/13 15:38:11 去了用不到的
     '''
-    # if hasattr(tweet, 'author'): # 自增长用户，啧啧，会不停增加的吧
-    #    saveUser(tweet.author)
-    #    user_bz.insertOrUpdateUserByType(pg, 'twitter', tweet.author.screen_name)
-
     m = public_bz.storage()
-    m.god_id = user.id
-    m.user_name = user.name
-    m.name = twitter_user.name
-    # m.avatar = twitter_user.avatar.replace('_normal', '')
+    m.god_id = god_id
+    m.user_name = user_name
+    m.name = twitter_name
 
     m.id_str = tweet.id_str
     m.m_type = 'twitter'
@@ -141,7 +141,7 @@ def getRemaining():
     return remaining
 
 
-def waitReset(user):
+def waitReset(user_name, twitter_name, god_id):
     while True:
         try:
             remaining = getRemaining()
@@ -154,7 +154,7 @@ def waitReset(user):
         if remaining == 0:
             time.sleep(1200)
         else:
-            main(user, wait=True)
+            main(user_name, twitter_name, god_id, wait=True)
             break
 
 
@@ -170,8 +170,10 @@ def run(god_name=None, wait=None):
         sql += " and name='%s'" % god_name
     users = pg.query(sql)
     for user in users:
-        # print 'checking %s %s' % (type, user[type])
-        main(user, wait)
+        user_name = user.name
+        twitter_name = user.twitter
+        god_id = user.id
+        main(user_name, twitter_name, god_id, wait)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:

@@ -504,7 +504,7 @@ class api_god(tornado_bz.UserInfoHandler):
         god_info = self.pg.select('god', where=where)[0]
         god_id = god_info.id
         if god_info.is_black == 1:
-            raise Exception('%s这是一个黑名名帐号,不允许添加!' % name)
+            raise Exception('%s这是一个黑名名帐号,不添加!' % name)
 
         # if god_info.cat != cat:
         #     where += " and is_public != 1"
