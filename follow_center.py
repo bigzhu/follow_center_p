@@ -74,6 +74,18 @@ class api_anki(tornado_bz.UserInfoHandler):
         anki.addCard(front, self.current_user)
         self.write(json.dumps({'error': '0'}))
 
+    @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
+    def get(self):
+        self.set_header("Content-Type", "application/json")
+        sql = 'select user_name, password from anki where user_id=%s' % self.current_user
+        datas = self.pg.query(sql)
+        if datas:
+            data = datas[0]
+        else:
+            data = None
+        self.write(json.dumps({'error': '0', 'anki': data}, cls=public_bz.ExtEncoder))
+
 
 class api_public_gods(BaseHandler):
 
