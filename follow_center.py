@@ -125,7 +125,7 @@ class api_block(tornado_bz.UserInfoHandler):
 
         if count:  # 只查总数
             sql = ''' select count(id) from block where user_id=%s''' % user_id
-            self.data.count = self.pg.query(sql)[0]
+            self.data.count = self.pg.query(sql)[0].count
 
         self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))
 
@@ -361,7 +361,8 @@ class api_my_gods(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
         cat = parm.get('cat')
-        gods = oper.getGods(self.current_user, is_my=True, cat=cat)
+        blocked = parm.get('blocked')
+        gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 

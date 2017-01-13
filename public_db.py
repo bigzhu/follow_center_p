@@ -232,7 +232,7 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     return pg.query(sql)
 
 
-def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, cat=None, is_public=None, limit=None, before=None):
+def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, cat=None, is_public=None, limit=None, before=None, blocked=None):
     '''
     modify by bigzhu at 15/08/06 17:05:22 可以根据god_name来取
     modify by bigzhu at 15/08/28 17:09:31 推荐模式就是只查随机5个
@@ -241,6 +241,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     modify by bigzhu at 16/05/24 23:21:36 关联到god表,可以只查某种类别
     modify by bigzhu at 16/05/27 22:16:30 没人关注的也查出来
     modify by bigzhu at 16/06/21 12:15:24 add xmind, 整理了sql
+    modify by bigzhu at 17/01/13 10:51:33 juest select blocked god
     '''
     sql = '''
     select  g.id as god_id,
@@ -249,7 +250,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     '''
     sql = filter_bz.filterHaveSocialGod(sql)
     sql = add_bz.addGodFollowedCount(sql)
-    sql = add_bz.addGodRemark(sql)
+    sql = add_bz.godAdminRemark(sql)
 
     # 只查有人关注的
     # sql = '''
@@ -258,15 +259,12 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
 
     if user_id:
         # followed info
-        sql = '''
-            select * from   (%s) ut left join (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=%s) f on ut.god_id=f.followed_god_id
-            order by ut.u_stat_date desc
-        ''' % (sql, user_id)
-        sql = filter_bz.filterBlock(sql, user_id)
-        # remark info
-        sql = '''
-            select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where user_id=%s) r on s.god_id=r.god_id
-            ''' % (sql, user_id)
+        sql = add_bz.godfollowed(sql, user_id)
+        if (blocked):
+            sql = filter_bz.godBlock(sql, user_id)
+        else:
+            sql = filter_bz.godNotBlock(sql, user_id)
+        sql = filter_bz.godUserRemark(sql, user_id)
         if recommand:
             sql = '''
             select * from (%s) s where s.followed=0 or s.followed is null

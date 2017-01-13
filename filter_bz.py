@@ -89,8 +89,16 @@ def filterFollowedMessages(sql, user_id):
     return sql
 
 
-def filterBlock(sql, user_id):
-    # block
+def godBlock(sql, user_id):
+    if user_id:
+        where = '''
+            s.god_id in (select god_id from block where user_id=%s)
+        ''' % user_id
+        sql = filter(sql, where)
+    return sql
+
+
+def godNotBlock(sql, user_id):
     if user_id:
         where = '''
             s.god_id not in (select god_id from block where user_id=%s)
