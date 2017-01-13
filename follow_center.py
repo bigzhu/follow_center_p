@@ -58,7 +58,7 @@ class api_login_anki(tornado_bz.UserInfoHandler):
         anki_info.user_id = self.current_user
         db_bz.insertOrUpdate(pg, 'anki', anki_info, "user_id=%s" % anki_info.user_id)
         anki.getMidAndCsrfTokenHolder(anki_info.user_id, reset_cookie=True)
-        self.write(json.dumps({'error': '0'}))
+        self.write(json.dumps(self.data))
 
 
 class api_anki(tornado_bz.UserInfoHandler):
@@ -114,6 +114,21 @@ class api_block(tornado_bz.UserInfoHandler):
 
     '''
     '''
+    @tornado_bz.handleError
+    def get(self, parm):
+        self.set_header("Content-Type", "application/json")
+
+        parm = json.loads(parm)
+        count = parm.get('count', None)
+        # is_public = parm.get('is_public', None)
+        user_id = self.current_user
+
+        if count:  # 只查总数
+            sql = ''' select count(id) from block where user_id=%s''' % user_id
+            self.data.count = self.pg.query(sql)[0]
+
+        self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))
+
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
     def post(self):
