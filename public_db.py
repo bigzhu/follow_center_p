@@ -264,7 +264,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
             sql = filter_bz.godBlock(sql, user_id)
         else:
             sql = filter_bz.godNotBlock(sql, user_id)
-        sql = filter_bz.godUserRemark(sql, user_id)
+        sql = add_bz.godUserRemark(sql, user_id)
         if recommand:
             sql = '''
             select * from (%s) s where s.followed=0 or s.followed is null
@@ -300,7 +300,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     sql += "  order by created_date desc "
     if limit:
         sql += ' limit %s ' % limit
-    # print sql
+    print sql
     return pg.query(sql)
 
 

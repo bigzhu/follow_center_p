@@ -9,6 +9,12 @@ import time_bz
 import filter_bz
 
 
+def unblock(user_id, god_id, make_sure=True):
+    count = pg.delete('block', where="user_id=%s and god_id=%s" % (user_id, god_id))
+    if count != 1 and make_sure:
+        raise Exception('没有正确的Unblcok, Unblock %s 人' % count)
+
+
 def block(user_id, god_id, make_sure=True):
     '''
     屏蔽某人

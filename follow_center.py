@@ -142,10 +142,8 @@ class api_block(tornado_bz.UserInfoHandler):
     @tornado_bz.handleError
     def delete(self, id):
         self.set_header("Content-Type", "application/json")
-        count = pg.delete('block', where="user_id=%s and god_id=%s" % (self.current_user, id))
-        if count != 1:
-            raise Exception('没有正确的Unblcok, Unblock %s 人' % count)
-        self.write(json.dumps({'error': '0'}))
+        oper.unblock(self.current_user, id)
+        self.write(json.dumps(self.data))
 
 
 class web_socket(web_bz.web_socket):
@@ -374,11 +372,12 @@ class api_gods(BaseHandler):
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
     def get(self, parm):
+        self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
         cat = parm.get('cat')
         is_my = parm.get('is_my')
-        self.set_header("Content-Type", "application/json")
-        gods = oper.getGods(cat=cat, is_my=is_my)
+        blocked = parm.get('blocked')
+        gods = oper.getGods(cat=cat, is_my=is_my, blocked=blocked, user_id=self.current_user)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 
@@ -393,8 +392,10 @@ class api_follow(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         data = json.loads(self.request.body)
         god_id = data['god_id']
-        oper.follow(self.current_user, god_id)
-        self.write(json.dumps({'error': '0'}))
+        user_id = self.current_user
+        oper.follow(user_id, god_id)
+        oper.unblock(user_id, god_id, False)
+        self.write(json.dumps(self.data))
 
     @tornado_bz.mustLoginApi
     @tornado_bz.handleError
