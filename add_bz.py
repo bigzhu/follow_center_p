@@ -2,6 +2,30 @@
 # -*- coding: utf-8 -*-
 
 
+def messagesAnkiSave(sql, user_id):
+    if user_id:
+        sql = '''
+            select m.*, c.message_id as anki, c.created_date as collect_date
+                from (%s) m
+            LEFT OUTER JOIN anki_save c
+                ON m.id = c.message_id
+                and c.user_id=%s
+        ''' % (sql, user_id)
+    return sql
+
+
+def messagesCollect(sql, user_id):
+    if user_id:
+        sql = '''
+            select m.*, c.message_id as collect, c.created_date as collect_date
+                from (%s) m
+            LEFT OUTER JOIN collect c
+                ON m.id = c.message_id
+                and c.user_id=%s
+        ''' % (sql, user_id)
+    return sql
+
+
 def addGodFollowedCount(sql):
     sql = '''
         select s.*, coalesce(c.count,0) as followed_count from   (%s) s left join (select count(id) as count,god_id from follow_who group by god_id) c on s.god_id=c.god_id

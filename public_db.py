@@ -94,13 +94,8 @@ def getMessage(id, user_id=None):
     select * from all_message m where id = %s
     ''' % id
     if user_id:
-        sql = '''
-            select m.*, c.message_id as collect, c.created_date as collect_date
-                from (%s) m
-            LEFT OUTER JOIN collect c
-                ON m.id = c.message_id
-                and c.user_id=%s
-        ''' % (sql, user_id)
+        sql = add_bz.messagesCollect(sql, user_id)
+        sql = add_bz.messagesAnkiSave(sql, user_id)
     else:  # 不给看18+
         sql = '''
             select m.*, null as collect, null as collect_date
@@ -116,14 +111,8 @@ def getCollectMessages(user_id):
     sql = '''
     select * from all_message m
     '''
-    # 关联collect表
-    sql = '''
-        select m.*, c.message_id as collect, c.created_date as collect_date
-            from (%s) m
-        LEFT OUTER JOIN collect c
-            ON m.id = c.message_id
-            and c.user_id=%s
-    ''' % (sql, user_id)
+    sql = add_bz.messagesCollect(sql, user_id)
+    sql = add_bz.messagesAnkiSave(sql, user_id)
     sql = '''
     select * from (%s) s
     where collect is not null
@@ -140,15 +129,9 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     sql = '''
     select * from all_message m
     '''
-    # 关联collect表
     if user_id:
-        sql = '''
-            select m.*, c.message_id as collect, c.created_date as collect_date
-                from (%s) m
-            LEFT OUTER JOIN collect c
-                ON m.id = c.message_id
-                and c.user_id=%s
-        ''' % (sql, user_id)
+        sql = add_bz.messagesCollect(sql, user_id)
+        sql = add_bz.messagesAnkiSave(sql, user_id)
     else:
         # 不给看18+
         sql += " where lower(name) not in (select lower(name) from god where cat='18+') "
@@ -189,15 +172,9 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     sql = '''
     select * from all_message m where 1=1
     '''
-    # 关联collect表
     if user_id:
-        sql = '''
-            select m.*, c.message_id as collect, c.created_date as collect_date
-                from (%s) m
-            LEFT OUTER JOIN collect c
-                ON m.id = c.message_id
-                and c.user_id=%s
-        ''' % (sql, user_id)
+        sql = add_bz.messagesCollect(sql, user_id)
+        sql = add_bz.messagesAnkiSave(sql, user_id)
     else:  # 不给看18+
         sql += " and lower(name) not in (select lower(name) from god where cat='18+') "
     # 封住，以直接加where
