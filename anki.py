@@ -97,7 +97,10 @@ def getStrCookie(cookies):
     return 'ankiweb=%s' % cookies['ankiweb']
 
 
-def addCard(front, user_id):
+def addCard(front, user_id, not_try=None):
+    '''
+    not_try: true 不再因403而再次调
+    '''
     mid, csrf_token, cookie = getMidAndCsrfTokenHolder(user_id)
 
     front = oper_bz.relativePathToAbsolute(front, 'https://follow.center')
@@ -107,7 +110,11 @@ def addCard(front, user_id):
     save_info = {'data': data, 'mid': str(mid), 'deck': DECK, 'csrf_token': str(csrf_token)}
     r = requests.post('https://ankiweb.net/edit/save', cookies=cookies, data=save_info)
     if r.text != '1':
-        raise Exception('error: %s' % r.text)
+        if '403 Forbidden' in r.text and not_try is None:
+            getMidAndCsrfTokenHolder(user_id, True)
+            addCard(front, user_id, True)
+        else:
+            raise Exception('error: %s' % r.text)
 
 if __name__ == '__main__':
     addCard('fuck', 404)
