@@ -5,7 +5,7 @@
 def messagesAnkiSave(sql, user_id):
     if user_id:
         sql = '''
-            select m.*, c.message_id as anki, c.created_date as collect_date
+            select m.*, c.message_id as anki, c.created_date as anki_date
                 from (%s) m
             LEFT OUTER JOIN anki_save c
                 ON m.id = c.message_id

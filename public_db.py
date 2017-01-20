@@ -119,6 +119,7 @@ def getCollectMessages(user_id):
     ''' % sql
     # order by
     sql += ' order by collect_date desc '
+    print sql
     return pg.query(sql)
 
 
@@ -277,7 +278,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     sql += "  order by created_date desc "
     if limit:
         sql += ' limit %s ' % limit
-    print sql
+    # print sql
     return pg.query(sql)
 
 
