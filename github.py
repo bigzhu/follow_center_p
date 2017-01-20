@@ -145,7 +145,7 @@ def run(god_name=None, wait=None):
     users = pg.query(sql)
     for user in users:
         user_name = user.name
-        github_name = user.twitter
+        github_name = user.github
         god_id = user.id
         main(user_name, github_name, god_id, wait)
 
