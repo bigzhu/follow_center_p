@@ -30,13 +30,29 @@ with open('conf/github.ini', 'r') as cfg_file:
 params = {'client_id': client_id, 'client_secret': client_secret}
 
 
+def getGithubUser(github_name, user_name):
+    try:
+        r = requests.get('https://api.github.com/users/%s' % github_name, params=params)
+        github_user = r.json()
+        if github_user.get('message'):
+            public_db.sendDelApply('github', user_name, github_name, github_user.get('message'))
+            return
+        saveUser(github_user)
+        return github_user
+    except requests.exceptions.ConnectionError:
+        print public_bz.getExpInfoAll()
+        return
+
+
 def main(user_name, github_name, god_id, wait):
     '''
     create by bigzhu at 15/07/15 17:54:08 取github
     modify by bigzhu at 15/07/22 16:20:42 时间同样要加入8小时,否则不正确
     '''
     etag = oper.getSyncKey('github', github_name)
-    # print 'check ', user.github
+    github_user = getGithubUser(github_name, user_name)
+    if github_user is None:
+        return
     headers = {'If-None-Match': etag}
     try:
         r = requests.get('https://api.github.com/users/%s/events' % github_name, headers=headers, params=params)
@@ -44,44 +60,15 @@ def main(user_name, github_name, god_id, wait):
         print public_bz.getExpInfoAll()
         return
     if r.status_code == 200:
-        messages = r.json()
-        if not messages:
-            # 没有这个github用户, 删除
-            public_db.sendDelApply('github', user_name, github_name, 'not have user')
-            return
-        actor = messages[0]['actor']
-        # actor不定是作者名字，有可能org才是
-        if actor['login'].lower() == github_name.lower():
-            the_user = actor
-        else:
-            org = messages[0]['org']
-            if org['login'].lower() == github_name.lower():
-                # the_user = org
-                # 如果是org，那么url不同
-                # the_user['url'] = "https://api.github.com/users/" + user.github
-
-                # 对org用户不同步,当作没有github处理，否则杂乱信息太多
-                public_db.sendDelApply('github', user_name, github_name, 'is org user')
-                return
-            else:
-                raise "in this github can't find user_name=%s" % github_name
-
-        user_request = requests.get(the_user['url'], params=params)
-        if user_request.status_code == 200:
-            github_user = storage(user_request.json())
-        else:
-            print 'get user info error', user_request.status_code
-            return
         etag = r.headers['etag']
         limit = r.headers['X-RateLimit-Remaining']
         if limit == '0':
             return
-
         for message in r.json():
             message = storage(message)
             saveMessage(user_name, github_name, god_id, message)
-        saveUser(github_user, etag)
-        oper.noMessageTooLong('github', github_name)
+        # oper.noMessageTooLong('github', github_name)
+        saveUser(github_user, etag)  # 为了update etag
     if r.status_code == 404:
         public_db.sendDelApply('github', user_name, github_name, '404')
 
@@ -111,29 +98,30 @@ def saveMessage(user_name, github_name, god_id, message):
     m.href = None
     id = db_bz.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='github'" % m.id_str)
     if id is not None:
-        print '%s new message github %s' % (m.name, m.id_str)
+        print '%s new github %s' % (m.name, m.id_str)
     return id
 
 
-def saveUser(user, sync_key):
+def saveUser(user, sync_key=None):
     social_user = public_bz.storage()
     social_user.type = 'github'
 
     try:
-        social_user.name = user.login
+        social_user.name = user['login']
     except Exception as e:
         print e
         print user
-    social_user.count = user.following
-    social_user.avatar = user.avatar_url
-    social_user.description = user.bio
-    social_user.sync_key = sync_key
+    social_user.count = user['following']
+    social_user.avatar = user['avatar_url']
+    social_user.description = user['bio']
+    if sync_key is not None:
+        social_user.sync_key = sync_key
 
     pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='github' " % social_user.name)
     return social_user
 
 
-def run(god_name=None, wait=None):
+def loop(god_name=None, wait=None):
     '''
     '''
     sql = '''
@@ -153,9 +141,9 @@ def run(god_name=None, wait=None):
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         user_name = (sys.argv[1])
-        run(user_name)
+        loop(user_name)
         exit(0)
     while True:
-        run(wait=True)
+        loop(wait=True)
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

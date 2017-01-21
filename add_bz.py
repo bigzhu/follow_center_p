@@ -34,9 +34,15 @@ def addGodFollowedCount(sql):
 
 
 def godAdminRemark(sql):
+    '''
+    不只取admin,没有时取其他人的
+    '''
+    one_remark = '''
+    select remark, god_id from remark where  (user_id,god_id) in(select min(user_id), god_id from remark group by god_id )
+    '''
     sql = '''
-        select s.*, r.remark as admin_remark from   (%s) s left join (select remark, god_id from remark where user_id=1) r on s.god_id=r.god_id
-        ''' % sql
+        select s.*, r.remark as admin_remark from   (%s) s left join (%s) r on s.god_id=r.god_id
+        ''' % (sql, one_remark)
     return sql
 
 

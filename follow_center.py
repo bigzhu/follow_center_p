@@ -301,7 +301,7 @@ class api_social(BaseHandler):
                 twitter.getTwitterUser(name, name)
             if type == 'github':
                 import github
-                sync(type, github.main, name)
+                github.getGithubUser(name, name)
             if type == 'instagram':
                 import reptile_instagram
                 reptile_instagram.run(name)

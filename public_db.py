@@ -162,7 +162,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     if limit is None and after is None:
         limit = 99
     sql += ' limit %s ' % limit
-    # print sql
+    print sql
     return pg.query(sql)
 
 
