@@ -27,20 +27,19 @@ from bs4 import BeautifulSoup
 M_TYPE = 'instagram'
 
 
-def main(user):
+def main(ins_name, user_name, god_id):
     '''
     create by bigzhu at 16/06/12 16:19:09 api disabled
     '''
-    name = user['instagram']
-    god_name = user['name']
+
     etag = None
 
-    where = "type='instagram' and name='%s'" % name
+    where = "type='instagram' and name='%s'" % ins_name
     social_user = list(pg.db.select('social_user', where=where))
     if social_user:
         etag = social_user[0].sync_key
     headers = {'If-None-Match': etag}
-    url = "https://www.instagram.com/%s" % name
+    url = "https://www.instagram.com/%s" % ins_name
 
     r = requests.get(url, headers=headers)
     if r.status_code == 200:
@@ -58,12 +57,11 @@ def main(user):
                 saveUser(user_info, etag)
                 if user_info['media'].get('nodes'):
                     for message in user_info['media']['nodes']:
-                        saveMessage(user, message)
+                        saveMessage(ins_name, user_name, god_id, message)
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        # public_db.delNoName('instagram', name)
-        public_db.sendDelApply('instagram', god_name, name, '404')
+        public_db.sendDelApply('instagram', user_name, ins_name, '404')
     else:
         print r.status_code
     # oper.noMessageTooLong(M_TYPE, user.instagram)
@@ -81,16 +79,16 @@ def saveUser(user, sync_key):
     return social_user
 
 
-def saveMessage(user, message):
+def saveMessage(ins_name, user_name, god_id, message):
     '''
     create by bigzhu at 16/04/06 19:46:10
     '''
     message = storage(message)
 
     m = public_bz.storage()
-    m.god_id = user.id
-    m.user_name = user.name
-    m.name = user.instagram
+    m.god_id = god_id
+    m.user_name = user_name
+    m.name = ins_name
     # m.avatar = message.user['profile_picture']
     m.m_type = 'instagram'
 
@@ -127,7 +125,9 @@ def run(god_name=None):
     sql = filter_bz.filterNotBlackGod(sql)
     users = pg.query(sql)
     for user in users:
-        main(user)
+        ins_name = user['instagram']
+        user_name = user['name']
+        main(ins_name, user_name, user.id)
 
 
 if __name__ == '__main__':
