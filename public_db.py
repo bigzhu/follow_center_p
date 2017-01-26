@@ -130,7 +130,6 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     sql = '''
     select * from all_message m
     '''
-    sql = filter_bz.messagesEffSocial(sql)
     if user_id:
         sql = add_bz.messagesCollect(sql, user_id)
         sql = add_bz.messagesAnkiSave(sql, user_id)
@@ -147,12 +146,14 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         # 再封
         sql = ''' select * from (%s) s ''' % sql
     # 互斥的filter_bz.filter
-    sql = filter_bz.messageThisGod(sql, god_name)
-    if search_key:
+    if god_name:
+        sql = filter_bz.messageThisGod(sql, god_name)
+    elif search_key:
         # sql += " where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%' " % (search_key.upper(), search_key.upper())
         sql = filter_bz.filterSearchKey(sql, search_key)
     else:
         sql = filter_bz.filterFollowedMessages(sql, user_id)
+    sql = filter_bz.messagesEffSocial(sql)
 
     if m_type:
         sql += " and s.m_type='%s' " % m_type
@@ -182,19 +183,12 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     sql = ''' select * from (%s) s ''' % sql
 
     # 互斥的filter_bz.filter
-    sql = filter_bz.messageThisGod(sql, god_name)
-    if search_key:
+    if god_name:
+        sql = filter_bz.messageThisGod(sql, god_name)
+    elif search_key:
         sql = filter_bz.filterSearchKey(sql, search_key)
     else:
-        if user_id:
-            sql += '''
-            where lower(s.name) in (
-                select lower(name) from god where id in(
-                        select god_id from follow_who where user_id=%s
-                    )
-            )
-            ''' % user_id
-
+        sql = filter_bz.filterFollowedMessages(sql, user_id)
     sql = filter_bz.filterMTYpe(sql, m_type)
     sql = filter_bz.filterBefore(sql, before)
 
@@ -205,7 +199,7 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     if limit is None:
         limit = 10
     sql += ' limit %s ' % limit
-    # print sql
+    print sql
     return pg.query(sql)
 
 

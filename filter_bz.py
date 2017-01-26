@@ -103,7 +103,7 @@ def filterAfterMessages(sql, after):
 def filterFollowedMessages(sql, user_id):
     if user_id:
         where = '''
-        lower(s.name) in (
+        lower(s.user_name) in (
             select lower(name) from god where id in(
                     select god_id from follow_who where user_id=%s
                 )
