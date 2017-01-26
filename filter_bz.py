@@ -12,6 +12,13 @@ def filter(sql, where):
     return sql
 
 
+def messageThisGod(sql, god_name):
+    if god_name:
+        where = " lower(s.user_name)=lower('%s') " % god_name
+        sql = filter(sql, where)
+    return sql
+
+
 def filterNotBlackGod(sql):
     where = '''
         is_black !=1 or is_black is null

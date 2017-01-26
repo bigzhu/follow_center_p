@@ -304,7 +304,7 @@ class api_social(BaseHandler):
                 github.getGithubUser(name, name)
             if type == 'instagram':
                 import reptile_instagram
-                reptile_instagram.run(name)
+                reptile_instagram.run(name)  # 用的是爬虫, 单取 user 意义不大
             if type == 'tumblr':
                 import tumblr
                 sync(type, tumblr.main, name)

@@ -146,9 +146,8 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         # 再封
         sql = ''' select * from (%s) s ''' % sql
     # 互斥的filter_bz.filter
-    if god_name:
-        sql += " where lower(s.user_name)=lower('%s') " % god_name
-    elif search_key:
+    sql = filter_bz.messageThisGod(sql, god_name)
+    if search_key:
         # sql += " where upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%' " % (search_key.upper(), search_key.upper())
         sql = filter_bz.filterSearchKey(sql, search_key)
     else:
@@ -182,9 +181,8 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     sql = ''' select * from (%s) s ''' % sql
 
     # 互斥的filter_bz.filter
-    if god_name:
-        sql += " where lower(s.name)=lower('%s') " % god_name
-    elif search_key:
+    sql = filter_bz.messageThisGod(sql, god_name)
+    if search_key:
         sql = filter_bz.filterSearchKey(sql, search_key)
     else:
         if user_id:
