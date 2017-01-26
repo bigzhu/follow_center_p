@@ -19,6 +19,23 @@ def messageThisGod(sql, god_name):
     return sql
 
 
+def messagesEffSocial(sql):
+    '''
+    是god表里有效的god social
+    '''
+    where = '''
+        (
+        (s.name, s.m_type) in (select instagram, 'instagram'::text as m_type from god)
+        or (s.name, s.m_type) in (select twitter, 'twitter'::text as m_type from god)
+        or (s.name, s.m_type) in (select github, 'github'::text as m_type from god)
+        or (s.name, s.m_type) in (select tumblr, 'tumblr'::text as m_type from god)
+        or (s.name, s.m_type) in (select facebook, 'facebook'::text as m_type from god)
+        )
+    '''
+    sql = filter(sql, where)
+    return sql
+
+
 def filterNotBlackGod(sql):
     where = '''
         is_black !=1 or is_black is null

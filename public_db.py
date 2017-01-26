@@ -130,6 +130,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     sql = '''
     select * from all_message m
     '''
+    sql = filter_bz.messagesEffSocial(sql)
     if user_id:
         sql = add_bz.messagesCollect(sql, user_id)
         sql = add_bz.messagesAnkiSave(sql, user_id)
