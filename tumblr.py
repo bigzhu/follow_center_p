@@ -21,13 +21,24 @@ M_TYPE = 'tumblr'
 API_KEY = 'w0qnSK6sUtFyapPHzZG7PjbTXbsYDoilrnmrblIbA56GTl0ULL'
 
 
-def getTumblrUser(user_name, tumblr_name):
+def getTumblrUserNotSaveKey(user_name, tumblr_name):
     blogs = callGetMeidaApi(user_name=tumblr_name, limit=1)
     if blogs is None:
         public_db.sendDelApply('tumblr', user_name, tumblr_name, 'not have user')
         return
     tumblr_user = blogs['response']['blog']
+    tumblr_user['updated'] = None
     saveUser(tumblr_user)
+
+
+def getTumblrUser(user_name, tumblr_name, save=True):
+    blogs = callGetMeidaApi(user_name=tumblr_name, limit=1)
+    if blogs is None:
+        public_db.sendDelApply('tumblr', user_name, tumblr_name, 'not have user')
+        return
+    tumblr_user = blogs['response']['blog']
+    if save:
+        saveUser(tumblr_user)
     return tumblr_user
 
 
@@ -104,7 +115,7 @@ def callGetMeidaApi(user_name, offset=0, limit=20):
 
 
 def main(user_name, tumblr_name, god_id, wait):
-    tumblr_user = getTumblrUser(user_name, tumblr_name)
+    tumblr_user = getTumblrUser(user_name, tumblr_name, False)
     if tumblr_user is None:
         return
     if oper.haveNew('tumblr', tumblr_user['name'], tumblr_user['updated']):
@@ -113,6 +124,7 @@ def main(user_name, tumblr_name, god_id, wait):
         for message in blogs:
             saveMessage(user_name, tumblr_name, god_id, message)
         oper.noMessageTooLong(M_TYPE, tumblr_name)
+    saveUser(tumblr_user)
 
 
 def run(god_name=None, wait=None):

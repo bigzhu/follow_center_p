@@ -309,7 +309,7 @@ class api_social(BaseHandler):
                 tumblr.getTumblrUser(name, name)
             if type == 'facebook':
                 import facebook
-                facebook.getFacebookUser(name, name)
+                facebook.getTumblrUserNotSaveKey(name, name)
 
             info = public_db.getSocialUser(name, type)
         self.write(json.dumps({'error': '0', 'info': info}, cls=public_bz.ExtEncoder))

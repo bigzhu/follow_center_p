@@ -38,7 +38,7 @@ def messagesEffSocial(sql):
 
 def filterNotBlackGod(sql):
     where = '''
-        is_black !=1 or is_black is null
+        (is_black !=1 or is_black is null)
     '''
     sql = filter(sql, where)
     return sql
