@@ -11,8 +11,8 @@ import requests
 import sys
 import pg
 import oper
-from oper import sync
 import json
+import filter_bz
 import time_bz
 import time
 import public_bz
@@ -43,13 +43,11 @@ def saveUser(user):
     return social_user
 
 
-def saveMessage(tumblr_user, user, blog):
+def saveMessage(user_name, twitter_name, god_id, blog):
     m = public_bz.storage()
-    m.god_id = user.id
-    m.user_name = user.name
-    m.name = tumblr_user['name']
-    # m.avatar = tumblr_user['avatar']
-    # m.avatar = avatar
+    m.god_id = god_id
+    m.user_name = user_name
+    m.name = twitter_name
 
     m.id_str = blog['id']
     m.m_type = 'tumblr'
@@ -104,29 +102,48 @@ def callGetMeidaApi(user_name, offset=0, limit=20):
 #             break
 
 
-def main(user, wait):
-    blogs = callGetMeidaApi(user_name=user.tumblr, limit=1)
+def main(user_name, tumblr_name, god_id, wait):
+
+    blogs = callGetMeidaApi(user_name=tumblr_name, limit=1)
     if blogs is None:
-        public_db.sendDelApply('tumblr', user.name, user.tumblr, 'not have user')
+        public_db.sendDelApply('tumblr', user_name, tumblr_name, 'not have user')
     else:
         response = blogs['response']
         tumblr_user = response['blog']
         if oper.haveNew('tumblr', tumblr_user['name'], tumblr_user['updated']):
             # 只取最新的20条来保存
-            blogs = callGetMeidaApi(user_name=user.tumblr, limit=20)['response']['posts']
+            blogs = callGetMeidaApi(user_name=tumblr_name, limit=20)['response']['posts']
             for message in blogs:
-                saveMessage(tumblr_user, user, message)
+                saveMessage(user_name, tumblr_name, god_id, message)
         saveUser(tumblr_user)
-        oper.noMessageTooLong(M_TYPE, user.tumblr)
+        oper.noMessageTooLong(M_TYPE, tumblr_name)
+
+
+def run(god_name=None, wait=None):
+    '''
+    '''
+    sql = '''
+    select * from god where tumblr is not null and tumblr != ''
+    '''
+    sql = filter_bz.filterNotBlackGod(sql)
+    if god_name:
+        sql += " and name='%s'" % god_name
+    users = pg.query(sql)
+    for user in users:
+        user_name = user.name
+        tumblr_name = user.twitter
+        god_id = user.id
+        main(user_name, tumblr_name, god_id, wait)
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         user_name = (sys.argv[1])
-        sync('tumblr', main, user_name)
+        run(user_name)
         exit(0)
     while True:
         try:
-            sync('tumblr', main, must_followed=False)
+            run(wait=True)
         except requests.exceptions.ConnectionError:
             print public_bz.getExpInfoAll()
         except requests.exceptions.ChunkedEncodingError as e:
