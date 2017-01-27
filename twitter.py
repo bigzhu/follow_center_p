@@ -33,12 +33,12 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 
-def getTwitterUser(twitter_name, user_name):
+def getTwitterUser(twitter_name, god_name):
     twitter_user = api.get_user(screen_name=twitter_name)
     if twitter_user:
         twitter_user = saveUser(twitter_user)
     else:
-        public_db.sendDelApply('twitter', user_name, twitter_name, 'User not found.')
+        public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
     return twitter_user
 
 
@@ -56,7 +56,7 @@ def saveUser(twitter_user):
     return social_user
 
 
-def main(user_name, twitter_name, god_id, wait):
+def main(god_name, twitter_name, god_id, wait):
     '''
     create by bigzhu at 15/07/04 22:49:04
         用 https://api.twitter.com/1.1/statuses/user_timeline.json 可以取到某个用户的信息
@@ -67,13 +67,13 @@ def main(user_name, twitter_name, god_id, wait):
     create by bigzhu at 16/04/30 09:56:02 不再取转发的消息
     '''
     try:
-        twitter_user = getTwitterUser(twitter_name, user_name)
+        twitter_user = getTwitterUser(twitter_name, god_name)
         if not twitter_user:
             return
         public_tweets = api.user_timeline(screen_name=twitter_name, include_rts=False, exclude_replies=True)
         for tweet in public_tweets:
             tweet.created_at += timedelta(hours=8)
-            saveMessage(user_name, twitter_name, god_id, tweet)
+            saveMessage(god_name, twitter_name, god_id, tweet)
         # oper.noMessageTooLong('twitter', user.twitter)
     except tweepy.error.TweepError:
         print 'twitter_name=', twitter_name
@@ -81,22 +81,22 @@ def main(user_name, twitter_name, god_id, wait):
         print error_info
 
         if 'User not found.' in error_info:
-            public_db.sendDelApply('twitter', user_name, twitter_name, 'User not found.')
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
         if 'Rate limit exceeded' in error_info:  # 调用太多
             if wait:
-                waitReset(user_name, twitter_name, god_id)
+                waitReset(god_name, twitter_name, god_id)
             else:
                 raise Exception('Twitter api 的调用次数用完了，请等个10分钟再添加!')
             return 'Rate limit exceeded'
         if 'User has been suspended.' in error_info:  # 帐号被冻结了
-            public_db.sendDelApply('twitter', user_name, twitter_name, 'User has been suspended.')
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'User has been suspended.')
         if 'Not authorized.' in error_info:  # 私有
-            public_db.sendDelApply('twitter', user_name, twitter_name, 'Not authorized.')
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'Not authorized.')
         if 'Sorry, that page does not exist.' in error_info:  # 没用户
-            public_db.sendDelApply('twitter', user_name, twitter_name, 'Sorry, that page does not exist.')
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'Sorry, that page does not exist.')
 
 
-def saveMessage(user_name, twitter_name, god_id, tweet):
+def saveMessage(god_name, twitter_name, god_id, tweet):
     '''
     create by bigzhu at 15/07/10 14:39:48
         保存twitter
@@ -108,7 +108,7 @@ def saveMessage(user_name, twitter_name, god_id, tweet):
     '''
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = user_name
+    m.god_name = god_name
     m.name = twitter_name
 
     m.id_str = tweet.id_str
@@ -141,7 +141,7 @@ def getRemaining():
     return remaining
 
 
-def waitReset(user_name, twitter_name, god_id):
+def waitReset(god_name, twitter_name, god_id):
     while True:
         try:
             remaining = getRemaining()
@@ -154,7 +154,7 @@ def waitReset(user_name, twitter_name, god_id):
         if remaining == 0:
             time.sleep(1200)
         else:
-            main(user_name, twitter_name, god_id, wait=True)
+            main(god_name, twitter_name, god_id, wait=True)
             break
 
 
@@ -170,15 +170,15 @@ def run(god_name=None, wait=None):
         sql += " and name='%s'" % god_name
     users = pg.query(sql)
     for user in users:
-        user_name = user.name
+        god_name = user.name
         twitter_name = user.twitter
         god_id = user.id
-        main(user_name, twitter_name, god_id, wait)
+        main(god_name, twitter_name, god_id, wait)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        user_name = (sys.argv[1])
-        run(user_name)
+        god_name = (sys.argv[1])
+        run(god_name)
         exit(0)
 
     while True:

@@ -38,20 +38,18 @@ def getFaceBookUserId(user_name):
     return r.get('id')
 
 
-def main(user):
+def main(god_name, facebook_name, god_id):
     '''
     create by bigzhu at 16/06/10 14:01:16 facebook
     '''
     etag = None
-    social_name = user['facebook']
-    god_name = user['name']
-    where = "type='facebook' and name='%s'" % social_name
+    where = "type='facebook' and name='%s'" % facebook_name
     social_user = list(pg.db.select('social_user', where=where))
     if social_user:
         user_id = social_user[0].out_id
         etag = social_user[0].sync_key
     else:
-        user_id = getFaceBookUserId(social_name)
+        user_id = getFaceBookUserId(facebook_name)
 
     params = {'access_token': access_token,
               'fields': 'username,link,bio,picture,feed{created_time,full_picture,message,link,description}'}
@@ -66,11 +64,11 @@ def main(user):
         r['user_id'] = user_id
         saveUser(r, etag)
         for message in r['feed']['data']:
-            saveMessage(user, message)
+            saveMessage(god_name, facebook_name, god_id, message)
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        public_db.sendDelApply('facebook', god_name, social_name, '404')
+        public_db.sendDelApply('facebook', god_name, facebook_name, '404')
     else:
         print r.status_code
 
@@ -90,14 +88,14 @@ def saveUser(user, etag):
     return social_user
 
 
-def saveMessage(user, message):
+def saveMessage(god_name, facebook_name, god_id, message):
     '''
     '''
     message = public_bz.storage(message)
     m = public_bz.storage()
-    m.god_id = user['id']
-    m.user_name = user['name']
-    m.name = user['facebook']
+    m.god_id = god_id
+    m.user_name = god_name
+    m.name = facebook_name
 
     m.m_type = 'facebook'
     m.id_str = message.id
@@ -125,7 +123,11 @@ def run(god_name=None):
     sql = filter_bz.filterNotBlackGod(sql)
     users = pg.query(sql)
     for user in users:
-        main(user)
+        god_name = user['name']
+        facebook_name = user['facebook']
+        god_id = user.id
+        main(god_name, facebook_name, god_id)
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
