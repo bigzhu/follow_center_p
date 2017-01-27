@@ -68,9 +68,11 @@ def saveMessage(user_name, twitter_name, god_id, blog):
     if type == 'text':
         m.title = blog.get('title')
         m.text = blog.get('body')
-    if type == 'photo':
+    elif type == 'photo':
         m.text = blog.get('caption')
         m.extended_entities = json.dumps(blog.get('photos'))
+    elif type == 'video':
+        m.extended_entities = json.dumps({'video_url': blog.get('video_url')})
     m.content = None
 
     id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='tumblr' " % m.id_str)
