@@ -21,6 +21,16 @@ M_TYPE = 'tumblr'
 API_KEY = 'w0qnSK6sUtFyapPHzZG7PjbTXbsYDoilrnmrblIbA56GTl0ULL'
 
 
+def getTumblrUser(user_name, tumblr_name):
+    blogs = callGetMeidaApi(user_name=tumblr_name, limit=1)
+    if blogs is None:
+        public_db.sendDelApply('tumblr', user_name, tumblr_name, 'not have user')
+        return
+    tumblr_user = blogs['response']['blog']
+    saveUser(tumblr_user)
+    return tumblr_user
+
+
 def tumblrRealAvatar(url):
     '''
     create by bigzhu at 16/05/28 11:06:23 tumblr 用了 301 来转 avatar url,要再调一次
@@ -91,31 +101,15 @@ def callGetMeidaApi(user_name, offset=0, limit=20):
         print r.status_code
 
 
-# def waitReset(user):
-#     while True:
-#         remaining = getRemaining()
-#         print 'remaining:', remaining
-#         if remaining == 0:
-#             time.sleep(600)
-#         else:
-#             main(user, wait=True)
-#             break
-
-
 def main(user_name, tumblr_name, god_id, wait):
-
-    blogs = callGetMeidaApi(user_name=tumblr_name, limit=1)
-    if blogs is None:
-        public_db.sendDelApply('tumblr', user_name, tumblr_name, 'not have user')
-    else:
-        response = blogs['response']
-        tumblr_user = response['blog']
-        if oper.haveNew('tumblr', tumblr_user['name'], tumblr_user['updated']):
-            # 只取最新的20条来保存
-            blogs = callGetMeidaApi(user_name=tumblr_name, limit=20)['response']['posts']
-            for message in blogs:
-                saveMessage(user_name, tumblr_name, god_id, message)
-        saveUser(tumblr_user)
+    tumblr_user = getTumblrUser(user_name, tumblr_name)
+    if tumblr_user is None:
+        return
+    if oper.haveNew('tumblr', tumblr_user['name'], tumblr_user['updated']):
+        # 只取最新的20条来保存
+        blogs = callGetMeidaApi(user_name=tumblr_name, limit=20)['response']['posts']
+        for message in blogs:
+            saveMessage(user_name, tumblr_name, god_id, message)
         oper.noMessageTooLong(M_TYPE, tumblr_name)
 
 

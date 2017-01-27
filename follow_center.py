@@ -307,7 +307,7 @@ class api_social(BaseHandler):
                 reptile_instagram.run(name)  # 用的是爬虫, 单取 user 意义不大
             if type == 'tumblr':
                 import tumblr
-                sync(type, tumblr.main, name)
+                tumblr.getTumblrUser(name, name)
             if type == 'facebook':
                 import facebook
                 facebook.run(name)
