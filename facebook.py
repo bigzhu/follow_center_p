@@ -38,6 +38,26 @@ def getFaceBookUserId(user_name):
     return r.get('id')
 
 
+def getFacebookUser(facebook_name, god_name):
+    '''
+    只是给添加时候用
+    '''
+
+    user_id = getFaceBookUserId(facebook_name)
+    params = {'access_token': access_token,
+              'fields': 'username,link,bio,picture'}
+    url = "https://graph.facebook.com/%s" % user_id
+    r = requests.get(url, params=params)
+    if r.status_code == 200:
+        r = r.json()
+        r['user_id'] = user_id
+        saveUser(r, None)
+    elif r.status_code == 404:
+        public_db.sendDelApply('facebook', god_name, facebook_name, '404')
+    else:
+        print r.status_code
+
+
 def main(god_name, facebook_name, god_id):
     '''
     create by bigzhu at 16/06/10 14:01:16 facebook
@@ -81,7 +101,8 @@ def saveUser(user, etag):
     social_user.count = -1
     social_user.avatar = user['picture']['data']['url']
     social_user.description = user.get('bio')  # bio 可能没有
-    social_user.sync_key = etag
+    if etag is not None:
+        social_user.sync_key = etag
     social_user.out_id = user['id']
 
     pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='facebook' " % social_user.name)
@@ -137,7 +158,7 @@ if __name__ == '__main__':
     while True:
         try:
             run()
-        except Exception, e:
+        except Exception as e:
             print e
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

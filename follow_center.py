@@ -6,7 +6,6 @@ sys.path.append("../lib_p_bz")
 import json
 import public_bz
 import sys
-from oper import sync
 
 import datetime
 import db_bz
@@ -310,7 +309,7 @@ class api_social(BaseHandler):
                 tumblr.getTumblrUser(name, name)
             if type == 'facebook':
                 import facebook
-                facebook.run(name)
+                facebook.getFacebookUser(name, name)
 
             info = public_db.getSocialUser(name, type)
         self.write(json.dumps({'error': '0', 'info': info}, cls=public_bz.ExtEncoder))
