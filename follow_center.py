@@ -306,10 +306,10 @@ class api_social(BaseHandler):
                 reptile_instagram.run(name)  # 用的是爬虫, 单取 user 意义不大
             if type == 'tumblr':
                 import tumblr
-                tumblr.getTumblrUser(name, name)
+                tumblr.getTumblrUserNotSaveKey(name, name)
             if type == 'facebook':
                 import facebook
-                facebook.getTumblrUserNotSaveKey(name, name)
+                facebook.getFacebookUser(name, name)
 
             info = public_db.getSocialUser(name, type)
         self.write(json.dumps({'error': '0', 'info': info}, cls=public_bz.ExtEncoder))
