@@ -111,7 +111,7 @@ def saveUser(user, sync_key=None):
     except Exception as e:
         print e
         print user
-    social_user.count = user['following']
+    social_user.count = user['followers']
     social_user.avatar = user['avatar_url']
     social_user.description = user['bio']
     if sync_key is not None:
@@ -139,6 +139,8 @@ def loop(god_name=None, wait=None):
 
 
 if __name__ == '__main__':
+    # print json.dumps(getGithubUser('kdzwinel', 'kdzwinel'))
+    exit(0)
     if len(sys.argv) == 2:
         user_name = (sys.argv[1])
         loop(user_name)
