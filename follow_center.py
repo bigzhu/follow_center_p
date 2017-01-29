@@ -492,12 +492,14 @@ class api_god(tornado_bz.UserInfoHandler):
             'github': name,
             'instagram': name,
             'tumblr': name,
+            'facebook': name
         }
         # 去了social中有相同名字的
         oper.cleanSocialData(data, 'twitter')
         oper.cleanSocialData(data, 'github')
         oper.cleanSocialData(data, 'instagram')
         oper.cleanSocialData(data, 'tumblr')
+        oper.cleanSocialData(data, 'facebook')
 
         god_id = db_bz.insertIfNotExist(pg, 'god', data, "lower(name)=lower('%s')" % name)
 

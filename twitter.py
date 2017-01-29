@@ -34,7 +34,22 @@ api = tweepy.API(auth)
 
 
 def getTwitterUser(twitter_name, god_name):
-    twitter_user = api.get_user(screen_name=twitter_name)
+    twitter_user = None
+    try:
+        twitter_user = api.get_user(screen_name=twitter_name)
+    except tweepy.error.TweepError:
+        print 'twitter_name=', twitter_name
+        error_info = public_bz.getExpInfo()
+        print error_info
+
+        if 'User not found.' in error_info:
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
+        if 'User has been suspended.' in error_info:  # 帐号被冻结了
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'User has been suspended.')
+        if 'Not authorized.' in error_info:  # 私有
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'Not authorized.')
+        if 'Sorry, that page does not exist.' in error_info:  # 没用户
+            public_db.sendDelApply('twitter', god_name, twitter_name, 'Sorry, that page does not exist.')
     if twitter_user:
         twitter_user = saveUser(twitter_user)
     else:
