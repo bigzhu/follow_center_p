@@ -140,7 +140,6 @@ def loop(god_name=None, wait=None):
 
 if __name__ == '__main__':
     # print json.dumps(getGithubUser('kdzwinel', 'kdzwinel'))
-    exit(0)
     if len(sys.argv) == 2:
         user_name = (sys.argv[1])
         loop(user_name)

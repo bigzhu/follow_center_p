@@ -62,7 +62,7 @@ def saveUser(twitter_user):
     social_user.type = 'twitter'
     social_user.name = twitter_user.screen_name
     social_user.count = twitter_user.followers_count
-    social_user.avatar = twitter_user.profile_image_url_https.replace('_normal', '')
+    social_user.avatar = twitter_user.profile_image_url_https.replace('_normal', '_400x400')
     social_user.description = twitter_user.description
     # 没有找到
     # social_user.sync_key = twitter_user.description
@@ -123,7 +123,7 @@ def saveMessage(god_name, twitter_name, god_id, tweet):
     '''
     m = public_bz.storage()
     m.god_id = god_id
-    m.god_name = god_name
+    m.user_name = god_name
     m.name = twitter_name
 
     m.id_str = tweet.id_str
