@@ -67,7 +67,7 @@ def saveUser(user):
 def saveMessage(user_name, twitter_name, god_id, blog):
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = user_name
+    m.user_name = user_name.lower()
     m.name = twitter_name
 
     m.id_str = blog['id']

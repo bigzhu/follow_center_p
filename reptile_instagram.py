@@ -87,7 +87,7 @@ def saveMessage(ins_name, user_name, god_id, message):
 
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = user_name
+    m.user_name = user_name.lower()
     m.name = ins_name
     # m.avatar = message.user['profile_picture']
     m.m_type = 'instagram'

@@ -115,7 +115,7 @@ def saveMessage(god_name, facebook_name, god_id, message):
     message = public_bz.storage(message)
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = god_name
+    m.user_name = god_name.lower()
     m.name = facebook_name
 
     m.m_type = 'facebook'

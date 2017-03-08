@@ -85,7 +85,7 @@ def saveMessage(user_name, github_name, god_id, message):
 
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = user_name
+    m.user_name = user_name.lower()
     m.name = github_name
     # m.avatar = message.actor['avatar_url']
 

@@ -123,7 +123,7 @@ def saveMessage(god_name, twitter_name, god_id, tweet):
     '''
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = god_name
+    m.user_name = god_name.lower()
     m.name = twitter_name
 
     m.id_str = tweet.id_str
