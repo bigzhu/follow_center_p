@@ -14,7 +14,7 @@ def filter(sql, where):
 
 def messageThisGod(sql, god_name):
     if god_name:
-        where = " lower(s.user_name)=lower('%s') " % god_name
+        where = " s.user_name=lower('%s') " % god_name
         sql = filter(sql, where)
     return sql
 
