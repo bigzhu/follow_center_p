@@ -133,8 +133,10 @@ def godNotBlock(sql, user_id):
 
 def filterSearchKey(sql, search_key):
     if search_key:
+
+        # to_tsvector(s.text) @@ to_tsquery('%s') or to_tsvector(s.content::text) @@ to_tsquery('%s')
         where = '''
-            upper(s.text) like '%%%s%%' or upper(s.content::text) like '%%%s%%'
+            s.text like '%%%s%%' or s.content::text like '%%%s%%'
             ''' % (search_key.upper(), search_key.upper())
         sql = filter(sql, where)
     return sql

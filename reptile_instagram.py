@@ -23,6 +23,8 @@ import public_bz
 from requests.exceptions import ConnectionError
 from bs4 import BeautifulSoup
 
+from socket import error as SocketError
+import errno
 
 M_TYPE = 'instagram'
 
@@ -138,6 +140,10 @@ if __name__ == '__main__':
     while True:
         try:
             run()
+        except SocketError as e:
+            if e.errno != errno.ECONNRESET:
+                raise  # Not error we are looking for
+            print e
         except ConnectionError as e:
             print e
         except ValueError as e:
