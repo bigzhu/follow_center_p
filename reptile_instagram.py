@@ -29,6 +29,20 @@ import errno
 M_TYPE = 'instagram'
 
 
+def getVideoUrl(url):
+    '''
+    从 video 类型的网址中得到真实的 mp4 url 地址
+    '''
+    r = requests.get(url)
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.text)
+        videos = soup.find_all('meta', property='og:video')
+        if (videos):
+            return videos[0]['content']
+    else:
+        raise Exception('getVideoUrl 异常: ' + r.status_code)
+
+
 def main(ins_name, user_name, god_id):
     '''
     create by bigzhu at 16/06/12 16:19:09 api disabled
@@ -105,6 +119,8 @@ def saveMessage(ins_name, user_name, god_id, message):
     m.href = 'https://www.instagram.com/p/%s/' % message.code
     if message.is_video:
         m.type = 'video'
+        video_url = getVideoUrl(m.href)
+        m.extended_entities = json.dumps({'url': message.display_src, 'video_url': video_url})
     else:
         m.type = 'image'
     id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='instagram'" % m.id_str)
