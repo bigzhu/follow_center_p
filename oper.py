@@ -93,13 +93,12 @@ def haveNew(type, name, sync_key):
     result = list(pg.select('social_user', where=where))
     if result:
         if result[0].sync_key == str(sync_key):
-            print result[0].sync_key
-            print str(sync_key)
             # print ' no new data'
             return False
         else:
-            print 'old:', result[0].sync_key
-            print 'new:', sync_key
+            pass
+            # print 'old:', result[0].sync_key
+            # print 'new:', sync_key
     return True
 
 
