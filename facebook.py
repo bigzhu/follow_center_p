@@ -53,7 +53,8 @@ def getFacebookUser(facebook_name, god_name):
         r['user_id'] = user_id
         saveUser(r, None)
     elif r.status_code == 404:
-        public_db.sendDelApply('facebook', god_name, facebook_name, '404')
+        # public_db.sendDelApply('facebook', god_name, facebook_name, '404')
+        public_db.delNoName('facebook', facebook_name)
     else:
         print r.status_code
 
