@@ -6,17 +6,38 @@
 import sys
 sys.path.append("../lib_p_bz")
 
-import model_oper_bz
-from peewee import TextField, IntegerField, BooleanField, DateTimeField
+try:
+    from playhouse.postgres_ext import PostgresqlExtDatabase
+    from peewee import SQL
+    from playhouse.postgres_ext import BinaryJSONField, JSONField
+    from peewee import TextField, IntegerField, DateTimeField, BooleanField
+except ImportError:
+    print 'you need install peewee, please run:'
+    print 'sudo pip install peewee'
+    exit(1)
 
-from playhouse.postgres_ext import JSONField, BinaryJSONField
-# import public_bz
+import ConfigParser
+config = ConfigParser.ConfigParser()
+with open('conf/db.ini', 'r') as cfg_file:
+    config.readfp(cfg_file)
+    host = config.get('db', 'host')
+    port = config.get('db', 'port')
+    db_name = config.get('db', 'db')
+    user = config.get('db', 'user')
+    password = config.get('db', 'pw')
+
+psql_db = PostgresqlExtDatabase(db_name, user=user, password=password, host=host, register_hstore=False)
+
 import model_bz
 
-db_name = 'follow_center'
+
+class BaseModel(model_bz.base):
+
+    class Meta:
+        database = psql_db
 
 
-class anki_save(model_oper_bz.base):
+class anki_save(BaseModel):
 
     '''
     标记是否发到anki
@@ -24,7 +45,7 @@ class anki_save(model_oper_bz.base):
     message_id = IntegerField()
 
 
-class anki(model_oper_bz.base):
+class anki(BaseModel):
     user_name = TextField()
     password = TextField()
     csrf_token = TextField(null=True)
@@ -32,11 +53,11 @@ class anki(model_oper_bz.base):
     cookie = TextField(null=True)
 
 
-class block(model_oper_bz.base):
+class block(BaseModel):
     god_id = IntegerField()
 
 
-class apply_del(model_oper_bz.base):
+class apply_del(BaseModel):
 
     '''
     create by bigzhu at 16/08/19 10:39:42 申请删除没有用的社交帐号
@@ -45,11 +66,11 @@ class apply_del(model_oper_bz.base):
     social_name = TextField()  # 社交帐号名
     type = TextField()  # 类别
     stat = IntegerField(null=True)  # 1 已删 0 不能删
-    count = IntegerField(null=True, default=0)  # 申请次数
+    count = IntegerField(null=True, constraints=[SQL('DEFAULT 0')])  # 申请次数
     reason = TextField(null=True)  # 原因
 
 
-class who_add_god(model_oper_bz.base):
+class who_add_god(BaseModel):
 
     '''
     谁添加了哪个god
@@ -58,7 +79,7 @@ class who_add_god(model_oper_bz.base):
     cat = TextField()  # 类别
 
 
-class remark(model_oper_bz.base):
+class remark(BaseModel):
 
     '''
     create by bigzhu at 16/06/06 10:37:47 给god添加备注
@@ -68,7 +89,7 @@ class remark(model_oper_bz.base):
     like = IntegerField(null=True)
 
 
-class god(model_oper_bz.base):
+class god(BaseModel):
 
     '''
     god 的信息 create by bigzhu at 16/05/24 10:01:39
@@ -86,7 +107,7 @@ class god(model_oper_bz.base):
     is_black = IntegerField(null=True)  # 是否黑名单
 
 
-class collect(model_oper_bz.base):
+class collect(BaseModel):
 
     '''
     收藏 create by bigzhu at 16/05/20 14:11:51
@@ -94,7 +115,7 @@ class collect(model_oper_bz.base):
     message_id = IntegerField()
 
 
-class wechat_dead_line(model_oper_bz.base):
+class wechat_dead_line(BaseModel):
 
     '''
     记录wechat的超时时间,以决定要不要新建
@@ -108,7 +129,7 @@ class wechat_dead_line(model_oper_bz.base):
     cookies = TextField(null=True)
 
 
-class wechat_user(model_oper_bz.base):
+class wechat_user(BaseModel):
 
     '''
     create by bigzhu at 15/04/04 13:30:57 记录微信用户的信息
@@ -130,7 +151,7 @@ class wechat_user(model_oper_bz.base):
     user_name = TextField(null=True)  # 系统的用户名,用来绑定
 
 
-class github_message(model_oper_bz.base):
+class github_message(BaseModel):
 
     '''
     create by bigzhu at 15/07/15 17:57:00
@@ -147,7 +168,7 @@ class github_message(model_oper_bz.base):
     content = BinaryJSONField(null=True)  # 整合的内容
 
 
-class github_user(model_oper_bz.base):
+class github_user(BaseModel):
 
     '''
     create by bigzhu at 15/07/15 18:02:15
@@ -185,7 +206,7 @@ class github_user(model_oper_bz.base):
     etag = TextField(null=True)
 
 
-class follow_who(model_oper_bz.base):
+class follow_who(BaseModel):
 
     '''
     create by bigzhu at 15/07/14 14:54:27 你要follow谁
@@ -193,7 +214,7 @@ class follow_who(model_oper_bz.base):
     god_id = IntegerField()  # 实际上是你要follow的用户的id
 
 
-class social_user(model_oper_bz.base):
+class social_user(BaseModel):
 
     '''
     create by bigzhu at 16/03/26 05:45:33 社交帐号
@@ -211,7 +232,7 @@ class social_user(model_oper_bz.base):
     sync_key = TextField(null=True)
 
 
-class last(model_oper_bz.base):
+class last(BaseModel):
 
     '''
     记录上次看到的那条message
@@ -222,7 +243,7 @@ class last(model_oper_bz.base):
     # last_message_id = IntegerField()
 
 
-class m(model_oper_bz.base):
+class m(BaseModel):
 
     '''
     create by bigzhu at 15/12/09 15:33:04 直接存message
@@ -238,7 +259,7 @@ class m(model_oper_bz.base):
     type = TextField(null=True)  # media type
 
 
-class message(model_oper_bz.base):
+class message(BaseModel):
 
     '''
     create by bigzhu at 16/03/25 14:52:27 冗余存放数据，提高效率
@@ -269,13 +290,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    import ConfigParser
-    config = ConfigParser.ConfigParser()
-    with open('conf/db.ini', 'r') as cfg_file:
-        config.readfp(cfg_file)
-        host = config.get('db', 'host')
-        port = config.get('db', 'port')
-        the_db = config.get('db', 'db')
-        user = config.get('db', 'user')
-        pw = config.get('db', 'pw')
-    model_oper_bz.reCreateTable(anki_save, db_name, user=user, password=pw, host=host)
+    apply_del.drop_table(True)
+    apply_del.create_table(True)
