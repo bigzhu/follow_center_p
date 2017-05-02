@@ -89,7 +89,8 @@ def main(god_name, facebook_name, god_id):
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        public_db.sendDelApply('facebook', god_name, facebook_name, '404')
+        # public_db.sendDelApply('facebook', god_name, facebook_name, '404')
+        public_db.delNoName('facebook', facebook_name)
     else:
         print r.status_code
 
