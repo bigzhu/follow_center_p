@@ -40,7 +40,7 @@ def getVideoUrl(url):
         if (videos):
             return videos[0]['content']
     else:
-        raise Exception('getVideoUrl 异常: ' + r.status_code)
+        raise Exception('getVideoUrl 异常: %s' % r.status_code)
 
 
 def main(ins_name, user_name, god_id):
