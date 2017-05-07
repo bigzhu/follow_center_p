@@ -128,7 +128,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     create by bigzhu at 16/05/28 22:01:58 查new的，根据mind图重构
     '''
     sql = '''
-    select m.*, g.cat from all_message m, god g where m.user_name=g.name
+    select * from all_message m
     '''
     if user_id:
         sql = add_bz.messagesCollect(sql, user_id)
@@ -172,13 +172,13 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     create by bigzhu at 16/05/29 08:06:28 查老的
     '''
     sql = '''
-    select * from all_message m where 1=1
+    select * from all_message
     '''
     if user_id:
         sql = add_bz.messagesCollect(sql, user_id)
         sql = add_bz.messagesAnkiSave(sql, user_id)
     else:  # 不给看18+
-        sql += " and lower(name) not in (select lower(name) from god where cat='18+') "
+        sql = filter_bz.messageNot18(sql)
     # 封住，以直接加where
     sql = ''' select * from (%s) s ''' % sql
 
@@ -241,18 +241,14 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
             select * from (%s) s where s.followed=0 or s.followed is null
             ''' % sql
             if not cat:
-                sql = '''
-                select * from (%s) s  where s.cat not in('18+')
-                ''' % sql
+                sql = filter_bz.messageNot18(sql)
         if is_my:
             sql = '''
             select * from (%s) s  where s.followed=1
             ''' % sql
     else:
         if recommand:
-            sql = '''
-            select * from (%s) s  where s.cat not in('18+')
-            ''' % sql
+            sql = filter_bz.messageNot18(sql)
 
     if cat:
         sql = '''

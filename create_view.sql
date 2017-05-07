@@ -189,3 +189,29 @@ drop VIEW all_message;
 select m.*, s.avatar from message m, social_user s
 where m.user_name = s.name
 and m.m_type = s.type
+
+ SELECT m.id,
+    m.created_date,
+    m.stat_date,
+    m.is_delete,
+    m.user_id,
+    m.god_id,
+    m.user_name,
+    m.name,
+    m.id_str,
+    m.m_type,
+    m.created_at,
+    m.content,
+    m.text,
+    m.extended_entities,
+    m.href,
+    m.type,
+    m.title,
+    s.avatar,
+    g.cat
+   FROM message m,
+    social_user s,
+    god g
+  WHERE m.name = s.name 
+AND m.m_type = s.type
+and m.user_name=g.name
