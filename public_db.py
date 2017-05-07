@@ -135,7 +135,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         sql = add_bz.messagesAnkiSave(sql, user_id)
     else:
         # 不给看18+
-        sql += " where cat <> '18+' "
+        sql = filter_bz.messageNot18(sql)
         # 只能看 public god 的 message
         sql = filter_bz.filterPublicGodMessages(sql)
     # 封住，以直接加where

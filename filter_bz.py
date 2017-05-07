@@ -12,6 +12,11 @@ def filter(sql, where):
     return sql
 
 
+def messageNot18(sql):
+    where = " cat <> '18+' "
+    return filter(sql, where)
+
+
 def messageThisGod(sql, god_name):
     if god_name:
         where = " s.user_name=lower('%s') " % god_name
