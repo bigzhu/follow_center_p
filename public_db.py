@@ -128,14 +128,14 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     create by bigzhu at 16/05/28 22:01:58 查new的，根据mind图重构
     '''
     sql = '''
-    select * from all_message m
+    select m.*, g.cat from all_message m, god g where m.user_name=g.name
     '''
     if user_id:
         sql = add_bz.messagesCollect(sql, user_id)
         sql = add_bz.messagesAnkiSave(sql, user_id)
     else:
         # 不给看18+
-        sql += " where lower(name) not in (select lower(name) from god where cat='18+') "
+        sql += " where cat <> '18+' "
         # 只能看 public god 的 message
         sql = filter_bz.filterPublicGodMessages(sql)
     # 封住，以直接加where
