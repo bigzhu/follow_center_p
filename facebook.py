@@ -73,7 +73,7 @@ def main(god_name, facebook_name, god_id):
         user_id = getFaceBookUserId(facebook_name)
 
     params = {'access_token': access_token,
-              'fields': 'username,link,bio,picture,feed{created_time,full_picture,message,link,description, created_time,full_picture,message,link,description, type, source}'}
+              'fields': 'username,link,bio,picture,feed{created_time,full_picture,message,link,description,type,source}'}
     url = "https://graph.facebook.com/%s" % user_id
 
     headers = {'If-None-Match': etag}
