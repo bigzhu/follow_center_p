@@ -29,6 +29,10 @@ import errno
 M_TYPE = 'instagram'
 
 
+class CodeException(Exception):
+    pass
+
+
 def getVideoUrl(url):
     '''
     从 video 类型的网址中得到真实的 mp4 url 地址
@@ -40,7 +44,7 @@ def getVideoUrl(url):
         if (videos):
             return videos[0]['content']
     else:
-        raise Exception('getVideoUrl 异常: %s' % r.status_code)
+        raise CodeException('getVideoUrl 异常: %s' % r.status_code)
 
 
 def main(ins_name, user_name, god_id):
@@ -156,6 +160,8 @@ if __name__ == '__main__':
     while True:
         try:
             run()
+        except CodeException as e:
+            print e
         except SocketError as e:
             if e.errno != errno.ECONNRESET:
                 raise  # Not error we are looking for

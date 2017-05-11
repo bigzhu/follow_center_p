@@ -85,7 +85,6 @@ def main(god_name, facebook_name, god_id):
         r['user_id'] = user_id
         saveUser(r, etag)
         for message in r['feed']['data']:
-            print message
             saveMessage(god_name, facebook_name, god_id, message)
     elif r.status_code == 304:
         pass
