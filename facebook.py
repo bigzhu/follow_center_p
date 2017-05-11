@@ -73,7 +73,7 @@ def main(god_name, facebook_name, god_id):
         user_id = getFaceBookUserId(facebook_name)
 
     params = {'access_token': access_token,
-              'fields': 'username,link,bio,picture,feed{created_time,full_picture,message,link,description}'}
+              'fields': 'username,link,bio,picture,feed{created_time,full_picture,message,link,description, created_time,full_picture,message,link,description, type, source}'}
     url = "https://graph.facebook.com/%s" % user_id
 
     headers = {'If-None-Match': etag}
@@ -85,6 +85,7 @@ def main(god_name, facebook_name, god_id):
         r['user_id'] = user_id
         saveUser(r, etag)
         for message in r['feed']['data']:
+            print message
             saveMessage(god_name, facebook_name, god_id, message)
     elif r.status_code == 304:
         pass
@@ -125,8 +126,8 @@ def saveMessage(god_name, facebook_name, god_id, message):
     m.created_at = message.created_time
     m.content = json.dumps({'description': message.get('description')})
     m.text = message.get('message')
-    m.extended_entities = json.dumps({'pictrue': message.get('full_picture')})
-    # m.type =
+    m.extended_entities = json.dumps({'pictrue': message.get('full_picture'), 'source': message.get('source')})
+    m.type = message.get('type')
     m.href = message.get('link')
     id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='facebook'" % m.id_str)
     if id is not None:
