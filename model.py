@@ -37,6 +37,19 @@ class BaseModel(model_bz.base):
         database = psql_db
 
 
+class oauth_info(BaseModel):
+
+    '''
+    oauth_info 登录的用户信息
+    '''
+    out_id = TextField(null=True)  # 外部的id
+    type = TextField()  # oauth 类型, twitter github
+    name = TextField()
+    avatar = TextField()  # 头像
+    email = TextField(null=True)
+    location = TextField(null=True)  # 归属地
+
+
 class anki_save(BaseModel):
 
     '''
@@ -290,5 +303,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    apply_del.drop_table(True)
-    apply_del.create_table(True)
+    oauth_info.drop_table(True)
+    oauth_info.create_table(True)
