@@ -42,6 +42,20 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     access_token_secret = config.get('secret', 'access_token_secret')
 
 
+class api_oauth_info(BaseHandler):
+
+    @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
+    def get(self):
+        self.set_header("Content-Type", "application/json")
+        user_id = self.get_current_user()
+        user_info = pg.select('oauth_info', where={'id': user_id})
+        if not user_info:
+            raise Exception('没有用户' + user_id)
+        self.data.user_info = user_info[0]
+        self.write(json.dumps(self.data, cls=public_bz.ExtEncoderNew))
+
+
 class api_login_anki(tornado_bz.UserInfoHandler):
 
     '''
