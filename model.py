@@ -22,9 +22,9 @@ with open('conf/db.ini', 'r') as cfg_file:
     config.readfp(cfg_file)
     host = config.get('db', 'host')
     port = config.get('db', 'port')
-    db_name = config.get('db', 'db')
+    db_name = config.get('db', 'db_name')
     user = config.get('db', 'user')
-    password = config.get('db', 'pw')
+    password = config.get('db', 'password')
 
 psql_db = PostgresqlExtDatabase(db_name, user=user, password=password, host=host, register_hstore=False)
 
