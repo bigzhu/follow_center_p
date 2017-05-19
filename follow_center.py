@@ -211,7 +211,7 @@ class api_registered(BaseHandler):
     def get(self):
         self.set_header("Content-Type", "application/json")
         sql = '''
-            select count(id) as count from user_info
+            select count(id) as count from oauth_info
         '''
         datas = self.pg.db.query(sql)
         registered_count = datas[0].count
@@ -882,7 +882,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         port = int(sys.argv[1])
     else:
-        port = 9000
+        port = 9444
     print (port)
 
     web_class = tornado_bz.getAllWebBzRequestHandlers()

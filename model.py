@@ -37,6 +37,42 @@ class BaseModel(model_bz.base):
         database = psql_db
 
 
+class god(BaseModel):
+
+    '''
+    god 的信息 create by bigzhu at 16/05/24 10:01:39
+    modify by bigzhu at 17/05/19 19:16:08 改为用 json 放社交信息
+    '''
+    name = TextField()  # 名字
+    bio = TextField(null=True)  # 说明
+    twitter = BinaryJSONField(null=True)  #
+    github = BinaryJSONField(null=True)  #
+    instagram = BinaryJSONField(null=True)  #
+    tumblr = BinaryJSONField(null=True)  #
+    facebook = BinaryJSONField(null=True)  #
+    cat = TextField(null=True)  # 类别
+    is_public = IntegerField(null=True)  # 是不是可以看到的，如果是，那么cat不能改
+    is_black = IntegerField(null=True)  # 是否黑名单
+
+
+class social_user(BaseModel):
+
+    '''
+    create by bigzhu at 16/03/26 05:45:33 社交帐号
+    '''
+    type = TextField()  # twitter or instagram or github
+    name = TextField()
+    count = IntegerField()  # 关注他的人数
+    avatar = TextField(null=True)  # 发布者的头像
+    description = TextField(null=True)  # 描述
+    out_id = TextField(null=True)  # facebook要用这个来调api
+    # 判断是否同步
+    # instagram 已经取过的最后一个id
+    # github etag
+    # tumblr 时间戳
+    sync_key = TextField(null=True)
+
+
 class oauth_info(BaseModel):
 
     '''
@@ -100,24 +136,6 @@ class remark(BaseModel):
     god_id = IntegerField()
     remark = TextField()
     like = IntegerField(null=True)
-
-
-class god(BaseModel):
-
-    '''
-    god 的信息 create by bigzhu at 16/05/24 10:01:39
-    '''
-    name = TextField()  # 名字
-    avatar = TextField(null=True)  # 头像
-    bio = TextField(null=True)  # 说明
-    twitter = TextField(null=True)  #
-    github = TextField(null=True)  #
-    instagram = TextField(null=True)  #
-    tumblr = TextField(null=True)  #
-    facebook = TextField(null=True)  #
-    cat = TextField(null=True)  # 类别
-    is_public = IntegerField(null=True)  # 是不是可以看到的，如果是，那么cat不能改
-    is_black = IntegerField(null=True)  # 是否黑名单
 
 
 class collect(BaseModel):
@@ -227,24 +245,6 @@ class follow_who(BaseModel):
     god_id = IntegerField()  # 实际上是你要follow的用户的id
 
 
-class social_user(BaseModel):
-
-    '''
-    create by bigzhu at 16/03/26 05:45:33 社交帐号
-    '''
-    type = TextField()  # twitter or instagram or github
-    name = TextField()
-    count = IntegerField()  # 关注他的人数
-    avatar = TextField(null=True)  # 发布者的头像
-    description = TextField(null=True)  # 描述
-    out_id = TextField(null=True)  # facebook要用这个来调api
-    # 判断是否同步
-    # instagram 已经取过的最后一个id
-    # github etag
-    # tumblr 时间戳
-    sync_key = TextField(null=True)
-
-
 class last(BaseModel):
 
     '''
@@ -303,5 +303,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    oauth_info.drop_table(True)
-    oauth_info.create_table(True)
+    god.drop_table(True)
+    god.create_table(True)
