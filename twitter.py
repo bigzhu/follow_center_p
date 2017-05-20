@@ -60,6 +60,7 @@ def getTwitterUser(twitter_name, god_name):
 def saveUser(god_name, twitter_user):
     social_user = public_bz.storage()
     social_user.name = twitter_user.screen_name
+    social_user.type = 'twitter'
     social_user.count = twitter_user.followers_count
     social_user.avatar = twitter_user.profile_image_url_https.replace('_normal', '_400x400')
     social_user.description = twitter_user.description
