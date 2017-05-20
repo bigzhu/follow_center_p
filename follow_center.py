@@ -501,6 +501,7 @@ class api_god(tornado_bz.UserInfoHandler):
         cat = data.get('cat', '大杂烩')
         where = {'name': name}
         gods = pg.select('god', where=where)
+        print gods
         if (gods):
             god = gods[0]
             god_id = god.id
@@ -516,13 +517,14 @@ class api_god(tornado_bz.UserInfoHandler):
                 'github': god_oper.makeSureSocialUnique('github', name),
                 'instagram': god_oper.makeSureSocialUnique('instagram', name),
                 'tumblr': god_oper.makeSureSocialUnique('tumblr', name),
-                'facebook': god_oper.makeSureSocialUnique('facebook', name)
+                'facebook': god_oper.makeSureSocialUnique('facebook', name),
+                'user_id': user_id
             }
 
             god_id = pg.insert('god', **data)
 
         oper.follow(user_id, god_id, make_sure=False)
-        god_info = oper.getGodInfo(name, user_id=user_id)
+        god_info = god_oper.getTheGodInfo(god_id, user_id=user_id)
 
         self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
 

@@ -32,15 +32,6 @@ def block(user_id, god_id, make_sure=True):
         raise Exception('没有正确的Block, 似乎已经Block过了呢')
 
 
-def checkSocialData(data, type):
-    name = data.get(type)
-    god_name = data.get('name')
-    if name:
-        god_info = checkSocialExists(type, name, god_name)
-        if god_info:
-            raise Exception('系统已有同名的%s帐号:%s，位于用户%s下' % (type, name, god_info[0].name))
-
-
 def noMessageTooLong(m_type, name):
     sql = '''
     select * from message where m_type='%s' and name='%s' order by created_at desc limit 1
@@ -220,7 +211,7 @@ def follow(user_id, god_id, make_sure=True):
     create by bigzhu at 15/07/15 14:22:51
     modify by bigzhu at 15/07/15 15:00:28 如果不用告警,就不要make_sure
     '''
-    id = db_bz.insertIfNotExist(pg, 'follow_who', {'user_id': user_id, 'god_id': god_id}, "user_id=%s and god_id=%s" % (user_id, god_id))
+    id = db_bz.insertIfNotExist(pg, 'follow_who', {'user_id': user_id, 'god_id': god_id}, "'user_id'=%s and god_id=%s" % (user_id, god_id))
     if id is None and make_sure:
         raise Exception('没有正确的Follow, 似乎已经Follow过了呢')
 

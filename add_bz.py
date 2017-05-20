@@ -53,12 +53,5 @@ def godUserRemark(sql, user_id):
     return sql
 
 
-def godfollowed(sql, user_id):
-    sql = '''
-        select * from   (%s) ut left join
-            (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=%s) f
-            on ut.god_id=f.followed_god_id
-    ''' % (sql, user_id)
-    return sql
 if __name__ == '__main__':
     pass
