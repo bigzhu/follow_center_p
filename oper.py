@@ -41,26 +41,6 @@ def checkSocialData(data, type):
             raise Exception('系统已有同名的%s帐号:%s，位于用户%s下' % (type, name, god_info[0].name))
 
 
-def cleanSocialData(data, type):
-    '''
-    create by bigzhu at 16/04/26 10:43:04 用于add god 时，存在就清除对应的 data.name, 避免出现加了别人的social
-    '''
-    name = data.get(type)
-    god_name = data.get('name')
-    if name:
-        user_info = checkSocialExists(type, name, god_name)
-        if user_info:
-            del data[type]
-
-
-def checkSocialExists(type, name, user_name):
-    sql = '''
-        select * from god where %s='%s' and name != '%s'
-    ''' % (type, name, user_name)
-    god = list(pg.query(sql))
-    return god
-
-
 def noMessageTooLong(m_type, name):
     sql = '''
     select * from message where m_type='%s' and name='%s' order by created_at desc limit 1

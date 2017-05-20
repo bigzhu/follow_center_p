@@ -37,6 +37,14 @@ class BaseModel(model_bz.base):
         database = psql_db
 
 
+class follow_who(BaseModel):
+
+    '''
+    create by bigzhu at 15/07/14 14:54:27 你要follow谁
+    '''
+    god_id = IntegerField()  # 实际上是你要follow的用户的id
+
+
 class god(BaseModel):
 
     '''
@@ -51,8 +59,8 @@ class god(BaseModel):
     tumblr = BinaryJSONField(null=True)  #
     facebook = BinaryJSONField(null=True)  #
     cat = TextField(null=True)  # 类别
-    is_public = IntegerField(null=True)  # 是不是可以看到的，如果是，那么cat不能改
-    is_black = IntegerField(null=True)  # 是否黑名单
+    is_public = IntegerField(null=True, constraints=[SQL('DEFAULT 0')])  # 是不是可以看到的，如果是，那么cat不能改
+    is_black = IntegerField(null=True, constraints=[SQL('DEFAULT 0')])  # 是否黑名单
 
 
 class social_user(BaseModel):
@@ -237,14 +245,6 @@ class github_user(BaseModel):
     etag = TextField(null=True)
 
 
-class follow_who(BaseModel):
-
-    '''
-    create by bigzhu at 15/07/14 14:54:27 你要follow谁
-    '''
-    god_id = IntegerField()  # 实际上是你要follow的用户的id
-
-
 class last(BaseModel):
 
     '''
@@ -303,5 +303,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    god.drop_table(True)
-    god.create_table(True)
+    follow_who.drop_table(True)
+    follow_who.create_table(True)

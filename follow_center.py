@@ -25,7 +25,7 @@ import proxy
 import web_bz
 from public_bz import storage
 from bs4 import BeautifulSoup
-import god
+import god_oper
 import anki
 
 reload(sys)
@@ -499,43 +499,29 @@ class api_god(tornado_bz.UserInfoHandler):
         data = json.loads(self.request.body)
         name = data['name']
         cat = data.get('cat', '大杂烩')
-        data = {
-            'name': name,
-            'cat': cat,
-            'twitter': name,
-            'github': name,
-            'instagram': name,
-            'tumblr': name,
-            'facebook': name
-        }
-        # 去了social中有相同名字的
-        oper.cleanSocialData(data, 'twitter')
-        oper.cleanSocialData(data, 'github')
-        oper.cleanSocialData(data, 'instagram')
-        oper.cleanSocialData(data, 'tumblr')
-        oper.cleanSocialData(data, 'facebook')
+        where = {'name': name}
+        gods = pg.select('god', where=where)
+        if (gods):
+            god = gods[0]
+            god_id = god.id
+            if god.is_black == 1:
+                raise Exception('%s这是一个黑名名帐号,不添加!' % name)
+            if god.is_public == 0 and cat != '大杂烩':
+                pg.update('god', where=where, cat=cat)
+        else:
+            data = {
+                'name': name,
+                'cat': cat,
+                'twitter': god_oper.makeSureSocialUnique('twitter', name),
+                'github': god_oper.makeSureSocialUnique('github', name),
+                'instagram': god_oper.makeSureSocialUnique('instagram', name),
+                'tumblr': god_oper.makeSureSocialUnique('tumblr', name),
+                'facebook': god_oper.makeSureSocialUnique('facebook', name)
+            }
 
-        god_id = db_bz.insertIfNotExist(pg, 'god', data, "lower(name)=lower('%s')" % name)
+            god_id = pg.insert('god', **data)
 
-        where = "name='%s'" % name
-        god_info = self.pg.select('god', where=where)[0]
-        god_id = god_info.id
-        if god_info.is_black == 1:
-            raise Exception('%s这是一个黑名名帐号,不添加!' % name)
-
-        # if god_info.cat != cat:
-        #     where += " and is_public != 1"
-        #     self.pg.update('god', where=where, cat=cat, stat_date=SQLLiteral('NOW()'), user_id=self.current_user)
-        # 加入自已的
-        values = storage()
-        values.god_id = god_id
-        values.cat = cat
-        values.user_id = self.current_user
-        where = "user_id=%s and god_id=%s" % (values.user_id, values.god_id)
-        db_bz.insertOrUpdate(self.pg, 'who_add_god', values, where)
-
-        oper.follow(self.current_user, god_id, make_sure=False)
-
+        oper.follow(user_id, god_id, make_sure=False)
         god_info = oper.getGodInfo(name, user_id=user_id)
 
         self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
@@ -756,7 +742,7 @@ class api_new(tornado_bz.UserInfoHandler):
         data.unread_message_count = oper.getUnreadCount(user_id)
         if (len(messages) == 0):
             if (user_id):
-                data.followed_god_count = god.getFollowedGodCount(user_id)
+                data.followed_god_count = god_oper.getFollowedGodCount(user_id)
             else:
                 data.followed_god_count = 0
 
