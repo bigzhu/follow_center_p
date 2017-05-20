@@ -24,7 +24,7 @@ drop VIEW all_message;
         when m.m_type = 'instagram' then g.instagram-> 'avatar'
         when m.m_type = 'tumblr' then g.tumblr-> 'avatar'
         when m.m_type = 'facebook' then g.tumblr-> 'facebook'
-    end
+    end as avatar
    FROM message m,
     god g
   WHERE m.god_name = g.name
