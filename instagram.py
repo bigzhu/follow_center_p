@@ -47,17 +47,14 @@ def getVideoUrl(url):
         raise CodeException('getVideoUrl 异常: %s' % r.status_code)
 
 
-def main(ins_name, user_name, god_id):
+def main(god):
     '''
     create by bigzhu at 16/06/12 16:19:09 api disabled
     '''
 
-    etag = None
-
-    where = "type='instagram' and name='%s'" % ins_name
-    social_user = list(pg.db.select('social_user', where=where))
-    if social_user:
-        etag = social_user[0].sync_key
+    ins_name = god.instagram['name']
+    god_name = god.name
+    etag = god.instagram.get('sync_key')
     headers = {'If-None-Match': etag}
     url = "https://www.instagram.com/%s" % ins_name
 
@@ -74,20 +71,20 @@ def main(ins_name, user_name, god_id):
                 content = json.loads(content)
                 user_info = content['entry_data']['ProfilePage'][0]['user']
 
-                saveUser(user_info, etag)
+                saveUser(god_name, user_info, etag)
                 if user_info['media'].get('nodes'):
                     for message in user_info['media']['nodes']:
-                        saveMessage(ins_name, user_name, god_id, message)
+                        saveMessage(ins_name, god_name, god.id, message)
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        public_db.sendDelApply('instagram', user_name, ins_name, '404')
+        public_db.sendDelApply('instagram', god_name, ins_name, '404')
     else:
         print r.status_code
     # oper.noMessageTooLong(M_TYPE, user.instagram)
 
 
-def saveUser(user, sync_key):
+def saveUser(god_name, user, sync_key):
     social_user = public_bz.storage()
     social_user.type = 'instagram'
     social_user.name = user['username']
@@ -95,7 +92,7 @@ def saveUser(user, sync_key):
     social_user.avatar = user['profile_pic_url']
     social_user.description = user['biography']
     social_user.sync_key = sync_key
-    pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='instagram' " % social_user.name)
+    pg.update('god', where={'name': god_name}, instagram=json.dumps(social_user))
     return social_user
 
 
@@ -106,12 +103,9 @@ def saveMessage(ins_name, user_name, god_id, message):
     message = storage(message)
 
     m = public_bz.storage()
-    m.god_id = god_id
-    m.user_name = user_name.lower()
+    m.god_name = user_name.lower()
     m.name = ins_name
-    # m.avatar = message.user['profile_picture']
     m.m_type = 'instagram'
-
     m.id_str = message.id
     m.created_at = time_bz.timestampToDateTime(message.date)
     # m.content = json.dumps(message.comments, cls=public_bz.ExtEncoder)
@@ -129,7 +123,7 @@ def saveMessage(ins_name, user_name, god_id, message):
         m.type = 'image'
     id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='instagram'" % m.id_str)
     if id is not None:
-        print '%s new instagram message %s' % (m.user_name, m.id_str)
+        print '%s new instagram message %s' % (m.name, m.id_str)
     # 肯定会有一条重复
     # else:
     #    print '%s 重复记录 %s' % (m.user_name, m.id_str)
@@ -140,16 +134,14 @@ def run(god_name=None):
     '''
     '''
     sql = '''
-    select * from god where instagram is not null and instagram != ''
+    select * from god where instagram is not null
     '''
     if god_name:
         sql += " and name='%s'" % god_name
     sql = filter_bz.filterNotBlackGod(sql)
-    users = pg.query(sql)
-    for user in users:
-        ins_name = user['instagram']
-        user_name = user['name']
-        main(ins_name, user_name, user.id)
+    gods = pg.query(sql)
+    for god in gods:
+        main(god)
 
 
 if __name__ == '__main__':
