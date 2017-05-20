@@ -51,15 +51,14 @@ def getTwitterUser(twitter_name, god_name):
         if 'Sorry, that page does not exist.' in error_info:  # 没用户
             public_db.sendDelApply('twitter', god_name, twitter_name, 'Sorry, that page does not exist.')
     if twitter_user:
-        twitter_user = saveUser(twitter_user)
+        twitter_user = saveUser(god_name, twitter_user)
     else:
         public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
     return twitter_user
 
 
-def saveUser(twitter_user):
+def saveUser(god_name, twitter_user):
     social_user = public_bz.storage()
-    social_user.type = 'twitter'
     social_user.name = twitter_user.screen_name
     social_user.count = twitter_user.followers_count
     social_user.avatar = twitter_user.profile_image_url_https.replace('_normal', '_400x400')
@@ -67,7 +66,8 @@ def saveUser(twitter_user):
     # 没有找到
     # social_user.sync_key = twitter_user.description
 
-    pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='twitter' " % social_user.name)
+    # pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='twitter' " % social_user.name)
+    pg.update('god', where={'name': god_name}, twitter=json.dumps(social_user))
     return social_user
 
 
@@ -123,7 +123,7 @@ def saveMessage(god_name, twitter_name, god_id, tweet):
     '''
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = god_name.lower()
+    m.god_name = god_name
     m.name = twitter_name
 
     m.id_str = tweet.id_str
@@ -178,7 +178,7 @@ def run(god_name=None, wait=None):
     create by bigzhu at 16/05/30 13:26:38 取出所有的gods，同步
     '''
     sql = '''
-    select * from god where twitter is not null and twitter != ''
+    select * from god where twitter is not null
     '''
     sql = filter_bz.filterNotBlackGod(sql)
     if god_name:
@@ -186,11 +186,14 @@ def run(god_name=None, wait=None):
     users = pg.query(sql)
     for user in users:
         god_name = user.name
-        twitter_name = user.twitter
+        twitter_name = user.twitter['name']
         god_id = user.id
         main(god_name, twitter_name, god_id, wait)
 
 if __name__ == '__main__':
+    run('bigzhu')
+    exit(0)
+
     if len(sys.argv) == 2:
         god_name = (sys.argv[1])
         run(god_name)

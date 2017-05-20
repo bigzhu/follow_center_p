@@ -37,6 +37,27 @@ class BaseModel(model_bz.base):
         database = psql_db
 
 
+class message(BaseModel):
+
+    '''
+    create by bigzhu at 16/03/25 14:52:27 冗余存放数据，提高效率
+    '''
+    god_id = IntegerField(null=True)  # 实际上是你要follow的用户的id
+    god_name = TextField(null=True)  # 在本系统的主用户名
+    name = TextField(null=True)  # 在社交帐号的名字
+    # avatar = TextField(null=True)  # 发布者的头像
+
+    id_str = TextField(null=True)  # 外部的id, 避免重复同步
+    m_type = TextField()  # twitter or instagram or github
+    created_at = DateTimeField()  # 在对应社交帐号真实的生成时间
+    content = BinaryJSONField(null=True)  # 带结构的内容github
+    text = TextField(null=True)  # 文本内容
+    # title = TextField(null=True)  # tumblr text blog 的 title
+    extended_entities = BinaryJSONField(null=True)  # 扩展内容,图片什么
+    href = TextField(null=True)  # message 的link
+    type = TextField(null=True)  # media type
+
+
 class follow_who(BaseModel):
 
     '''
@@ -272,27 +293,6 @@ class m(BaseModel):
     type = TextField(null=True)  # media type
 
 
-class message(BaseModel):
-
-    '''
-    create by bigzhu at 16/03/25 14:52:27 冗余存放数据，提高效率
-    '''
-    god_id = IntegerField(null=True)  # 实际上是你要follow的用户的id
-    user_name = TextField(null=True)  # 在本系统的主用户名
-    name = TextField(null=True)  # 在社交帐号的名字
-    # avatar = TextField(null=True)  # 发布者的头像
-
-    id_str = TextField(null=True)  # 外部的id, 避免重复同步
-    m_type = TextField()  # twitter or instagram or github
-    created_at = DateTimeField()  # 在对应社交帐号真实的生成时间
-    content = BinaryJSONField(null=True)  # 带结构的内容github
-    text = TextField(null=True)  # 文本内容
-    # title = TextField(null=True)  # tumblr text blog 的 title
-    extended_entities = BinaryJSONField(null=True)  # 扩展内容,图片什么
-    href = TextField(null=True)  # message 的link
-    type = TextField(null=True)  # media type
-
-
 class user_info(model_bz.user_info):
 
     '''
@@ -303,5 +303,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    follow_who.drop_table(True)
-    follow_who.create_table(True)
+    # message.drop_table(True)
+    message.create_table(True)
