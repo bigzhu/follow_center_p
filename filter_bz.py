@@ -52,11 +52,11 @@ def filterNotBlackGod(sql):
 def filterHaveSocialGod(sql):
     where = '''
         not (
-            (tumblr is null or tumblr='')
-            and (twitter is null or twitter='')
-            and (github is null or github='')
-            and (instagram is null or instagram='')
-            and (facebook is null or facebook='')
+            tumblr is null
+            and twitter is null
+            and github is null
+            and instagram is null
+            and facebook is null
             )
     '''
     sql = filter(sql, where)

@@ -140,9 +140,6 @@ def getGods(user_id=None, recommand=False, is_my=None, cat=None, is_public=None,
     modify by bigzhu at 16/05/27 21:52:06 让所有god都能看到
     '''
     gods = list(public_db.getGodInfoFollow(user_id=user_id, recommand=recommand, is_my=is_my, cat=cat, is_public=is_public, limit=limit, before=before, blocked=blocked))
-    # have_social_gods = []
-    for god in gods:
-        god = getGodSocialInfo(god)
     return gods
 
 
