@@ -1,9 +1,0 @@
-<div>
-    <div class="meta">tumblr</div>
-    <div class="description description_bz" v-html="text"></div>
-    <template v-for="media in medias" :media="media">
-        <p class="description description_bz" v-html="media.caption"></p>
-        <img :src="media.img_url" :height="media.height" class="ui image" >
-        <br>
-    </template>
-</div>
