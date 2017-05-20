@@ -22,7 +22,7 @@ def addGodfollowed(sql, user_id):
     if user_id:
         sql = '''
             select * from   (%s) ut left join
-                (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=%s) f
+                (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id='%s') f
                 on ut.god_id=f.followed_god_id
         ''' % (sql, user_id)
     return sql

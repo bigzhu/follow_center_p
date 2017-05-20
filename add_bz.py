@@ -48,7 +48,7 @@ def godAdminRemark(sql):
 
 def godUserRemark(sql, user_id):
     sql = '''
-        select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where 'user_id'=%s) r on s.god_id=r.god_id
+        select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where user_id='%s') r on s.god_id=r.god_id
         ''' % (sql, user_id)
     return sql
 

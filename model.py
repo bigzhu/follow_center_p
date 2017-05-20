@@ -302,5 +302,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    remark.drop_table(True)
-    remark.create_table(True)
+    block.drop_table(True)
+    block.create_table(True)

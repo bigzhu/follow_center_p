@@ -5,6 +5,7 @@ import user_bz
 import db_bz
 import filter_bz
 import add_bz
+import god_oper
 from webpy_db import SQLLiteral
 user_oper = user_bz.UserOper(pg)
 
@@ -230,7 +231,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
 
     if user_id:
         # followed info
-        sql = add_bz.godfollowed(sql, user_id)
+        sql = god_oper.addGodfollowed(sql, user_id)
         if (blocked):
             sql = filter_bz.godBlock(sql, user_id)
         else:
