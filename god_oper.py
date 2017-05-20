@@ -43,9 +43,9 @@ def makeSureSocialUnique(type, name):
 
 def getFollowedGodCount(user_id):
     sql = '''
-    select count(god_id) from follow_who where user_id=%s
-    ''' % user_id
-    count = pg.query(sql)[0].count
+    select count(god_id) from follow_who where user_id=$user_id
+    '''
+    count = pg.query(sql, vars=locals())[0].count
     return count
 
 

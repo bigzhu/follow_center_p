@@ -191,9 +191,6 @@ def run(god_name=None, wait=None):
         main(god_name, twitter_name, god_id, wait)
 
 if __name__ == '__main__':
-    run('bigzhu')
-    exit(0)
-
     if len(sys.argv) == 2:
         god_name = (sys.argv[1])
         run(god_name)

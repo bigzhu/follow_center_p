@@ -19,7 +19,7 @@ def messageNot18(sql):
 
 def messageThisGod(sql, god_name):
     if god_name:
-        where = " s.user_name=lower('%s') " % god_name
+        where = " s.god_name='%s' " % god_name
         sql = filter(sql, where)
     return sql
 
@@ -74,7 +74,7 @@ def filter18God(sql):
 def filterMyGod(sql, user_id):
     if user_id:
         where = '''
-            s.id in(select god_id from follow_who where user_id=%s)
+            s.id in(select god_id from follow_who where user_id='%s')
         ''' % user_id
         sql = filter(sql, where)
     return sql
@@ -108,9 +108,9 @@ def filterAfterMessages(sql, after):
 def filterFollowedMessages(sql, user_id):
     if user_id:
         where = '''
-        lower(s.user_name) in (
-            select lower(name) from god where id in(
-                    select god_id from follow_who where user_id=%s
+        s.god_name in (
+            select name from god where id in(
+                    select god_id from follow_who where user_id='%s'
                 )
         )
         ''' % user_id
@@ -121,7 +121,7 @@ def filterFollowedMessages(sql, user_id):
 def godBlock(sql, user_id):
     if user_id:
         where = '''
-            s.god_id in (select god_id from block where user_id=%s)
+            s.god_id in (select god_id from block where user_id='%s')
         ''' % user_id
         sql = filter(sql, where)
     return sql
@@ -130,7 +130,7 @@ def godBlock(sql, user_id):
 def godNotBlock(sql, user_id):
     if user_id:
         where = '''
-            s.god_id not in (select god_id from block where user_id=%s)
+            s.god_id not in (select god_id from block where user_id='%s')
         ''' % user_id
         sql = filter(sql, where)
     return sql

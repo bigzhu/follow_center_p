@@ -9,7 +9,7 @@ def messagesAnkiSave(sql, user_id):
                 from (%s) m
             LEFT OUTER JOIN anki_save c
                 ON m.id = c.message_id
-                and c.user_id=%s
+                and c.user_id='%s'
         ''' % (sql, user_id)
     return sql
 
@@ -21,7 +21,7 @@ def messagesCollect(sql, user_id):
                 from (%s) m
             LEFT OUTER JOIN collect c
                 ON m.id = c.message_id
-                and c.user_id=%s
+                and c.user_id='%s'
         ''' % (sql, user_id)
     return sql
 
@@ -48,7 +48,7 @@ def godAdminRemark(sql):
 
 def godUserRemark(sql, user_id):
     sql = '''
-        select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where user_id=%s) r on s.god_id=r.god_id
+        select s.*, r.remark from   (%s) s left join (select remark, god_id from remark where 'user_id'=%s) r on s.god_id=r.god_id
         ''' % (sql, user_id)
     return sql
 

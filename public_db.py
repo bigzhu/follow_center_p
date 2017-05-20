@@ -44,7 +44,7 @@ def getSocialUser(name, type):
 def getLast(user_id):
     if user_id is None:
         return
-    result = list(pg.select('last', where="user_id=%s" % user_id))
+    result = pg.select('last', where={'user_id': user_id}).list()
     if result:
         return result[0]
 
@@ -153,7 +153,7 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
         sql = filter_bz.filterSearchKey(sql, search_key)
     else:
         sql = filter_bz.filterFollowedMessages(sql, user_id)
-    sql = filter_bz.messagesEffSocial(sql)
+    # sql = filter_bz.messagesEffSocial(sql)
 
     if m_type:
         sql += " and s.m_type='%s' " % m_type

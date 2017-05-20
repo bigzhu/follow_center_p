@@ -178,10 +178,7 @@ def getLast(user_id):
     '''
     if user_id is None:
         return None
-    last = public_db.getLast(user_id)
-    last = list(pg.select('last', where="user_id=%s" % user_id))
-    if last:
-        return last[0]
+    return public_db.getLast(user_id)
 
 
 def getLastTime(user_id):

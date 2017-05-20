@@ -272,7 +272,6 @@ class last(BaseModel):
     记录上次看到的那条message
     create by bigzhu at 16/04/19 08:20:48 还是改为记录时间
     '''
-    user_id = IntegerField()
     last_time = DateTimeField()
     # last_message_id = IntegerField()
 
@@ -303,5 +302,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    # message.drop_table(True)
-    message.create_table(True)
+    last.drop_table(True)
+    last.create_table(True)
