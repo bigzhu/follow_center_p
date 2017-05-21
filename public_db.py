@@ -49,18 +49,6 @@ def getLast(user_id):
     if result:
         return result[0]
 
-
-def delNoName(type, name):
-    '''
-    modify by bigzhu at 16/05/27 11:01:43 改为god
-    '''
-    sql = '''
-    update god set %s=null where lower(%s)=lower('%s')
-    ''' % (type, type, name)
-    count = pg.query(sql)
-    return count
-
-
 def sendDelApply(type, god_name, social_name, reason=None):
     '''
     提交del申请，已有就+1

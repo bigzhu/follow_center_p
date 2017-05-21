@@ -11,6 +11,7 @@ import sys
 import time
 # from datetime import timedelta
 import requests
+import god_oper
 requests.adapters.DEFAULT_RETRIES = 5
 import pg
 import json
@@ -90,7 +91,7 @@ def main(god_name, facebook_name, god_id):
         pass
     elif r.status_code == 404:
         # public_db.sendDelApply('facebook', god_name, facebook_name, '404')
-        public_db.delNoName('facebook', facebook_name)
+        god_oper.delNoName('facebook', god_name)
     else:
         print r.status_code
 

@@ -4,6 +4,17 @@ import pg
 import json
 
 
+def delNoName(type, god_name):
+    '''
+    modify by bigzhu at 16/05/27 11:01:43 删除没有的社交
+    >>> delNoName('instagram', 'bigzhu')
+    1
+    '''
+    values = {type: json.dumps({'name': ''})}
+    count = pg.update('god', where={'name': god_name}, **values)
+    return count
+
+
 def checkOtherNameSocialNameUnique(god_name, social_name, type):
     '''
     create by bigzhu at 17/05/21 16:39:02 检查其他的god下是否已有相同名字的 social
