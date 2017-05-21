@@ -231,7 +231,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
 
     if user_id:
         # followed info
-        sql = god_oper.addGodfollowed(sql, user_id)
+        sql = god_oper.addGodfolloweInfoByUserId(sql)
         if (blocked):
             sql = filter_bz.godBlock(sql, user_id)
         else:
@@ -269,7 +269,7 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     if limit:
         sql += ' limit %s ' % limit
     # print sql
-    return pg.query(sql)
+    return pg.query(sql, vars=locals())
 
 
 def getUserInfoByName(user_name):

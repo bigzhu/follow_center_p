@@ -10,15 +10,12 @@ with open('conf/db.ini', 'r') as cfg_file:
     config.readfp(cfg_file)
     host = config.get('db', 'host')
     port = config.get('db', 'port')
-    the_db = config.get('db', 'db')
+    db_name = config.get('db', 'db_name')
     user = config.get('db', 'user')
-    pw = config.get('db', 'pw')
+    password = config.get('db', 'password')
 
-try:
-    conn = psycopg2.connect("dbname='%s' user='%s' password='%s'" % (the_db, user, pw))
-    conn.set_isolation_level(0)
-except:
-    print "Unable to connect to the database."
+conn = psycopg2.connect(host=host, dbname=db_name, user=user, password=password)
+conn.set_isolation_level(0)
 
 cur = conn.cursor()
 
@@ -27,7 +24,7 @@ try:
     rows = cur.fetchall()
     for row in rows:
         print "dropping table: ", row[1]
-        cur.execute("drop table " + row[1] + " cascade")
+        # cur.execute("drop table " + row[1] + " cascade")
     cur.close()
     conn.close()
 except:

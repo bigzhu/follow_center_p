@@ -15,15 +15,15 @@ with open('conf/db.ini', 'r') as cfg_file:
     config.readfp(cfg_file)
     host = config.get('db', 'host')
     port = config.get('db', 'port')
-    the_db = config.get('db', 'db')
+    db_name = config.get('db', 'db_name')
     user = config.get('db', 'user')
-    pw = config.get('db', 'pw')
+    password = config.get('db', 'password')
 
 now_day = time_bz.getYearMonthDay()
-file_name = 'db_bak/%s.%s.dump' % (the_db, now_day)
+file_name = 'db_bak/%s.%s.dump' % (db_name, now_day)
 command = '''
 PGPASSWORD="%s" pg_dump -T 'tumblr_blog' -T 'instagram_media' -T 'github_message' -T 'twitter_message' -i -h %s -p %s -U %s -F c -b -v -f %s %s
-''' % (pw, host, port, user, file_name, the_db)
+''' % (password, host, port, user, file_name, db_name)
 
 print command
 os.system(command)

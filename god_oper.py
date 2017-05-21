@@ -5,7 +5,7 @@ import json
 
 
 def getTheGodInfoByName(god_name, user_id):
-    result = pg.select('god', value='id', where={'name': god_name})
+    result = pg.select('god', what='id', where={'name': god_name})
     if result:
         god_id = result[0].id
         return getTheGodInfo(god_id, user_id)
@@ -14,10 +14,15 @@ def getTheGodInfoByName(god_name, user_id):
 
 
 def getTheGodInfo(god_id, user_id):
+    '''
+    >>> getTheGodInfo(1, '1')
+    <Storage
+    '''
     sql = '''
-    select * from god where god_id=$god_id
+    select id as god_id, * from god where id=$god_id
     '''
     sql = addGodfolloweInfoByUserId(sql)
+    print sql
     result = pg.query(sql, vars=locals())
     if (not result):
         raise Exception('未找到这个 god ' + god_id)
