@@ -27,6 +27,8 @@ from public_bz import storage
 from bs4 import BeautifulSoup
 import god_oper
 import anki
+import follow_who_oper
+import block_oper
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -136,14 +138,14 @@ class api_block(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         data = json.loads(self.request.body)
         god_id = data['god_id']
-        oper.block(self.current_user, god_id)
+        block_oper.block(self.current_user, god_id)
         self.write(json.dumps({'error': '0'}))
 
     @tornado_bz.mustLoginApi
     @tornado_bz.handleError
     def delete(self, id):
         self.set_header("Content-Type", "application/json")
-        oper.unblock(self.current_user, id)
+        block_oper.unblock(self.current_user, id)
         self.write(json.dumps(self.data))
 
 
@@ -394,8 +396,8 @@ class api_follow(tornado_bz.UserInfoHandler):
         data = json.loads(self.request.body)
         god_id = data['god_id']
         user_id = self.current_user
-        oper.follow(user_id, god_id)
-        oper.unblock(user_id, god_id, False)
+        follow_who_oper.follow(user_id, god_id)
+        block_oper.unblock(user_id, god_id, False)
         self.write(json.dumps(self.data))
 
     @tornado_bz.mustLoginApi

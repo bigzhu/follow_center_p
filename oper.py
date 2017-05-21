@@ -17,21 +17,6 @@ def anki_save(message_id, user_id):
     return id
 
 
-def unblock(user_id, god_id, make_sure=True):
-    count = pg.delete('block', where="user_id=%s and god_id=%s" % (user_id, god_id))
-    if count != 1 and make_sure:
-        raise Exception('没有正确的Unblcok, Unblock %s 人' % count)
-
-
-def block(user_id, god_id, make_sure=True):
-    '''
-    屏蔽某人
-    '''
-    id = db_bz.insertIfNotExist(pg, 'block', {'user_id': user_id, 'god_id': god_id}, "user_id=%s and god_id=%s" % (user_id, god_id))
-    if id is None and make_sure:
-        raise Exception('没有正确的Block, 似乎已经Block过了呢')
-
-
 def noMessageTooLong(m_type, name):
     sql = '''
     select * from message where m_type='%s' and name='%s' order by created_at desc limit 1
@@ -198,16 +183,6 @@ def collect(message_id, user_id):
     '''
     id = db_bz.insertIfNotExist(pg, 'collect', {'user_id': user_id, 'message_id': message_id}, "user_id=%s and message_id=%s" % (user_id, message_id))
     return id
-
-
-def follow(user_id, god_id, make_sure=True):
-    '''
-    create by bigzhu at 15/07/15 14:22:51
-    modify by bigzhu at 15/07/15 15:00:28 如果不用告警,就不要make_sure
-    '''
-    id = db_bz.insertIfNotExist(pg, 'follow_who', {'user_id': user_id, 'god_id': god_id}, "'user_id'=%s and god_id=%s" % (user_id, god_id))
-    if id is None and make_sure:
-        raise Exception('没有正确的Follow, 似乎已经Follow过了呢')
 
 
 def getMessages(limit=None, current_user=None, god_name=None, offset=None, last_message_id=None):
