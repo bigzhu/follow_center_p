@@ -13,7 +13,7 @@ import sys
 import datetime
 import time_bz
 import requests
-import filter_bz
+import social_sync
 requests.adapters.DEFAULT_RETRIES = 5
 import time
 from public_bz import storage
@@ -130,16 +130,8 @@ def saveMessage(ins_name, user_name, god_id, message):
     return id
 
 
-def run(god_name=None):
-    '''
-    '''
-    sql = '''
-    select * from god where instagram is not null
-    '''
-    if god_name:
-        sql += " and name='%s'" % god_name
-    sql = filter_bz.filterNotBlackGod(sql)
-    gods = pg.query(sql)
+def loop(god_name=None):
+    gods = social_sync.getSocialGods('instagram', god_name)
     for god in gods:
         main(god)
 
@@ -147,11 +139,11 @@ def run(god_name=None):
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         user_name = (sys.argv[1])
-        run(user_name)
+        loop(user_name)
         exit(0)
     while True:
         try:
-            run()
+            loop()
         except CodeException as e:
             print e
         except SocketError as e:
