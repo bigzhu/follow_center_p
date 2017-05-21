@@ -384,7 +384,7 @@ class api_gods(BaseHandler):
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 
-class api_follow(tornado_bz.UserInfoHandler):
+class api_follow(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/07/14 17:11:45 follow
@@ -404,9 +404,7 @@ class api_follow(tornado_bz.UserInfoHandler):
     @tornado_bz.handleError
     def delete(self, id):
         self.set_header("Content-Type", "application/json")
-        count = pg.delete('follow_who', where="user_id=%s and god_id=%s" % (self.current_user, id))
-        if count != 1:
-            raise Exception('没有正确的Unfollow, Unfollow %s 人' % count)
+        follow_who_oper.unFollow(self.current_user, id)
         self.write(json.dumps({'error': '0'}))
 
 
