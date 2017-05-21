@@ -520,15 +520,15 @@ class api_god(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         data = json.loads(self.request.body)
         name = data['name']
+
         if name == '' or name is None:
             raise Exception('必须有名字才能修改')
 
-        oper.checkSocialData(data, 'twitter')
-        oper.checkSocialData(data, 'github')
-        oper.checkSocialData(data, 'tumblr')
-        oper.checkSocialData(data, 'instagram')
+        for type in ['twitter', 'github', 'instagram', 'tumblr', 'facebook']:
+            god_oper.checkOtherNameSocialNameUnique(name, data[type]['name'], type)
+            data[type] = json.dumps(data[type])
 
-        where = " name='%s'" % name
+        where = " name='%s' " % name
         count = self.pg.update("god", where=where, **data)
         if count != 1:
             raise Exception("修改失败" + count)

@@ -4,6 +4,23 @@ import pg
 import json
 
 
+def checkOtherNameSocialNameUnique(god_name, social_name, type):
+    '''
+    create by bigzhu at 17/05/21 16:39:02 检查其他的god下是否已有相同名字的 social
+
+    >>> checkOtherNameSocialNameUnique('bigzhu', 'bigzhu', 'twitter')
+    >>> checkOtherNameSocialNameUnique('bigzhu2', 'bigzhu', 'twitter')
+    Traceback (most recent call last):
+        ...
+    Exception: 已有别人绑定了 twitter bigzhu, 修改失败
+    '''
+    sql = '''
+    select * from god where name <> $god_name and  %s ->>'name'::text = $social_name
+    ''' % type
+    if (pg.query(sql, vars=locals())):
+        raise Exception('已有别人绑定了 %s %s, 修改失败' % (type, social_name))
+
+
 def getTheGodInfoByName(god_name, user_id):
     result = pg.select('god', what='id', where={'name': god_name})
     if result:
@@ -42,6 +59,10 @@ def addGodfolloweInfoByUserId(sql):
 def makeSureSocialUnique(type, name):
     '''
     create by bigzhu at 17/05/20 08:35:04 确保 Social 不重复
+
+    >>> makeSureSocialUnique('twitter', 'bigzhu')
+    >>> makeSureSocialUnique('twitter', 'bigzhu1')
+    '{"name": "bigzhu1"}'
     '''
     sql = '''
     select * from god where %s ->>'name'::text = $name
@@ -61,4 +82,5 @@ def getFollowedGodCount(user_id):
 
 
 if __name__ == '__main__':
-    makeSureSocialUnique('twitter', 'bigzhu')
+    import doctest
+    doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
