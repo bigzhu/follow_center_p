@@ -22,6 +22,10 @@ M_TYPE = 'tumblr'
 API_KEY = 'w0qnSK6sUtFyapPHzZG7PjbTXbsYDoilrnmrblIbA56GTl0ULL'
 
 
+class NoUser(Exception):
+    pass
+
+
 def getTumblrUserNotSaveKey(god_name, tumblr_name):
     blogs = callGetMeidaApi(god_name=tumblr_name, limit=1)
     if blogs is None:
@@ -37,7 +41,7 @@ def getTumblrUser(god_name, tumblr_name, save=True):
     if blogs is None:
         # public_db.sendDelApply('tumblr', god_name, tumblr_name, 'not have user')
         god_oper.delNoName('tumblr', god_name)
-        raise Exception(tumblr_name + 'blog is None')
+        raise NoUser('%s blog is None' % tumblr_name)
     tumblr_user = blogs['response']['blog']
     if save:
         saveUser(tumblr_user)
@@ -119,7 +123,7 @@ def callGetMeidaApi(god_name, offset=0, limit=20):
 
 def main(god, wait):
     god_name = god.name
-    tumblr_name = god.tumblr
+    tumblr_name = god.tumblr['name']
     god_id = god.id
     tumblr_user = getTumblrUser(god_name, tumblr_name, False)
 
@@ -156,7 +160,7 @@ if __name__ == '__main__':
             print e
         except requests.exceptions.ReadTimeout as e:
             print e
-        except Exception as e:
+        except NoUser as e:
             print e
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

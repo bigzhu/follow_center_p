@@ -4,7 +4,6 @@
 '''
 import sys
 sys.path.append("../lib_p_bz")
-import public_db
 
 import datetime
 import sys
@@ -16,7 +15,7 @@ requests.adapters.DEFAULT_RETRIES = 5
 import pg
 import json
 import public_bz
-import filter_bz
+import social_sync
 import ConfigParser
 config = ConfigParser.ConfigParser()
 with open('conf/facebook.ini', 'r') as cfg_file:
@@ -28,12 +27,12 @@ with open('conf/facebook.ini', 'r') as cfg_file:
 TYPE = 'facebook'
 
 
-def getFaceBookUserId(user_name):
+def getFaceBookUserId(facebook_name):
     '''
     create by bigzhu at 16/06/10 14:07:01 facebook的所有操作都要以user-id来做
     '''
     params = {'access_token': access_token}
-    url = "https://graph.facebook.com/%s" % user_name
+    url = "https://graph.facebook.com/%s" % facebook_name
     r = requests.get(url, params=params)
     r = r.json()
     return r.get('id')
@@ -55,21 +54,25 @@ def getFacebookUser(facebook_name, god_name):
         saveUser(r, None)
     elif r.status_code == 404:
         # public_db.sendDelApply('facebook', god_name, facebook_name, '404')
-        public_db.delNoName('facebook', facebook_name)
+        god_oper.delNoName('facebook', god_name)
+
     else:
         print r.status_code
 
 
-def main(god_name, facebook_name, god_id):
+def main(god):
     '''
     create by bigzhu at 16/06/10 14:01:16 facebook
     '''
-    etag = None
-    where = "type='facebook' and name='%s'" % facebook_name
-    social_user = list(pg.db.select('social_user', where=where))
-    if social_user:
-        user_id = social_user[0].out_id
-        etag = social_user[0].sync_key
+    god_name = god['name']
+    facebook_name = god['facebook']['name']
+    god_id = god.id
+
+    etag = god['facebook'].get('sync_key')
+    user_id = god['facebook'].get('out_id')
+
+    if etag:
+        pass
     else:
         user_id = getFaceBookUserId(facebook_name)
 
@@ -84,7 +87,7 @@ def main(god_name, facebook_name, god_id):
         etag = r.headers['etag']
         r = r.json()
         r['user_id'] = user_id
-        saveUser(r, etag)
+        saveUser(god_name, r, etag)
         for message in r['feed']['data']:
             saveMessage(god_name, facebook_name, god_id, message)
     elif r.status_code == 304:
@@ -96,7 +99,7 @@ def main(god_name, facebook_name, god_id):
         print r.status_code
 
 
-def saveUser(user, etag):
+def saveUser(god_name, user, etag):
     social_user = public_bz.storage()
     social_user.type = 'facebook'
     social_user.name = user['username']
@@ -108,7 +111,8 @@ def saveUser(user, etag):
         social_user.sync_key = etag
     social_user.out_id = user['id']
 
-    pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='facebook' " % social_user.name)
+    # pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='facebook' " % social_user.name)
+    pg.update('god', where={'name': god_name}, facebook=json.dumps(social_user))
     return social_user
 
 
@@ -118,7 +122,7 @@ def saveMessage(god_name, facebook_name, god_id, message):
     message = public_bz.storage(message)
     m = public_bz.storage()
     m.god_id = god_id
-    m.user_name = god_name.lower()
+    m.god_name = god_name.lower()
     m.name = facebook_name
 
     m.m_type = 'facebook'
@@ -135,33 +139,26 @@ def saveMessage(god_name, facebook_name, god_id, message):
     return id
 
 
-def run(god_name=None):
+def loop(god_name=None):
     '''
     create by bigzhu at 16/05/30 13:26:38 取出所有的gods，同步
     '''
-    sql = '''
-    select * from god where facebook is not null and facebook != ''
-    '''
-    if god_name:
-        sql += " and name='%s'" % god_name
-    sql = filter_bz.filterNotBlackGod(sql)
-    users = pg.query(sql)
-    for user in users:
-        god_name = user['name']
-        facebook_name = user['facebook']
-        god_id = user.id
-        main(god_name, facebook_name, god_id)
+    gods = social_sync.getSocialGods('facebook', god_name)
+    for god in gods:
+
+        main(god)
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        user_name = (sys.argv[1])
-        run(user_name)
+        god_name = (sys.argv[1])
+        loop(god_name)
         exit(0)
     while True:
-        try:
-            run()
-        except Exception as e:
-            print e
+        loop()
+        # try:
+        #     loop()
+        # except Exception as e:
+        #     print e
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

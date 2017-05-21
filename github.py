@@ -75,7 +75,6 @@ def main(god, wait):
         saveUser(god_name, github_user, etag)  # 为了update etag
     if r.status_code == 404:
         # public_db.sendDelApply('github', god_name, github_name, '404')
-        print 'del ' + god_name
         god_oper.delNoName('github', god_name)
 
 
