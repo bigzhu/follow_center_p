@@ -16,13 +16,12 @@ def getTheGodInfoByName(god_name, user_id):
 def getTheGodInfo(god_id, user_id):
     '''
     >>> getTheGodInfo(1, '1')
-    <Storage
+    <Storage...>
     '''
     sql = '''
     select id as god_id, * from god where id=$god_id
     '''
     sql = addGodfolloweInfoByUserId(sql)
-    print sql
     result = pg.query(sql, vars=locals())
     if (not result):
         raise Exception('未找到这个 god ' + god_id)

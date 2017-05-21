@@ -16,22 +16,19 @@ except ImportError:
     print 'sudo pip install peewee'
     exit(1)
 
-import ConfigParser
-config = ConfigParser.ConfigParser()
-with open('conf/db.ini', 'r') as cfg_file:
-    config.readfp(cfg_file)
-    host = config.get('db', 'host')
-    port = config.get('db', 'port')
-    db_name = config.get('db', 'db_name')
-    user = config.get('db', 'user')
-    password = config.get('db', 'password')
+import db_conf
+conf = db_conf.getDBConf()
 
-psql_db = PostgresqlExtDatabase(db_name, user=user, password=password, host=host, register_hstore=False)
+
+psql_db = PostgresqlExtDatabase(conf.db_name, user=conf.user, password=conf.password, host=conf.host, register_hstore=False)
 
 import model_bz
 
 
 class BaseModel(model_bz.base):
+    '''
+    >>> BaseModel.drop_table(True)
+    '''
 
     class Meta:
         database = psql_db
