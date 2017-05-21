@@ -18,7 +18,7 @@ import public_db
 import pg
 import json
 import public_bz
-import filter_bz
+import social_sync
 import ConfigParser
 config = ConfigParser.ConfigParser()
 with open('conf/twitter.ini', 'r') as cfg_file:
@@ -174,30 +174,24 @@ def waitReset(god_name, twitter_name, god_id):
             break
 
 
-def run(god_name=None, wait=None):
+def loop(god_name=None, wait=None):
     '''
     create by bigzhu at 16/05/30 13:26:38 取出所有的gods，同步
     '''
-    sql = '''
-    select * from god where twitter is not null
-    '''
-    sql = filter_bz.filterNotBlackGod(sql)
-    if god_name:
-        sql += " and name='%s'" % god_name
-    users = pg.query(sql)
-    for user in users:
-        god_name = user.name
-        twitter_name = user.twitter['name']
-        god_id = user.id
+    gods = social_sync.getSocialGods('twitter', god_name)
+    for god in gods:
+        god_name = god.name
+        twitter_name = god.twitter['name']
+        god_id = god.id
         main(god_name, twitter_name, god_id, wait)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         god_name = (sys.argv[1])
-        run(god_name)
+        loop(god_name)
         exit(0)
 
     while True:
-        run(wait=True)
+        loop(wait=True)
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(2400)
