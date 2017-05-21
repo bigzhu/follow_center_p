@@ -31,7 +31,7 @@ def saveLast(last_time, user_id):
     '''
     id = db_bz.insertIfNotExist(pg, 'last', {'user_id': user_id, 'last_time': last_time}, "user_id='%s'" % user_id)
     if id is None:
-        count = pg.update('last', where="last_time< '%s'  and user_id=%s" % (last_time, user_id), last_time=last_time)
+        count = pg.update('last', where="last_time< $last_time  and user_id=$user_id", last_time=last_time, vars=locals())
         return count
     return 1
 

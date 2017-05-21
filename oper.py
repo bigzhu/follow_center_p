@@ -5,7 +5,7 @@ import pg
 import public_db
 import base64
 import datetime
-import time_bz
+import last_oper
 import filter_bz
 
 
@@ -143,8 +143,7 @@ def getGodInfo(god_name, user_id=None, is_public=None):
 
 
 def getUnreadCount(user_id):
-    after = getLastTime(user_id)
-    print after
+    after = last_oper.getLastTime(user_id)
     return public_db.queryUnreadCount(after, user_id)
 
 
