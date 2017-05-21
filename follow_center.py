@@ -21,6 +21,7 @@ import oper
 import pg
 import filter_bz
 import public_db
+import last_oper
 import proxy
 import web_bz
 from public_bz import storage
@@ -290,13 +291,16 @@ class api_collect(BaseHandler):
 class api_social(BaseHandler):
 
     @tornado_bz.handleError
+    @tornado_bz.mustLoginApi
     def get(self, parm):
         self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
         name = parm['name']
         type = parm['type']
-        info = public_db.getSocialUser(name, type)
-        if not info:  # 已有就直接返回了
+        god = god_oper.getTheGodInfoByName(name, self.current_user)
+        if god[type].get('count'):
+            info = god[type]
+        else:
             if type == 'twitter':
                 import twitter
                 twitter.getTwitterUser(name, name)
@@ -304,17 +308,17 @@ class api_social(BaseHandler):
                 import github
                 github.getGithubUser(name, name)
             if type == 'instagram':
-                import reptile_instagram
-                reptile_instagram.run(name)  # 用的是爬虫, 单取 user 意义不大
+                import instagram
+                instagram.loop(name)  # 用的是爬虫, 单取 user 意义不大
             if type == 'tumblr':
                 import tumblr
                 tumblr.getTumblrUserNotSaveKey(name, name)
             if type == 'facebook':
                 import facebook
                 facebook.getFacebookUser(name, name)
-
-            info = public_db.getSocialUser(name, type)
-        self.write(json.dumps({'error': '0', 'info': info}, cls=public_bz.ExtEncoder))
+            info = god_oper.getTheGodInfoByName(name, self.current_user)[type]
+        self.data.info = info
+        self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))
 
 
 class api_logout(BaseHandler):
@@ -509,7 +513,7 @@ class api_god(tornado_bz.UserInfoHandler):
 
             god_id = pg.insert('god', **data)
 
-        oper.follow(user_id, god_id, make_sure=False)
+        follow_who_oper.follow(user_id, god_id, make_sure=False)
         god_info = god_oper.getTheGodInfo(god_id, user_id=user_id)
 
         self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
@@ -652,7 +656,7 @@ class api_last(tornado_bz.UserInfoHandler):
         if user_id is None:
             pass
         else:
-            oper.saveLast(last_time, user_id)
+            last_oper.saveLast(last_time, user_id)
         data = storage()
         data.error = OK
         data.unread_message_count = oper.getUnreadCount(user_id)
@@ -721,7 +725,7 @@ class api_new(tornado_bz.UserInfoHandler):
         if after:
             after = time_bz.timestampToDateTime(after, True)
         elif search_key is None and god_name is None:  # 这些条件查询不能卡上次看到那条的时间
-            after = oper.getLastTime(user_id)
+            after = last_oper.getLastTime(user_id)
 
         messages = public_db.getNewMessages(user_id=user_id, after=after, limit=limit, god_name=god_name, search_key=search_key)
         data = storage()

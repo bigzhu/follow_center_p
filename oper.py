@@ -142,35 +142,6 @@ def getGodInfo(god_name, user_id=None, is_public=None):
     return god
 
 
-def saveLast(last_time, user_id):
-    '''
-    create by bigzhu at 15/08/16 16:22:39 保存最后一条的message
-    '''
-    id = db_bz.insertIfNotExist(pg, 'last', {'user_id': user_id, 'last_time': last_time}, "user_id=%s" % user_id)
-    if id is None:
-        count = pg.update('last', where="last_time< '%s'  and user_id=%s" % (last_time, user_id), last_time=last_time)
-        return count
-    return 1
-
-
-def getLast(user_id):
-    '''
-    create by bigzhu at 16/02/22 23:34:00 查出上一次的id，并决定 limit 和info
-    modify by bigzhu at 16/04/19 10:02:40 不要干多余的事
-    '''
-    if user_id is None:
-        return None
-    return public_db.getLast(user_id)
-
-
-def getLastTime(user_id):
-    last = getLast(user_id)
-    if last:
-        return last.last_time
-    else:  # 未登录 or 第一次进来
-        return time_bz.getBeforeDay()
-
-
 def getUnreadCount(user_id):
     after = getLastTime(user_id)
     print after

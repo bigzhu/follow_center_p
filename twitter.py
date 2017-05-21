@@ -12,9 +12,9 @@ sys.path.append("../lib_p_bz")
 import datetime
 import sys
 import time
+import god_oper
 from datetime import timedelta
 import tweepy
-import public_db
 import pg
 import json
 import public_bz
@@ -43,17 +43,17 @@ def getTwitterUser(twitter_name, god_name):
         print error_info
 
         if 'User not found.' in error_info:
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
+            god_oper.delNoName('twitter', god_name)
         if 'User has been suspended.' in error_info:  # 帐号被冻结了
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'User has been suspended.')
+            god_oper.delNoName('twitter', god_name)
         if 'Not authorized.' in error_info:  # 私有
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'Not authorized.')
+            god_oper.delNoName('twitter', god_name)
         if 'Sorry, that page does not exist.' in error_info:  # 没用户
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'Sorry, that page does not exist.')
+            god_oper.delNoName('twitter', god_name)
     if twitter_user:
         twitter_user = saveUser(god_name, twitter_user)
     else:
-        public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
+        god_oper.delNoName('twitter', god_name)
     return twitter_user
 
 
@@ -97,7 +97,7 @@ def main(god_name, twitter_name, god_id, wait):
         print error_info
 
         if 'User not found.' in error_info:
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'User not found.')
+            god_oper.delNoName('twitter', god_name)
         if 'Rate limit exceeded' in error_info:  # 调用太多
             if wait:
                 waitReset(god_name, twitter_name, god_id)
@@ -105,11 +105,11 @@ def main(god_name, twitter_name, god_id, wait):
                 raise Exception('Twitter api 的调用次数用完了，请等个10分钟再添加!')
             return 'Rate limit exceeded'
         if 'User has been suspended.' in error_info:  # 帐号被冻结了
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'User has been suspended.')
+            god_oper.delNoName('twitter', god_name)
         if 'Not authorized.' in error_info:  # 私有
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'Not authorized.')
+            god_oper.delNoName('twitter', god_name)
         if 'Sorry, that page does not exist.' in error_info:  # 没用户
-            public_db.sendDelApply('twitter', god_name, twitter_name, 'Sorry, that page does not exist.')
+            god_oper.delNoName('twitter', god_name)
 
 
 def saveMessage(god_name, twitter_name, god_id, tweet):

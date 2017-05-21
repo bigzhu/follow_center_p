@@ -42,13 +42,6 @@ def getSocialUser(name, type):
         return result[0]
 
 
-def getLast(user_id):
-    if user_id is None:
-        return
-    result = pg.select('last', where={'user_id': user_id}).list()
-    if result:
-        return result[0]
-
 def sendDelApply(type, god_name, social_name, reason=None):
     '''
     提交del申请，已有就+1

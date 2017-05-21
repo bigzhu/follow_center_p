@@ -26,12 +26,17 @@ import model_bz
 
 
 class BaseModel(model_bz.base):
+
     '''
     >>> BaseModel.drop_table(True)
     '''
 
     class Meta:
         database = psql_db
+
+
+class test(BaseModel):
+    test = TextField(null=True)
 
 
 class message(BaseModel):
@@ -299,5 +304,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    block.drop_table(True)
-    block.create_table(True)
+    test.drop_table(True)
+    test.create_table(True)

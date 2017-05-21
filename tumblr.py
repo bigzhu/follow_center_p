@@ -16,7 +16,6 @@ import social_sync
 import time_bz
 import time
 import public_bz
-import public_db
 import god_oper
 M_TYPE = 'tumblr'
 API_KEY = 'w0qnSK6sUtFyapPHzZG7PjbTXbsYDoilrnmrblIbA56GTl0ULL'
@@ -29,11 +28,12 @@ class NoUser(Exception):
 def getTumblrUserNotSaveKey(god_name, tumblr_name):
     blogs = callGetMeidaApi(god_name=tumblr_name, limit=1)
     if blogs is None:
-        public_db.sendDelApply('tumblr', god_name, tumblr_name, 'not have user')
+        # public_db.sendDelApply('tumblr', god_name, tumblr_name, 'not have user')
+        god_oper.delNoName('tumblr', god_name)
         return
     tumblr_user = blogs['response']['blog']
     tumblr_user['updated'] = None
-    saveUser(tumblr_user)
+    saveUser(god_name, tumblr_user)
 
 
 def getTumblrUser(god_name, tumblr_name, save=True):
@@ -44,7 +44,7 @@ def getTumblrUser(god_name, tumblr_name, save=True):
         raise NoUser('%s blog is None' % tumblr_name)
     tumblr_user = blogs['response']['blog']
     if save:
-        saveUser(tumblr_user)
+        saveUser(god_name, tumblr_user)
     return tumblr_user
 
 
@@ -56,7 +56,7 @@ def tumblrRealAvatar(url):
     return r.url
 
 
-def saveUser(user):
+def saveUser(god_name, user):
     social_user = public_bz.storage()
     social_user.type = 'tumblr'
     social_user.name = user['name']
@@ -135,7 +135,7 @@ def main(god, wait):
         for message in blogs:
             saveMessage(god_name, tumblr_name, god_id, message)
         oper.noMessageTooLong(M_TYPE, tumblr_name)
-    saveUser(tumblr_user)
+    saveUser(god_name, tumblr_user)
 
 
 def loop(god_name=None, wait=None):
