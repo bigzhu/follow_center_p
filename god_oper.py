@@ -8,10 +8,12 @@ def delNoName(type, god_name):
     '''
     modify by bigzhu at 16/05/27 11:01:43 删除没有的社交
     >>> delNoName('instagram', 'bigzhu')
+    del ...
     1
     '''
     values = {type: json.dumps({'name': ''})}
     count = pg.update('god', where={'name': god_name}, **values)
+    print 'del %s %s' % (type, god_name)
     return count
 
 
