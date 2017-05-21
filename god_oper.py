@@ -4,28 +4,35 @@ import pg
 import json
 
 
+def getTheGodInfoByName(god_name, user_id):
+    result = pg.select('god', value='id', where={'name': god_name})
+    if result:
+        god_id = result[0].id
+        return getTheGodInfo(god_id, user_id)
+    else:
+        raise Exception('god %s 不存在' % god_name)
+
+
 def getTheGodInfo(god_id, user_id):
     sql = '''
     select * from god where god_id=$god_id
     '''
-    sql = addGodfollowed(sql, user_id)
+    sql = addGodfolloweInfoByUserId(sql)
     result = pg.query(sql, vars=locals())
     if (not result):
         raise Exception('未找到这个 god ' + god_id)
     return result[0]
 
 
-def addGodfollowed(sql, user_id):
+def addGodfolloweInfoByUserId(sql):
     '''
     关联以查出对某个用户, 他是否关注了这个 god
     '''
-    if user_id:
-        sql = '''
+    return '''
             select * from   (%s) ut left join
-                (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id='%s') f
+                (select god_id followed_god_id, 1 followed, stat_date followed_at from follow_who where user_id=$user_id) f
                 on ut.god_id=f.followed_god_id
-        ''' % (sql, user_id)
-    return sql
+        ''' % sql
 
 
 def makeSureSocialUnique(type, name):

@@ -468,7 +468,7 @@ class api_god(tornado_bz.UserInfoHandler):
         self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
         god_name = parm['god_name']
-        god_info = oper.getGodInfo(god_name, self.current_user)
+        god_info = god_oper.getTheGodInfoByName(god_name, self.current_user)
         self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
 
     @tornado_bz.handleError
