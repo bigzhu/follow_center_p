@@ -10,7 +10,6 @@ import datetime
 import requests
 import sys
 import pg
-import oper
 import json
 import social_sync
 import time_bz
@@ -134,7 +133,7 @@ def main(god, wait):
         blogs = callGetMeidaApi(god_name=tumblr_name, limit=20)['response']['posts']
         for message in blogs:
             saveMessage(god_name, tumblr_name, god_id, message)
-        oper.noMessageTooLong(M_TYPE, tumblr_name)
+        # oper.noMessageTooLong(M_TYPE, tumblr_name)
     saveUser(god_name, tumblr_name, tumblr_user)
 
 

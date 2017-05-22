@@ -58,7 +58,7 @@ class api_login_anki(tornado_bz.UserInfoHandler):
         anki_info.user_name = data['user_name']
         anki_info.password = data['password']
         anki_info.user_id = self.current_user
-        db_bz.insertOrUpdate(pg, 'anki', anki_info, "user_id=%s" % anki_info.user_id)
+        db_bz.insertOrUpdate(pg, 'anki', anki_info, "user_id='%s'" % anki_info.user_id)
         anki.getMidAndCsrfTokenHolder(anki_info.user_id, reset_cookie=True)
         self.write(json.dumps(self.data))
 
@@ -82,8 +82,8 @@ class api_anki(tornado_bz.UserInfoHandler):
     @tornado_bz.mustLoginApi
     def get(self):
         self.set_header("Content-Type", "application/json")
-        sql = 'select user_name, password from anki where user_id=%s' % self.current_user
-        datas = self.pg.query(sql)
+        sql = 'select user_name, password from anki where user_id=$user_id'
+        datas = self.pg.query(sql, vars={'user_id': self.current_user})
         if datas:
             data = datas[0]
         else:
@@ -128,7 +128,7 @@ class api_block(tornado_bz.UserInfoHandler):
         user_id = self.current_user
 
         if count:  # 只查总数
-            sql = ''' select count(id) from block where user_id=%s''' % user_id
+            sql = ''' select count(id) from block where user_id='%s' ''' % user_id
             self.data.count = self.pg.query(sql)[0].count
 
         self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))

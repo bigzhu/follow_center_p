@@ -304,5 +304,5 @@ class user_info(model_bz.user_info):
 
 
 if __name__ == '__main__':
-    test.drop_table(True)
-    test.create_table(True)
+    anki.drop_table(True)
+    anki.create_table(True)

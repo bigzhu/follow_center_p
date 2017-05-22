@@ -27,6 +27,8 @@ def checkOtherNameSocialNameUnique(god_name, social_name, type):
         ...
     Exception: 已有别人绑定了 twitter bigzhu, 修改失败
     '''
+    if social_name == '':  # 要删除的, 不用管
+        return
     sql = '''
     select * from god where name <> $god_name and  %s ->>'name'::text = $social_name
     ''' % type
