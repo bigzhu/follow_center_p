@@ -90,7 +90,7 @@ def filterPublicGod(sql):
 
 def filterPublicGodMessages(sql):
     where = '''
-        lower(s.name) in (select lower(name) from god where is_public in (1,2) )
+       s.god_name in (select name from god where is_public in (1,2) )
     '''
     sql = filter(sql, where)
     return sql

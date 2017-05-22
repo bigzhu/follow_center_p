@@ -35,6 +35,10 @@ def checkOtherNameSocialNameUnique(god_name, social_name, type):
 
 
 def getTheGodInfoByName(god_name, user_id):
+    '''
+    >>> getTheGodInfoByName('VueComponents', '1')
+    <Storage...>
+    '''
     result = pg.select('god', what='id', where={'name': god_name})
     if result:
         god_id = result[0].id

@@ -51,7 +51,7 @@ def getFacebookUser(facebook_name, god_name):
     if r.status_code == 200:
         r = r.json()
         r['user_id'] = user_id
-        saveUser(r, None)
+        saveUser(god_name, r, None)
     elif r.status_code == 404:
         # public_db.sendDelApply('facebook', god_name, facebook_name, '404')
         god_oper.delNoName('facebook', god_name)
@@ -111,7 +111,6 @@ def saveUser(god_name, user, etag):
         social_user.sync_key = etag
     social_user.out_id = user['id']
 
-    # pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='facebook' " % social_user.name)
     pg.update('god', where={'name': god_name}, facebook=json.dumps(social_user))
     return social_user
 
@@ -122,7 +121,7 @@ def saveMessage(god_name, facebook_name, god_id, message):
     message = public_bz.storage(message)
     m = public_bz.storage()
     m.god_id = god_id
-    m.god_name = god_name.lower()
+    m.god_name = god_name
     m.name = facebook_name
 
     m.m_type = 'facebook'

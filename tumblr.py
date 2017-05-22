@@ -66,7 +66,6 @@ def saveUser(god_name, user):
     social_user.description = user['description']
     social_user.sync_key = user['updated']
 
-    # pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='tumblr' " % social_user.name)
     pg.update('god', where={'name': god_name}, tumblr=json.dumps(social_user))
     return social_user
 
@@ -74,7 +73,7 @@ def saveUser(god_name, user):
 def saveMessage(god_name, twitter_name, god_id, blog):
     m = public_bz.storage()
     m.god_id = god_id
-    m.god_name = god_name.lower()
+    m.god_name = god_name
     m.name = twitter_name
 
     m.id_str = blog['id']

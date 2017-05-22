@@ -8,7 +8,7 @@ modify by bigzhu at 15/11/28 11:36:18 可以查某个用户
 '''
 import sys
 sys.path.append("../lib_p_bz")
-import public_db
+import god_oper
 import sys
 import datetime
 import time_bz
@@ -78,7 +78,7 @@ def main(god):
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        public_db.sendDelApply('instagram', god_name, ins_name, '404')
+        god_oper.delNoName('facebook', god_name)
     else:
         print r.status_code
     # oper.noMessageTooLong(M_TYPE, user.instagram)
@@ -103,7 +103,7 @@ def saveMessage(ins_name, user_name, god_id, message):
     message = storage(message)
 
     m = public_bz.storage()
-    m.god_name = user_name.lower()
+    m.god_name = user_name
     m.name = ins_name
     m.m_type = 'instagram'
     m.id_str = message.id

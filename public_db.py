@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 import pg
 import user_bz
-import db_bz
 import filter_bz
 import add_bz
 import god_oper
-from webpy_db import SQLLiteral
 user_oper = user_bz.UserOper(pg)
 
 
@@ -28,30 +26,6 @@ def queryUnreadCount(after, user_id=None):
     # print sql
 
     return pg.query(sql)[0].count
-
-
-def getSocialUser(name, type):
-    '''
-    create by bigzhu at 16/04/07 11:38:48 代替那些冗余的
-    '''
-    result = list(pg.select('social_user', where="lower(name)=lower('%s') and type='%s' " % (name, type)))
-    count = len(result)
-    if count > 1:
-        raise Exception('social_user name=%s count=%s type=%s' % (name, count, type))
-    if count == 1:
-        return result[0]
-
-
-def sendDelApply(type, god_name, social_name, reason=None):
-    '''
-    提交del申请，已有就+1
-    '''
-    data = {'type': type, 'god_name': god_name, 'social_name': social_name, 'reason': reason}
-    table_name = 'apply_del'
-    where = "lower(god_name)=lower('%s') and lower(social_name)=lower('%s') and type='%s'" % (god_name, social_name, type)
-    id = db_bz.insertIfNotExist(pg, table_name, data, where)
-    if id is None:
-        pg.db.update(table_name, where=where, count=SQLLiteral('count+1'), stat=None)
 
 
 def followedWho(user_id):
@@ -234,11 +208,11 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
 
     if cat:
         sql = '''
-        select * from (%s) s where lower(cat)=lower('%s')
+        select * from (%s) s where cat='%s'
         ''' % (sql, cat)
     if god_name:
         sql = '''
-        select * from (%s) s where lower(name)=lower('%s')
+        select * from (%s) s where name='%s'
         ''' % (sql, god_name)
     if is_public:
         sql = filter_bz.filterPublicGod(sql)

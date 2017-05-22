@@ -67,7 +67,6 @@ def saveUser(god_name, twitter_user):
     # 没有找到
     # social_user.sync_key = twitter_user.description
 
-    # pg.insertOrUpdate(pg, 'social_user', social_user, "lower(name)=lower('%s') and type='twitter' " % social_user.name)
     pg.update('god', where={'name': god_name}, twitter=json.dumps(social_user))
     return social_user
 

@@ -491,13 +491,12 @@ class api_god(tornado_bz.UserInfoHandler):
         cat = data.get('cat', '大杂烩')
         where = {'name': name}
         gods = pg.select('god', where=where)
-        print gods
         if (gods):
             god = gods[0]
             god_id = god.id
             if god.is_black == 1:
                 raise Exception('%s这是一个黑名名帐号,不添加!' % name)
-            if god.is_public == 0 and cat != '大杂烩':
+            if cat != '大杂烩':
                 pg.update('god', where=where, cat=cat)
         else:
             data = {
