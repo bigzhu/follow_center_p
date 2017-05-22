@@ -51,7 +51,7 @@ def getFacebookUser(facebook_name, god_name):
     if r.status_code == 200:
         r = r.json()
         r['user_id'] = user_id
-        saveUser(god_name, r, None)
+        saveUser(god_name, facebook_name, r, None)
     elif r.status_code == 404:
         # public_db.sendDelApply('facebook', god_name, facebook_name, '404')
         god_oper.delNoName('facebook', god_name)
@@ -87,7 +87,7 @@ def main(god):
         etag = r.headers['etag']
         r = r.json()
         r['user_id'] = user_id
-        saveUser(god_name, r, etag)
+        saveUser(god_name, facebook_name, r, etag)
         for message in r['feed']['data']:
             saveMessage(god_name, facebook_name, god_id, message)
     elif r.status_code == 304:
@@ -99,10 +99,11 @@ def main(god):
         print r.status_code
 
 
-def saveUser(god_name, user, etag):
+def saveUser(god_name, facebook_name, user, etag):
     social_user = public_bz.storage()
     social_user.type = 'facebook'
-    social_user.name = user['username']
+    # social_user.name = user['username']
+    social_user.name = facebook_name
     # facebook 取不到 friend count or followed count
     social_user.count = -1
     social_user.avatar = user['picture']['data']['url']

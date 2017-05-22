@@ -71,7 +71,7 @@ def main(god):
                 content = json.loads(content)
                 user_info = content['entry_data']['ProfilePage'][0]['user']
 
-                saveUser(god_name, user_info, etag)
+                saveUser(god_name, ins_name, user_info, etag)
                 if user_info['media'].get('nodes'):
                     for message in user_info['media']['nodes']:
                         saveMessage(ins_name, god_name, god.id, message)
@@ -84,10 +84,11 @@ def main(god):
     # oper.noMessageTooLong(M_TYPE, user.instagram)
 
 
-def saveUser(god_name, user, sync_key):
+def saveUser(god_name, ins_name, user, sync_key):
     social_user = public_bz.storage()
     social_user.type = 'instagram'
-    social_user.name = user['username']
+    # social_user.name = user['username']
+    social_user.name = ins_name
     social_user.count = user['followed_by']['count']
     social_user.avatar = user['profile_pic_url']
     social_user.description = user['biography']

@@ -37,7 +37,7 @@ def getGithubUser(github_name, god_name):
         if message == 'Not Found':
             god_oper.delNoName('github', god_name)
             return
-        saveUser(god_name, github_user)
+        saveUser(god_name, github_name, github_user)
         return github_user
     except requests.exceptions.ConnectionError:
         print public_bz.getExpInfoAll()
@@ -72,7 +72,7 @@ def main(god, wait):
             message = storage(message)
             saveMessage(god_name, github_name, god_id, message)
         # oper.noMessageTooLong('github', github_name)
-        saveUser(god_name, github_user, etag)  # 为了update etag
+        saveUser(god_name, github_name, github_user, etag)  # 为了update etag
     if r.status_code == 404:
         # public_db.sendDelApply('github', god_name, github_name, '404')
         god_oper.delNoName('github', god_name)
@@ -107,11 +107,12 @@ def saveMessage(god_name, github_name, god_id, message):
     return id
 
 
-def saveUser(god_name, user, sync_key=None):
+def saveUser(god_name, github_name, user, sync_key=None):
     social_user = public_bz.storage()
 
     try:
-        social_user.name = user['login']
+        # social_user.name = user['login']
+        social_user.name = github_name
     except Exception as e:
         print e
         print user

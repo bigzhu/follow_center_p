@@ -51,15 +51,17 @@ def getTwitterUser(twitter_name, god_name):
         if 'Sorry, that page does not exist.' in error_info:  # 没用户
             god_oper.delNoName('twitter', god_name)
     if twitter_user:
-        twitter_user = saveUser(god_name, twitter_user)
+        twitter_user = saveUser(god_name, twitter_name, twitter_user)
     else:
         god_oper.delNoName('twitter', god_name)
     return twitter_user
 
 
-def saveUser(god_name, twitter_user):
+def saveUser(god_name, twitter_name, twitter_user):
     social_user = public_bz.storage()
-    social_user.name = twitter_user.screen_name
+    # 不要用返回的name, 大小写会发生变化
+    # social_user.name = twitter_user.screen_name
+    social_user.name = twitter_name
     social_user.type = 'twitter'
     social_user.count = twitter_user.followers_count
     social_user.avatar = twitter_user.profile_image_url_https.replace('_normal', '_400x400')
@@ -71,7 +73,7 @@ def saveUser(god_name, twitter_user):
     return social_user
 
 
-def main(god_name, twitter_name, god_id, wait):
+def main(god, wait):
     '''
     create by bigzhu at 15/07/04 22:49:04
         用 https://api.twitter.com/1.1/statuses/user_timeline.json 可以取到某个用户的信息
@@ -81,6 +83,9 @@ def main(god_name, twitter_name, god_id, wait):
     modify by bigzhu at 15/08/02 21:35:46 避免批量微信通知
     create by bigzhu at 16/04/30 09:56:02 不再取转发的消息
     '''
+    god_name = god.name
+    twitter_name = god.twitter['name']
+    god_id = god.id
     try:
         twitter_user = getTwitterUser(twitter_name, god_name)
         if not twitter_user:
@@ -179,10 +184,7 @@ def loop(god_name=None, wait=None):
     '''
     gods = social_sync.getSocialGods('twitter', god_name)
     for god in gods:
-        god_name = god.name
-        twitter_name = god.twitter['name']
-        god_id = god.id
-        main(god_name, twitter_name, god_id, wait)
+        main(god, wait)
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:

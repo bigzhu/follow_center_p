@@ -33,7 +33,7 @@ def getTumblrUserNotSaveKey(god_name, tumblr_name):
         return
     tumblr_user = blogs['response']['blog']
     tumblr_user['updated'] = None
-    saveUser(god_name, tumblr_user)
+    saveUser(god_name, tumblr_name, tumblr_user)
 
 
 def getTumblrUser(god_name, tumblr_name, save=True):
@@ -44,7 +44,7 @@ def getTumblrUser(god_name, tumblr_name, save=True):
         raise NoUser('%s blog is None' % tumblr_name)
     tumblr_user = blogs['response']['blog']
     if save:
-        saveUser(god_name, tumblr_user)
+        saveUser(god_name, tumblr_name, tumblr_user)
     return tumblr_user
 
 
@@ -56,10 +56,11 @@ def tumblrRealAvatar(url):
     return r.url
 
 
-def saveUser(god_name, user):
+def saveUser(god_name, tumblr_name, user):
     social_user = public_bz.storage()
     social_user.type = 'tumblr'
-    social_user.name = user['name']
+    # social_user.name = user['name']
+    social_user.name = tumblr_name
     social_user.count = user.get('likes', -1)  # 有人会不分享likes数
     avatar_url = 'https://api.tumblr.com/v2/blog/%s.tumblr.com/avatar/512' % user['name']
     social_user.avatar = tumblrRealAvatar(avatar_url)
@@ -134,7 +135,7 @@ def main(god, wait):
         for message in blogs:
             saveMessage(god_name, tumblr_name, god_id, message)
         oper.noMessageTooLong(M_TYPE, tumblr_name)
-    saveUser(god_name, tumblr_user)
+    saveUser(god_name, tumblr_name, tumblr_user)
 
 
 def loop(god_name=None, wait=None):
