@@ -132,7 +132,6 @@ def loop(god_name=None, wait=None):
     '''
     gods = social_sync.getSocialGods('github', god_name)
     for god in gods:
-        print god.name
         main(god, wait)
 
 

@@ -219,7 +219,7 @@ class api_remark(BaseHandler):
         data = json.loads(self.request.body)
         god_id = data['god_id']
         remark = data['remark']
-        where = 'user_id=%s and god_id=%s' % (self.current_user, god_id)
+        where = "user_id='%s' and god_id=%s" % (self.current_user, god_id)
         values = storage()
         values.user_id = self.current_user
         values.remark = remark
@@ -275,7 +275,7 @@ class api_collect(BaseHandler):
     @tornado_bz.handleError
     def delete(self, id):
         self.set_header("Content-Type", "application/json")
-        count = pg.delete('collect', where="user_id=%s and message_id=%s" % (self.current_user, id))
+        count = pg.delete('collect', where="user_id='%s' and message_id=%s" % (self.current_user, id))
         if count != 1:
             raise Exception('没有正确的uncollect, uncollect %s 条' % count)
         self.write(json.dumps({'error': '0'}))
@@ -489,7 +489,7 @@ class api_god(tornado_bz.UserInfoHandler):
         data = json.loads(self.request.body)
         name = data['name']
         cat = data.get('cat', '大杂烩')
-        where = {'name': name}
+        where = {'lower(name)': name.lower()}
         gods = pg.select('god', where=where)
         if (gods):
             god = gods[0]

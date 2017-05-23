@@ -54,7 +54,7 @@ class message(BaseModel):
     created_at = DateTimeField()  # 在对应社交帐号真实的生成时间
     content = BinaryJSONField(null=True)  # 带结构的内容github
     text = TextField(null=True)  # 文本内容
-    # title = TextField(null=True)  # tumblr text blog 的 title
+    title = TextField(null=True)  # tumblr text blog 的 title
     extended_entities = BinaryJSONField(null=True)  # 扩展内容,图片什么
     href = TextField(null=True)  # message 的link
     type = TextField(null=True)  # media type

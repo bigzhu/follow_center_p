@@ -30,7 +30,7 @@ def queryUnreadCount(after, user_id=None):
 
 def followedWho(user_id):
     sql = '''
-        select god_id from follow_who where user_id=%s
+        select god_id from follow_who where user_id='%s'
     ''' % user_id
     return pg.query(sql)
 

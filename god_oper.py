@@ -41,7 +41,7 @@ def getTheGodInfoByName(god_name, user_id):
     >>> getTheGodInfoByName('VueComponents', '1')
     <Storage...>
     '''
-    result = pg.select('god', what='id', where={'name': god_name})
+    result = pg.select('god', what='id', where={'lower(name)': god_name.lower()})
     if result:
         god_id = result[0].id
         return getTheGodInfo(god_id, user_id)

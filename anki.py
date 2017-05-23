@@ -45,7 +45,7 @@ def login(username, password):
 
 def getMidAndCsrfTokenHolder(user_id, reset_cookie=False):
     sql = '''
-    select * from anki where user_id=%s
+    select * from anki where user_id='%s'
     ''' % user_id
     datas = pg.query(sql)
     if(len(datas) == 0):
@@ -55,7 +55,7 @@ def getMidAndCsrfTokenHolder(user_id, reset_cookie=False):
         return data.mid, data.csrf_token, data.cookie
     mid, csrf_token, cookie = getMidAndCsrfToken(data.user_name, data.password)
     sql = '''
-    update anki set mid='%s', csrf_token='%s', cookie='%s' where user_id=%s
+    update anki set mid='%s', csrf_token='%s', cookie='%s' where user_id='%s'
     ''' % (mid, csrf_token, cookie, user_id)
     pg.query(sql)
     return mid, csrf_token, cookie
