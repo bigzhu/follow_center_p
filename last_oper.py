@@ -9,6 +9,7 @@ import db_bz
 def getLast(user_id):
     '''
     >>> getLast('1')
+    <Storage...>
     '''
     if user_id is None:
         return

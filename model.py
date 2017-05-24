@@ -16,8 +16,8 @@ except ImportError:
     print 'sudo pip install peewee'
     exit(1)
 
-import db_conf
-conf = db_conf.getDBConf()
+from db_bz import getDBConf
+conf = getDBConf()
 
 
 psql_db = PostgresqlExtDatabase(conf.db_name, user=conf.user, password=conf.password, host=conf.host, register_hstore=False)

@@ -5,8 +5,8 @@ import sys
 
 # Drop all tables from a given database
 
-import db_conf
-conf = db_conf.getDBConf()
+from db_bz import getDBConf
+conf = getDBConf()
 
 
 def main():
