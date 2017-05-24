@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from pg import pg
+from db_bz import pg
 import json
 
 

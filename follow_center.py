@@ -18,7 +18,7 @@ from tornado_bz import BaseHandler
 # from webpy_db import SQLLiteral
 
 import oper
-from pg import pg
+from db_bz import pg
 import filter_bz
 import public_db
 import last_oper
@@ -617,7 +617,7 @@ class api_facebook(web_bz.facebook):
         web_bz.facebook.initialize(self)
         self.settings["facebook_api_key"] = '1181207665262692'
         self.settings["facebook_secret"] = 'c0478bd3f100528989ce90ba5c1e8713'
-        self.settings["facebook_redirect_uri"] = 'http://follow.center/api_facebook'
+        self.settings["facebook_redirect_uri"] = 'https://follow.center/api_facebook'
 
 
 class api_qq(web_bz.qq):

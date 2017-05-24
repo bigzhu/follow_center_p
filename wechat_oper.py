@@ -5,7 +5,7 @@ import public_bz
 import wechat_bz
 import public_db
 from public_bz import storage
-from pg import pg
+from db_bz import pg
 import oper
 import datetime
 import time_bz

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import db_bz
-from pg import pg
+from db_bz import pg
 
 
 def unFollow(user_id, god_id):

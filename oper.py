@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import db_bz
-from pg import pg
+from db_bz import pg
 import public_db
 import base64
 import datetime
