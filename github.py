@@ -101,7 +101,7 @@ def saveMessage(god_name, github_name, god_id, message):
     m.content = content
     m.text = None
     m.href = None
-    id = db_bz.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='github'" % m.id_str)
+    id = db_bz.insertIfNotExist('message', m, "id_str='%s' and m_type='github'" % m.id_str)
     if id is not None:
         print '%s new github %s' % (m.name, m.id_str)
     return id

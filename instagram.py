@@ -122,7 +122,7 @@ def saveMessage(ins_name, user_name, god_id, message):
         m.extended_entities = json.dumps({'url': message.display_src, 'video_url': video_url})
     else:
         m.type = 'image'
-    id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='instagram'" % m.id_str)
+    id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='instagram'" % m.id_str)
     if id is not None:
         print '%s new instagram message %s' % (m.name, m.id_str)
     # 肯定会有一条重复

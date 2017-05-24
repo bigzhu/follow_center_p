@@ -133,7 +133,7 @@ def saveMessage(god_name, facebook_name, god_id, message):
     m.extended_entities = json.dumps({'pictrue': message.get('full_picture'), 'source': message.get('source')})
     m.type = message.get('type')
     m.href = message.get('link')
-    id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='facebook'" % m.id_str)
+    id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='facebook'" % m.id_str)
     if id is not None:
         print '%s new facebook message %s' % (m.name, m.id_str)
     return id
@@ -155,10 +155,9 @@ if __name__ == '__main__':
         loop(god_name)
         exit(0)
     while True:
-        loop()
-        # try:
-        #     loop()
-        # except Exception as e:
-        #     print e
+        try:
+            loop()
+        except requests.exceptions.ConnectionError as e:
+            print e
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)

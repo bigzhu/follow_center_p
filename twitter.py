@@ -140,7 +140,7 @@ def saveMessage(god_name, twitter_name, god_id, tweet):
         m.extended_entities = json.dumps(tweet.extended_entities)
         m.type = tweet.extended_entities['media'][0]['type']
     m.href = 'https://twitter.com/' + m.name + '/status/' + m.id_str
-    id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='twitter'" % tweet.id_str)
+    id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='twitter'" % tweet.id_str)
     if id is not None:
         print '%s new twitter %s' % (m.name, m.id_str)
     return id

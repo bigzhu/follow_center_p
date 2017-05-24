@@ -15,7 +15,7 @@ def block(user_id, god_id, make_sure=True):
     '''
     屏蔽某人
     '''
-    id = db_bz.insertIfNotExist(pg, 'block', {'user_id': user_id, 'god_id': god_id}, "user_id='%s' and god_id=%s" % (user_id, god_id))
+    id = db_bz.insertIfNotExist('block', {'user_id': user_id, 'god_id': god_id}, "user_id='%s' and god_id=%s" % (user_id, god_id))
     if id is None and make_sure:
         raise Exception('没有正确的Block, 似乎已经Block过了呢')
 

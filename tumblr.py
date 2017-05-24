@@ -92,7 +92,7 @@ def saveMessage(god_name, twitter_name, god_id, blog):
         m.extended_entities = json.dumps({'video_url': blog.get('video_url')})
     m.content = None
 
-    id = pg.insertIfNotExist(pg, 'message', m, "id_str='%s' and m_type='tumblr' " % m.id_str)
+    id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='tumblr' " % m.id_str)
     if id is None:
         pass
     else:
@@ -126,11 +126,11 @@ def main(god, wait):
     god_id = god.id
     tumblr_user = getTumblrUser(god_name, tumblr_name, False)
 
-    if tumblr_user['updated'] == god.tumblr['sync_key']:
+    if tumblr_user['updated'] == god.tumblr.get('sync_key'):
         pass
     else:
         # 只取最新的20条来保存
-        blogs = callGetMeidaApi(god_name=tumblr_name, limit=20)['response']['posts']
+        blogs = callGetMeidaApi(god_name=tumblr_name, limit=200)['response']['posts']
         for message in blogs:
             saveMessage(god_name, tumblr_name, god_id, message)
         # oper.noMessageTooLong(M_TYPE, tumblr_name)

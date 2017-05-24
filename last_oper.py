@@ -29,7 +29,7 @@ def saveLast(last_time, user_id):
     '''
     create by bigzhu at 15/08/16 16:22:39 保存最后一条的message
     '''
-    id = db_bz.insertIfNotExist(pg, 'last', {'user_id': user_id, 'last_time': last_time}, "user_id='%s'" % user_id)
+    id = db_bz.insertIfNotExist('last', {'user_id': user_id, 'last_time': last_time}, "user_id='%s'" % user_id)
     if id is None:
         count = pg.update('last', where="last_time< $last_time  and user_id=$user_id", last_time=last_time, vars=locals())
         return count

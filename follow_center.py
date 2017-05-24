@@ -83,7 +83,7 @@ class api_anki(tornado_bz.UserInfoHandler):
     def get(self):
         self.set_header("Content-Type", "application/json")
         sql = 'select user_name, password from anki where user_id=$user_id'
-        datas = self.pg.query(sql, vars={'user_id': self.current_user})
+        datas = pg.query(sql, vars={'user_id': self.current_user})
         if datas:
             data = datas[0]
         else:
@@ -129,7 +129,7 @@ class api_block(tornado_bz.UserInfoHandler):
 
         if count:  # 只查总数
             sql = ''' select count(id) from block where user_id='%s' ''' % user_id
-            self.data.count = self.pg.query(sql)[0].count
+            self.data.count = pg.query(sql)[0].count
 
         self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))
 
@@ -202,7 +202,7 @@ class api_registered(BaseHandler):
         sql = '''
             select count(id) as count from oauth_info
         '''
-        datas = self.pg.db.query(sql)
+        datas = pg.db.query(sql)
         registered_count = datas[0].count
         self.write(json.dumps({'error': '0', 'registered_count': registered_count}, cls=public_bz.ExtEncoder))
 
@@ -224,7 +224,7 @@ class api_remark(BaseHandler):
         values.user_id = self.current_user
         values.remark = remark
         values.god_id = god_id
-        db_bz.insertOrUpdate(self.pg, 'remark', values, where)
+        db_bz.insertOrUpdate(pg, 'remark', values, where)
         self.write(json.dumps({'error': '0'}))
 
 
@@ -253,7 +253,7 @@ class api_cat(BaseHandler):
             select count(id) count,cat from (%s) s group by cat order by count desc,cat
         ''' % sql
         print sql
-        cats = list(self.pg.db.query(sql))
+        cats = list(pg.db.query(sql))
         self.write(json.dumps({'error': '0', 'cats': cats}, cls=public_bz.ExtEncoder))
 
 
@@ -425,7 +425,7 @@ class api_apply_del(tornado_bz.UserInfoHandler):
         sql = '''
         select * from apply_del where stat is null order by created_date desc
         '''
-        apply_dels = self.pg.query(sql)
+        apply_dels = pg.query(sql)
         self.write(json.dumps({'error': '0', 'apply_dels': apply_dels}, cls=public_bz.ExtEncoder))
 
     @tornado_bz.handleError
@@ -445,7 +445,7 @@ class api_apply_del(tornado_bz.UserInfoHandler):
         #     raise Exception("修改失败 type:%s social_name: %s count: %s" % (type, social_name, count))
 
         sql = ''' update apply_del set stat=1 where social_name='%s' and type='%s' and stat is null''' % (social_name, type)
-        count = self.pg.query(sql)
+        count = pg.query(sql)
         if count != 1:
             raise Exception("修改失败" + count)
 
@@ -532,7 +532,7 @@ class api_god(tornado_bz.UserInfoHandler):
             data[type] = json.dumps(data[type])
 
         where = " name='%s' " % name
-        count = self.pg.update("god", where=where, **data)
+        count = pg.update("god", where=where, **data)
         if count != 1:
             raise Exception("修改失败" + count)
 
