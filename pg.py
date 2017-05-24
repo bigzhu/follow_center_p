@@ -1,11 +1,10 @@
 # !/usr/bin/env python
 # encoding=utf-8
-from db_bz import PG
-import db_conf
+import db_bz
 
 
-conf = db_conf.getDBConf()
-pg = PG(**conf)
+conf = db_bz.getDBConf()
+pg = db_bz.PG(**conf)
 
 if __name__ == '__main__':
     import doctest
