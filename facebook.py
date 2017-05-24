@@ -12,7 +12,7 @@ import time
 import requests
 import god_oper
 requests.adapters.DEFAULT_RETRIES = 5
-import pg
+from pg import pg
 import json
 import public_bz
 import social_sync

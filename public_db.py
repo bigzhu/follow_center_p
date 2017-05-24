@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import pg
+from pg import pg
 import user_bz
 import filter_bz
 import add_bz

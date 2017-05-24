@@ -8,7 +8,7 @@ sys.path.append("../lib_p_bz")
 
 import datetime
 import requests
-import pg
+from pg import pg
 import sys
 from datetime import timedelta
 import db_bz

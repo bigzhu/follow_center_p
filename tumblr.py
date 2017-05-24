@@ -9,7 +9,7 @@ sys.path.append("../lib_p_bz")
 import datetime
 import requests
 import sys
-import pg
+from pg import pg
 import json
 import social_sync
 import time_bz

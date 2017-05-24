@@ -18,7 +18,7 @@ from tornado_bz import BaseHandler
 # from webpy_db import SQLLiteral
 
 import oper
-import pg
+from pg import pg
 import filter_bz
 import public_db
 import last_oper

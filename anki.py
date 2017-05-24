@@ -8,7 +8,7 @@ import json
 import oper_bz
 import re
 from bs4 import BeautifulSoup
-import pg
+from pg import pg
 DECK = 'Default'
 URL = 'https://ankiweb.net/account/login'
 client = None

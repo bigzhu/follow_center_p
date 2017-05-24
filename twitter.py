@@ -15,7 +15,7 @@ import time
 import god_oper
 from datetime import timedelta
 import tweepy
-import pg
+from pg import pg
 import json
 import public_bz
 import social_sync

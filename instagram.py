@@ -17,7 +17,7 @@ import social_sync
 requests.adapters.DEFAULT_RETRIES = 5
 import time
 from public_bz import storage
-import pg
+from pg import pg
 import json
 import public_bz
 from requests.exceptions import ConnectionError
