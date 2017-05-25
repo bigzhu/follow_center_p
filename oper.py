@@ -13,7 +13,7 @@ def anki_save(message_id, user_id):
     '''
     create by bigzhu at 17/01/13 20:20:25 是否发到了anki
     '''
-    id = db_bz.insertIfNotExist('anki_save', {'user_id': user_id, 'message_id': message_id}, "user_id='%s' and message_id=%s" % (user_id, message_id))
+    id = pg.insertIfNotExist('anki_save', {'user_id': user_id, 'message_id': message_id}, "user_id='%s' and message_id=%s" % (user_id, message_id))
     return id
 
 
@@ -145,14 +145,6 @@ def getGodInfo(god_name, user_id=None, is_public=None):
 def getUnreadCount(user_id):
     after = last_oper.getLastTime(user_id)
     return public_db.queryUnreadCount(after, user_id)
-
-
-def collect(message_id, user_id):
-    '''
-    create by bigzhu at 16/05/20 14:21:02 加入收藏
-    '''
-    id = db_bz.insertIfNotExist('collect', {'user_id': user_id, 'message_id': message_id}, "user_id='%s' and message_id=%s" % (user_id, message_id))
-    return id
 
 
 def getMessages(limit=None, current_user=None, god_name=None, offset=None, last_message_id=None):

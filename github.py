@@ -11,7 +11,6 @@ import requests
 from db_bz import pg
 import sys
 from datetime import timedelta
-import db_bz
 from public_bz import storage
 import god_oper
 import json
@@ -101,7 +100,7 @@ def saveMessage(god_name, github_name, god_id, message):
     m.content = content
     m.text = None
     m.href = None
-    id = db_bz.insertIfNotExist('message', m, "id_str='%s' and m_type='github'" % m.id_str)
+    id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='github'" % m.id_str)
     if id is not None:
         print '%s new github %s' % (m.name, m.id_str)
     return id

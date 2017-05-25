@@ -22,6 +22,7 @@ from db_bz import pg
 import filter_bz
 import public_db
 import last_oper
+import collect_oper
 import proxy
 import web_bz
 from public_bz import storage
@@ -268,7 +269,7 @@ class api_collect(BaseHandler):
         self.set_header("Content-Type", "application/json")
         parm = json.loads(self.request.body)
         message_id = parm['message_id']
-        oper.collect(message_id, self.current_user)
+        collect_oper.collect(message_id, self.current_user)
         self.write(json.dumps({'error': '0'}))
 
     @tornado_bz.mustLoginApi
