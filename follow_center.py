@@ -368,7 +368,8 @@ class api_my_gods(tornado_bz.UserInfoHandler):
         parm = json.loads(parm)
         cat = parm.get('cat')
         blocked = parm.get('blocked')
-        gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
+        gods = god_oper.getMyGods(self.current_user, 5)
+        # gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 

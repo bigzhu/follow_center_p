@@ -2,6 +2,49 @@
 # -*- coding: utf-8 -*-
 from db_bz import pg
 import json
+import filter_bz
+import add_bz
+
+
+def filterBeforeCreatedDate(sql):
+    where = " created_date < $before "
+    return filter_bz.filter(sql, where)
+
+
+def filterFollowed(sql):
+    '''
+    must followed
+    '''
+    where = " followed=1 "
+    return filter_bz.filter(sql, where)
+
+
+def getMyGods(user_id, limit, before=None):
+    '''
+    get my gods
+    >>> getMyGods('1', 10)
+    <utils.IterBetter instance at ...>
+    '''
+    sql = '''
+    select  g.id as god_id,
+            g.stat_date as u_stat_date,
+    * from god g
+    '''
+    sql = filter_bz.filterHaveSocialGod(sql)
+    sql = add_bz.addGodFollowedCount(sql)
+    sql = add_bz.godAdminRemark(sql)
+    sql = addGodfolloweInfoByUserId(sql)
+    sql = filterFollowed(sql)
+    sql = filter_bz.godNotBlock(sql, user_id)
+    sql = add_bz.godUserRemark(sql, user_id)
+
+    if before:
+        sql = filterBeforeCreatedDate(sql)
+
+    sql += "  order by created_date desc "
+    if limit:
+        sql += ' limit $limit '
+    return pg.query(sql, vars=locals())
 
 
 def delNoName(type, god_name):
