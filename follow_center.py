@@ -366,11 +366,12 @@ class api_my_gods(tornado_bz.UserInfoHandler):
     def get(self, parm):
         self.set_header("Content-Type", "application/json")
         parm = json.loads(parm)
+        before = parm.get('before')
         cat = parm.get('cat')
         blocked = parm.get('blocked')
-        gods = god_oper.getMyGods(self.current_user, 5)
+        gods = god_oper.getMyGods(self.current_user, 5, before, cat)
         # gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
-        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoderNew))
 
 
 class api_gods(BaseHandler):

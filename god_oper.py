@@ -6,6 +6,11 @@ import filter_bz
 import add_bz
 
 
+def filterCat(sql):
+    where = " cat = $cat "
+    return filter_bz.filter(sql, where)
+
+
 def filterBeforeCreatedDate(sql):
     where = " created_date < $before "
     return filter_bz.filter(sql, where)
@@ -19,7 +24,7 @@ def filterFollowed(sql):
     return filter_bz.filter(sql, where)
 
 
-def getMyGods(user_id, limit, before=None):
+def getMyGods(user_id, limit, before=None, cat=None):
     '''
     get my gods
     >>> getMyGods('1', 10)
@@ -40,6 +45,8 @@ def getMyGods(user_id, limit, before=None):
 
     if before:
         sql = filterBeforeCreatedDate(sql)
+    if cat:
+        sql = filterCat(sql)
 
     sql += "  order by created_date desc "
     if limit:

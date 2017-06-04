@@ -19,15 +19,16 @@ with open('conf/db.ini', 'r') as cfg_file:
     user = config.get('db', 'user')
     password = config.get('db', 'password')
 
-def main ():
+
+def main():
     now_day = time_bz.getYearMonthDay()
     file_name = 'db_bak/%s.%s.dump' % (db_name, now_day)
     command = '''
-    PGPASSWORD="%s" pg_dump -T 'tumblr_blog' -T 'instagram_media' -T 'github_message' -T 'twitter_message' -i -h %s -p %s -U %s -F c -b -v -f %s %s
+    PGPASSWORD="%s" pg_dump -T 'tumblr_blog' -T 'instagram_media' -T 'github_message' -T 'twitter_message' -h %s -p %s -U %s -F c -b -v -f %s %s
     ''' % (password, host, port, user, file_name, db_name)
 
     print command
     os.system(command)
 
 if __name__ == '__main__':
-    pass
+    main()
