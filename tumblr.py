@@ -99,6 +99,25 @@ def saveMessage(god_name, twitter_name, god_id, blog):
         print '%s new tumblr message %s' % (m.name, m.id_str)
 
 
+def getFollowedCount(tumblr_name):
+    '''
+    没成功, 取不到
+    '''
+    params = {'api_key': API_KEY,
+              'blog-identifier': '%s.tumblr.com' % tumblr_name}
+    url = '''http://api.tumblr.com/v2/blog/%s.tumblr.com/followers''' % tumblr_name
+    r = requests.get(url, params=params)
+    print r
+    if r.status_code == 200:
+        try:
+            medias = r.json()
+            return medias
+        except Exception:
+            print 'r=', r
+            print public_bz.getExpInfoAll()
+    print r.status_code
+
+
 def callGetMeidaApi(god_name, offset=0, limit=20):
     params = {'api_key': API_KEY,
               'offset': offset,

@@ -47,6 +47,26 @@ def getVideoUrl(url):
         raise CodeException('getVideoUrl 异常: %s' % r.status_code)
 
 
+def getMutipleImage(code):
+    '''
+    有多图时, 取多图
+    '''
+    url = "https://www.instagram.com/p/%s" % code
+    r = requests.get(url)
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.text)
+        scripts = soup.find_all("script", type="text/javascript")
+        for script in scripts:
+            if '_sharedData' in str(script):
+                content = script.contents[0]
+                content = content.replace('window._sharedData =', '')
+                content = content.replace(';', '')
+                content = json.loads(content)
+                edges = content['entry_data']['PostPage'][0]['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
+                return edges
+    return None
+
+
 def main(god):
     '''
     create by bigzhu at 16/06/12 16:19:09 api disabled
@@ -116,7 +136,15 @@ def saveMessage(ins_name, user_name, god_id, message):
         m.text = None
     m.extended_entities = json.dumps({'url': message.display_src})
     m.href = 'https://www.instagram.com/p/%s/' % message.code
-    if message.is_video:
+    if message.__typename == 'GraphSidecar':  # mutiple image
+        edges = getMutipleImage(message.code)
+        images = []
+        for edge in edges:
+            url = edge['node']['display_url']
+            images.append({'url': url})
+        m.extended_entities = json.dumps(images)
+        m.type = 'images'
+    elif message.is_video:
         m.type = 'video'
         video_url = getVideoUrl(m.href)
         m.extended_entities = json.dumps({'url': message.display_src, 'video_url': video_url})

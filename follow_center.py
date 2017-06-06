@@ -13,7 +13,6 @@ import time_bz
 import tornado.ioloop
 import tornado.web
 import tornado_bz
-from tornado_bz import UserInfoHandler
 from tornado_bz import BaseHandler
 # from webpy_db import SQLLiteral
 
@@ -46,7 +45,7 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     access_token_secret = config.get('secret', 'access_token_secret')
 
 
-class api_login_anki(tornado_bz.UserInfoHandler):
+class api_login_anki(tornado_bz.BaseHandler):
 
     '''
     '''
@@ -64,7 +63,7 @@ class api_login_anki(tornado_bz.UserInfoHandler):
         self.write(json.dumps(self.data))
 
 
-class api_anki(tornado_bz.UserInfoHandler):
+class api_anki(tornado_bz.BaseHandler):
 
     '''
     '''
@@ -115,7 +114,7 @@ class api_public_gods(BaseHandler):
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 
-class api_block(tornado_bz.UserInfoHandler):
+class api_block(tornado_bz.BaseHandler):
 
     '''
     '''
@@ -330,7 +329,7 @@ class api_logout(BaseHandler):
         self.redirect("/")
 
 
-class api_not_my_gods(tornado_bz.UserInfoHandler):
+class api_not_my_gods(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 16/03/24 23:19:19
@@ -356,7 +355,7 @@ class api_not_my_gods(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 
-class api_my_gods(tornado_bz.UserInfoHandler):
+class api_my_gods(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 16/03/24 14:22:54
@@ -415,7 +414,7 @@ class api_follow(tornado_bz.BaseHandler):
         self.write(json.dumps({'error': '0'}))
 
 
-class api_apply_del(tornado_bz.UserInfoHandler):
+class api_apply_del(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 16/08/22 15:07:42 处理apply_del
@@ -464,7 +463,7 @@ class api_apply_del(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0'}))
 
 
-class api_god(tornado_bz.UserInfoHandler):
+class api_god(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 16/03/09 11:00:52 要跟踪的人
@@ -632,7 +631,7 @@ class api_qq(web_bz.qq):
         self.settings["qq_redirect_uri"] = 'https://follow.center/api_qq'
 
 
-class main(UserInfoHandler):
+class main(BaseHandler):
 
     '''
     首页
@@ -645,7 +644,7 @@ class main(UserInfoHandler):
         self.redirect('/app/')
 
 
-class api_last(tornado_bz.UserInfoHandler):
+class api_last(tornado_bz.BaseHandler):
 
     def put(self):
         self.set_header("Content-Type", "application/json")
@@ -666,7 +665,7 @@ class api_last(tornado_bz.UserInfoHandler):
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 
-class messages_app(tornado_bz.UserInfoHandler):
+class messages_app(tornado_bz.BaseHandler):
 
     '''
     '''
@@ -675,7 +674,7 @@ class messages_app(tornado_bz.UserInfoHandler):
         self.render(tornado_bz.getTName(self))
 
 
-class api_message(tornado_bz.UserInfoHandler):
+class api_message(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 16/04/24 11:31:30 操作某个特定message
@@ -697,7 +696,7 @@ class api_message(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0', 'message': message}, cls=public_bz.ExtEncoder))
 
 
-class api_new(tornado_bz.UserInfoHandler):
+class api_new(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/08/17 11:12:24 查看我订阅了的message，要定位到上一次看的那条
@@ -747,7 +746,7 @@ class api_new(tornado_bz.UserInfoHandler):
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 
-class api_old(tornado_bz.UserInfoHandler):
+class api_old(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/08/17 11:06:40 用来查all的更多,不需要定位
@@ -768,7 +767,7 @@ class api_old(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0', 'messages': messages}, cls=public_bz.ExtEncoder))
 
 
-class api_big_gods(tornado_bz.UserInfoHandler):
+class api_big_gods(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/08/28 17:04:40 随机推荐5个没关注的人
@@ -780,7 +779,7 @@ class api_big_gods(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
 
 
-class api_god_info(tornado_bz.UserInfoHandler):
+class api_god_info(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/11/27 10:29:35 查出这个god的信息
@@ -796,7 +795,7 @@ class api_god_info(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
 
 
-class user_info(tornado_bz.UserInfoHandler):
+class user_info(tornado_bz.BaseHandler):
 
     def post(self):
         self.set_header("Content-Type", "application/json")
@@ -809,7 +808,7 @@ class user_info(tornado_bz.UserInfoHandler):
         self.write(json.dumps({'error': '0', 'user_info': god_info}, cls=public_bz.ExtEncoder))
 
 
-class Changelog(tornado_bz.UserInfoHandler):
+class Changelog(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/07/19 22:15:13
@@ -819,7 +818,7 @@ class Changelog(tornado_bz.UserInfoHandler):
         self.render(tornado_bz.getTName(self))
 
 
-class message(tornado_bz.UserInfoHandler):
+class message(tornado_bz.BaseHandler):
 
     '''
     某条信息
@@ -833,7 +832,7 @@ class message(tornado_bz.UserInfoHandler):
         self.render(tornado_bz.getTName(self, "main"), messages=messages)
 
 
-class users(tornado_bz.UserInfoHandler):
+class users(tornado_bz.BaseHandler):
 
     '''
     create by bigzhu at 15/07/12 23:43:54 显示所有的大神, 关联twitter
