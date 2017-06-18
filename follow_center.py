@@ -367,7 +367,7 @@ class api_my_gods(tornado_bz.BaseHandler):
         parm = json.loads(parm)
         before = parm.get('before')
         cat = parm.get('cat')
-        blocked = parm.get('blocked')
+        # blocked = parm.get('blocked')
         gods = god_oper.getMyGods(self.current_user, 5, before, cat)
         # gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoderNew))
@@ -555,20 +555,6 @@ class signup(web_bz.signup):
 
 class ProxyHandler(proxy.ProxyHandler):
     pass
-
-
-class api_sp(proxy.ProxyHandler):
-
-    '''
-    create by bigzhu at 15/08/05 22:52:44 加密方式传递url
-    '''
-
-    def get(self, secret):
-        url = oper.decodeUrl(secret)
-        print ('proxy ', url)
-        if self.settings["disable_sp"]:
-            url = 'http://cdn.v2ex.co/avatar/43dd/49b4/1066_large.png?m=1430489276'
-        return super(api_sp, self).get(url)
 
 
 class api_github(web_bz.github):
