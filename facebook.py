@@ -132,6 +132,9 @@ def saveMessage(god_name, facebook_name, god_id, message):
     m.text = message.get('message')
     m.extended_entities = json.dumps({'pictrue': message.get('full_picture'), 'source': message.get('source')})
     m.type = message.get('type')
+    if m.type == 'video':
+        print('facebook 不再同步 video, 有时效, 无法一直看')
+        return
     m.href = message.get('link')
     id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='facebook'" % m.id_str)
     if id is not None:
