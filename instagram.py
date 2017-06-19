@@ -98,7 +98,7 @@ def main(god):
     elif r.status_code == 304:
         pass
     elif r.status_code == 404:
-        god_oper.delNoName('facebook', god_name)
+        god_oper.delNoName(M_TYPE, god_name)
     else:
         print r.status_code
     # oper.noMessageTooLong(M_TYPE, user.instagram)
