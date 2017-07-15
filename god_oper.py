@@ -48,7 +48,7 @@ def getMyGods(user_id, limit, before=None, cat=None):
     if cat:
         sql = filterCat(sql)
 
-    sql += "  order by created_date desc "
+    sql += "  order by followed_at desc "
     if limit:
         sql += ' limit $limit '
     return pg.query(sql, vars=locals())
