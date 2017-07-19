@@ -41,6 +41,9 @@ def getGithubUser(github_name, god_name):
     except requests.exceptions.ConnectionError:
         print public_bz.getExpInfoAll()
         return
+    except ValueError:
+        print public_bz.getExpInfoAll()
+        return
 
 
 def main(god, wait):
