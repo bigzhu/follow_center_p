@@ -29,6 +29,66 @@ import errno
 M_TYPE = 'instagram'
 
 
+def saveGraphqlMessage(ins_name, user_name, god_id, message):
+    '''
+    用 Graphql 取到的数据
+    '''
+    message = storage(message)
+
+    m = public_bz.storage()
+    m.god_name = user_name
+    m.name = ins_name
+    m.m_type = 'instagram'
+    m.id_str = message.id
+    m.created_at = time_bz.timestampToDateTime(message.taken_at_timestamp)
+
+    if message.get('edge_media_to_caption').get('edges'):
+        m.text = message.get('edge_media_to_caption').get('edges')[0].get('node').get('text')
+    else:
+        m.text = None
+    m.extended_entities = json.dumps({'url': message.display_url})
+
+    m.href = 'https://www.instagram.com/p/%s/' % message.shortcode
+    if message.__typename == 'GraphSidecar':  # mutiple image
+        edges = getMutipleImage(message.shortcode)
+        images = []
+        for edge in edges:
+            url = edge['node']['display_url']
+            images.append({'url': url})
+        m.extended_entities = json.dumps(images)
+        m.type = 'images'
+    elif message.is_video:
+        m.type = 'video'
+        video_url = getVideoUrl(m.href)
+        m.extended_entities = json.dumps({'url': message.display_url, 'video_url': video_url})
+    else:
+        m.type = 'image'
+    id = pg.insertIfNotExist('message', m, "id_str='%s' and m_type='instagram'" % m.id_str)
+    if id is not None:
+        print '%s new instagram message %s' % (m.name, m.id_str)
+    # 肯定会有一条重复
+    # else:
+    #    print '%s 重复记录 %s' % (m.user_name, m.id_str)
+    return id
+
+
+def getAllMedia(god_name):
+    god = social_sync.getSocialGods('instagram', god_name)[0]
+    god_name = god.name
+    god_id = god.id
+    ins_name = god.instagram['name']
+    ins_id = god.instagram['id']
+    url = 'https://www.instagram.com/graphql/query/?query_id=17888483320059182&variables={"id":"%s","first":1000}' % ins_id
+    r = requests.get(url)
+    if r.status_code == 200:
+        nodes = r.json()['data']['user']['edge_owner_to_timeline_media']['edges']
+        for node in nodes:
+            node = node['node']
+            saveGraphqlMessage(ins_name, god_name, god_id, node)
+    else:
+        print r.status_code
+
+
 class CodeException(Exception):
     pass
 
@@ -67,7 +127,7 @@ def getMutipleImage(code):
     return None
 
 
-def main(god):
+def sync(god):
     '''
     create by bigzhu at 16/06/12 16:19:09 api disabled
     '''
@@ -130,7 +190,6 @@ def saveMessage(ins_name, user_name, god_id, message):
     m.m_type = 'instagram'
     m.id_str = message.id
     m.created_at = time_bz.timestampToDateTime(message.date)
-    # m.content = json.dumps(message.comments, cls=public_bz.ExtEncoder)
     if message.get('caption'):
         m.text = message.caption
     else:
@@ -163,10 +222,15 @@ def saveMessage(ins_name, user_name, god_id, message):
 def loop(god_name=None):
     gods = social_sync.getSocialGods('instagram', god_name)
     for god in gods:
-        main(god)
+        sync(god)
 
 
-if __name__ == '__main__':
+def main():
+    if len(sys.argv) == 3:
+        god_name = (sys.argv[1])
+        if sys.argv[2] == 'all':
+            getAllMedia(god_name)
+        exit(0)
     if len(sys.argv) == 2:
         user_name = (sys.argv[1])
         loop(user_name)
@@ -188,3 +252,9 @@ if __name__ == '__main__':
             print e
         print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         time.sleep(1200)
+
+
+if __name__ == '__main__':
+    main()
+    # import doctest
+    # doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
