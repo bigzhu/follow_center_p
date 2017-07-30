@@ -247,12 +247,12 @@ class api_cat(BaseHandler):
             sql = filter_bz.filterMyGod(sql, user_id)
         else:
             sql = filter_bz.filterPublicGod(sql)
-            sql = filter_bz.filter18God(sql)
+            if user_id is None:
+                sql = filter_bz.filter18God(sql)
 
         sql = '''
             select count(id) count,cat from (%s) s group by cat order by count desc,cat
         ''' % sql
-        print sql
         cats = list(pg.db.query(sql))
         self.write(json.dumps({'error': '0', 'cats': cats}, cls=public_bz.ExtEncoder))
 
@@ -367,8 +367,9 @@ class api_my_gods(tornado_bz.BaseHandler):
         parm = json.loads(parm)
         before = parm.get('before')
         cat = parm.get('cat')
+        limit = parm.get('limit')
         # blocked = parm.get('blocked')
-        gods = god_oper.getMyGods(self.current_user, 5, before, cat)
+        gods = god_oper.getMyGods(self.current_user, limit, before, cat)
         # gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
         self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoderNew))
 

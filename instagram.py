@@ -112,6 +112,7 @@ def saveUser(god_name, ins_name, user, sync_key):
     social_user.count = user['followed_by']['count']
     social_user.avatar = user['profile_pic_url']
     social_user.description = user['biography']
+    social_user.id = user['id']
     social_user.sync_key = sync_key
     pg.update('god', where={'name': god_name}, instagram=json.dumps(social_user))
     return social_user
