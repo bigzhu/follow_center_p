@@ -45,6 +45,18 @@ with open('conf/twitter.ini', 'r') as cfg_file:
     access_token_secret = config.get('secret', 'access_token_secret')
 
 
+class api_sp(proxy.ProxyHandler):
+
+    '''
+    create by bigzhu at 15/08/05 22:52:44 加密方式传递url
+    '''
+
+    def get(self, secret):
+        url = oper.decodeUrl(secret)
+        print ('proxy ', url)
+        return super(api_sp, self).get(url)
+
+
 class api_login_anki(tornado_bz.BaseHandler):
 
     '''
