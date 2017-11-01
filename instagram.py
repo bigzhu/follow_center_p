@@ -145,6 +145,8 @@ def sync(god):
         scripts = soup.find_all("script", type="text/javascript")
         for script in scripts:
             if '_sharedData' in str(script):
+                if script.contents is None:
+                    return
                 content = script.contents[0]
                 content = content.replace('window._sharedData =', '')
                 content = content.replace(';', '')
@@ -198,6 +200,8 @@ def saveMessage(ins_name, user_name, god_id, message):
     m.href = 'https://www.instagram.com/p/%s/' % message.code
     if message.__typename == 'GraphSidecar':  # mutiple image
         edges = getMutipleImage(message.code)
+        if not edges:
+            return
         images = []
         for edge in edges:
             url = edge['node']['display_url']

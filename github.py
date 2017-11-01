@@ -119,9 +119,12 @@ def saveUser(god_name, github_name, user, sync_key=None):
         print e
         print user
     social_user.type = 'github'
-    social_user.count = user['followers']
-    social_user.avatar = user['avatar_url']
-    social_user.description = user['bio']
+    if user.get('followers') is None:
+        social_user.count = -1
+    else:
+        social_user.count = user['followers']
+    social_user.avatar = user.get('avatar_url', '')
+    social_user.description = user.get('bio')
     if sync_key is not None:
         social_user.sync_key = sync_key
 

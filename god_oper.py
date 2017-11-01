@@ -108,6 +108,7 @@ def getTheGodInfo(god_id, user_id):
     select id as god_id, * from god where id=$god_id
     '''
     sql = addGodfolloweInfoByUserId(sql)
+    sql = add_bz.godAdminRemark(sql)
     sql = add_bz.godUserRemark(sql, user_id)
     result = pg.query(sql, vars=locals())
     if (not result):

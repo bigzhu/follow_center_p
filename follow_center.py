@@ -558,8 +558,17 @@ class api_get_user_info(web_bz.get_user_info):
     pass
 
 
-class api_login(web_bz.api_login):
-    pass
+class api_login(tornado_bz.BaseHandler):
+
+    @tornado_bz.handleError
+    def post(self):
+        self.set_header("Content-Type", "application/json")
+        login_info = json.loads(self.request.body)
+        user_name = login_info.get("user_name")
+        password = login_info.get("password")
+        user_info = pg.select('oauth_info', where="name=$user_name", vars=locals())
+        self.set_secure_cookie("user_id", str(user_info[0].id))
+        self.write(json.dumps({'error': '0'}))
 
 
 class signup(web_bz.signup):
