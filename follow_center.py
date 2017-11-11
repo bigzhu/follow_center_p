@@ -243,19 +243,18 @@ class api_remark(BaseHandler):
 class api_cat(BaseHandler):
 
     @tornado_bz.handleError
-    def get(self, parm):
+    def get(self):
         self.set_header("Content-Type", "application/json")
 
-        parm = json.loads(parm)
-        is_my = parm.get('is_my', None)
-        # is_public = parm.get('is_public', None)
+        is_my = self.get_argument('is_my', 0)
+        print {k: self.get_argument(k) for k in self.request.arguments}
         user_id = self.current_user
         sql = '''
         select * from god
         '''
 
         sql = filter_bz.filterHaveSocialGod(sql)
-        if is_my:
+        if is_my == '1':
             sql = filter_bz.filterMyGod(sql, user_id)
         else:
             sql = filter_bz.filterPublicGod(sql)
