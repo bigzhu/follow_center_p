@@ -31,12 +31,9 @@ import anki
 import follow_who_oper
 import block_oper
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 OK = '0'
-import ConfigParser
-config = ConfigParser.ConfigParser()
+import configparser
+config = configparser.ConfigParser()
 with open('conf/twitter.ini', 'r') as cfg_file:
     config.readfp(cfg_file)
     consumer_key = config.get('secret', 'consumer_key')
@@ -247,7 +244,6 @@ class api_cat(BaseHandler):
         self.set_header("Content-Type", "application/json")
 
         is_my = self.get_argument('is_my', 0)
-        print {k: self.get_argument(k) for k in self.request.arguments}
         user_id = self.current_user
         sql = '''
         select * from god
@@ -748,8 +744,7 @@ class api_new(tornado_bz.BaseHandler):
 
         endtime = datetime.datetime.now()
 
-        print 'api_new cost'
-        print (endtime - starttime).seconds
+        print((endtime - starttime).seconds)
         self.write(json.dumps(data, cls=public_bz.ExtEncoder))
 
 

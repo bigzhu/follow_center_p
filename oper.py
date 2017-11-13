@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import db_bz
 from db_bz import pg
 import public_db
 import base64
@@ -26,7 +25,7 @@ def noMessageTooLong(m_type, name):
     if last_message:
         last_message_time = last_message[0].created_at
         if (datetime.datetime.now() - last_message_time).days >= 180:
-            print 'no message too long'
+            print('no message too long')
             public_db.delNoName(m_type, name)
 
 
@@ -175,5 +174,5 @@ def decodeUrl(url):
     return base64.decodestring(base64.decodestring(url))
 
 if __name__ == '__main__':
-    print getMessages(limit=1, god_name='bigzhu')
+    print(getMessages(limit=1, god_name='bigzhu'))
     pass

@@ -63,7 +63,7 @@ def delNoName(type, god_name):
     '''
     values = {type: json.dumps({'name': ''})}
     count = pg.update('god', where={'name': god_name}, **values)
-    print 'del %s %s' % (type, god_name)
+    print('del %s %s' % (type, god_name))
     return count
 
 

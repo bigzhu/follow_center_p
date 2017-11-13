@@ -23,7 +23,6 @@ def queryUnreadCount(after, user_id=None):
     sql = filter_bz.filterFollowedMessages(sql, user_id)
     sql = filter_bz.filterAfterMessages(sql, after)
     sql = wrapCount(sql)
-    # print sql
 
     return pg.query(sql)[0].count
 
@@ -75,7 +74,6 @@ def getCollectMessages(user_id):
     ''' % sql
     # order by
     sql += ' order by collect_date desc '
-    print sql
     return pg.query(sql)
 
 
@@ -119,7 +117,6 @@ def getNewMessages(user_id=None, after=None, limit=None, god_name=None, search_k
     if limit is None and after is None:
         limit = 99
     sql += ' limit %s ' % limit
-    print sql
     return pg.query(sql)
 
 
@@ -155,7 +152,6 @@ def getOldMessages(before, user_id=None, limit=None, god_name=None, search_key=N
     if limit is None:
         limit = 10
     sql += ' limit %s ' % limit
-    print sql
     return pg.query(sql)
 
 
@@ -223,7 +219,6 @@ def getGodInfoFollow(user_id=None, god_name=None, recommand=False, is_my=None, c
     sql += "  order by created_date desc "
     if limit:
         sql += ' limit %s ' % limit
-    # print sql
     return pg.query(sql, vars=locals())
 
 

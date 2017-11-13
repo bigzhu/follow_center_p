@@ -36,7 +36,7 @@ def login(username, password):
     global cookies
     csrf_token = getLoginCsrfToken()
     login_info = {'submitted': '1', 'csrf_token': str(csrf_token), 'username': username, 'password': password}
-    print login_info
+    print(login_info)
     r = client.post(URL, data=login_info, cookies=cookies)
     if 'the password you provided does not match our records' in r.text:
         raise Exception('密码不正确')
