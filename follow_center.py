@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append("../lib_p_bz")
-
 import json
-import public_bz
-import sys
+sys.path.append("../lib_py")
+import json_bz
+
 
 import datetime
 import db_bz
@@ -30,6 +29,7 @@ import god_oper
 import anki
 import follow_who_oper
 import block_oper
+
 
 OK = '0'
 import configparser
@@ -97,7 +97,7 @@ class api_anki(tornado_bz.BaseHandler):
             data = datas[0]
         else:
             data = None
-        self.write(json.dumps({'error': '0', 'anki': data}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'anki': data}, cls=json_bz.ExtEncoder))
 
 
 class api_public_gods(BaseHandler):
@@ -120,7 +120,7 @@ class api_public_gods(BaseHandler):
 
         gods = oper.getGods(self.current_user, cat=cat, is_public=True, limit=limit, before=before)
 
-        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=json_bz.ExtEncoder))
 
 
 class api_block(tornado_bz.BaseHandler):
@@ -140,7 +140,7 @@ class api_block(tornado_bz.BaseHandler):
             sql = ''' select count(id) from block where user_id='%s' ''' % user_id
             self.data.count = pg.query(sql)[0].count
 
-        self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))
+        self.write(json.dumps(self.data, cls=json_bz.ExtEncoder))
 
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
@@ -213,7 +213,7 @@ class api_registered(BaseHandler):
         '''
         datas = pg.db.query(sql)
         registered_count = datas[0].count
-        self.write(json.dumps({'error': '0', 'registered_count': registered_count}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'registered_count': registered_count}, cls=json_bz.ExtEncoder))
 
 
 class api_remark(BaseHandler):
@@ -261,7 +261,7 @@ class api_cat(BaseHandler):
             select count(id) count,cat from (%s) s group by cat order by count desc,cat
         ''' % sql
         cats = list(pg.db.query(sql))
-        self.write(json.dumps({'error': '0', 'cats': cats}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'cats': cats}, cls=json_bz.ExtEncoder))
 
 
 class api_collect(BaseHandler):
@@ -292,7 +292,7 @@ class api_collect(BaseHandler):
     def get(self):
         self.set_header("Content-Type", "application/json")
         messages = public_db.getCollectMessages(user_id=self.current_user)
-        self.write(json.dumps({'error': '0', 'messages': messages}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'messages': messages}, cls=json_bz.ExtEncoder))
 
 
 class api_social(BaseHandler):
@@ -325,7 +325,7 @@ class api_social(BaseHandler):
                 facebook.getFacebookUser(name, name)
             info = god_oper.getTheGodInfoByName(name, self.current_user)[type]
         self.data.info = info
-        self.write(json.dumps(self.data, cls=public_bz.ExtEncoder))
+        self.write(json.dumps(self.data, cls=json_bz.ExtEncoder))
 
 
 class api_logout(BaseHandler):
@@ -359,7 +359,7 @@ class api_not_my_gods(tornado_bz.BaseHandler):
                 gods = oper.getGods(self.current_user, cat=cat, recommand=recommand, is_public=True)
         else:
             gods = oper.getGods(cat=cat, recommand=recommand, is_public=True)
-        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=json_bz.ExtEncoder))
 
 
 class api_my_gods(tornado_bz.BaseHandler):
@@ -378,7 +378,7 @@ class api_my_gods(tornado_bz.BaseHandler):
         # blocked = parm.get('blocked')
         gods = god_oper.getMyGods(self.current_user, limit, before, cat)
         # gods = oper.getGods(self.current_user, is_my=True, cat=cat, blocked=blocked)
-        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoderNew))
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=json_bz.ExtEncoderNew))
 
 
 class api_gods(BaseHandler):
@@ -395,7 +395,7 @@ class api_gods(BaseHandler):
         is_my = parm.get('is_my')
         blocked = parm.get('blocked')
         gods = oper.getGods(cat=cat, is_my=is_my, blocked=blocked, user_id=self.current_user)
-        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=json_bz.ExtEncoder))
 
 
 class api_follow(tornado_bz.BaseHandler):
@@ -436,7 +436,7 @@ class api_apply_del(tornado_bz.BaseHandler):
         select * from apply_del where stat is null order by created_date desc
         '''
         apply_dels = pg.query(sql)
-        self.write(json.dumps({'error': '0', 'apply_dels': apply_dels}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'apply_dels': apply_dels}, cls=json_bz.ExtEncoder))
 
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
@@ -459,7 +459,7 @@ class api_apply_del(tornado_bz.BaseHandler):
         if count != 1:
             raise Exception("修改失败" + count)
 
-        self.write(json.dumps({'error': '0', 'count': count}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'count': count}, cls=json_bz.ExtEncoder))
 
     @tornado_bz.mustLoginApi
     @tornado_bz.handleError
@@ -483,7 +483,7 @@ class api_god(tornado_bz.BaseHandler):
         parm = json.loads(parm)
         god_name = parm['god_name']
         god_info = god_oper.getTheGodInfoByName(god_name, self.current_user)
-        self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=json_bz.ExtEncoder))
 
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
@@ -525,7 +525,7 @@ class api_god(tornado_bz.BaseHandler):
         follow_who_oper.follow(user_id, god_id, make_sure=False)
         god_info = god_oper.getTheGodInfo(god_id, user_id=user_id)
 
-        self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=json_bz.ExtEncoder))
 
     @tornado_bz.handleError
     @tornado_bz.mustLoginApi
@@ -546,7 +546,7 @@ class api_god(tornado_bz.BaseHandler):
         if count != 1:
             raise Exception("修改失败" + count)
 
-        self.write(json.dumps({'error': '0', 'count': count}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'count': count}, cls=json_bz.ExtEncoder))
 
 
 class api_get_user_info(web_bz.get_user_info):
@@ -665,7 +665,7 @@ class api_last(tornado_bz.BaseHandler):
         data.error = OK
         data.unread_message_count = oper.getUnreadCount(user_id)
 
-        self.write(json.dumps(data, cls=public_bz.ExtEncoder))
+        self.write(json.dumps(data, cls=json_bz.ExtEncoder))
 
 
 class messages_app(tornado_bz.BaseHandler):
@@ -696,7 +696,7 @@ class api_message(tornado_bz.BaseHandler):
         else:
             raise Exception('没有这条信息')
 
-        self.write(json.dumps({'error': '0', 'message': message}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'message': message}, cls=json_bz.ExtEncoder))
 
 
 class api_new(tornado_bz.BaseHandler):
@@ -745,7 +745,7 @@ class api_new(tornado_bz.BaseHandler):
         endtime = datetime.datetime.now()
 
         print((endtime - starttime).seconds)
-        self.write(json.dumps(data, cls=public_bz.ExtEncoder))
+        self.write(json.dumps(data, cls=json_bz.ExtEncoder))
 
 
 class api_old(tornado_bz.BaseHandler):
@@ -766,7 +766,7 @@ class api_old(tornado_bz.BaseHandler):
             limit = 10
         before = time_bz.timestampToDateTime(before, True)
         messages = public_db.getOldMessages(before=before, search_key=search_key, god_name=god_name, limit=limit, user_id=self.current_user)
-        self.write(json.dumps({'error': '0', 'messages': messages}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'messages': messages}, cls=json_bz.ExtEncoder))
 
 
 class api_big_gods(tornado_bz.BaseHandler):
@@ -778,7 +778,7 @@ class api_big_gods(tornado_bz.BaseHandler):
     def get(self):
         self.set_header("Content-Type", "application/json")
         gods = oper.getGods(self.current_user, recommand=True)
-        self.write(json.dumps({'error': '0', 'gods': gods}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'gods': gods}, cls=json_bz.ExtEncoder))
 
 
 class api_god_info(tornado_bz.BaseHandler):
@@ -794,7 +794,7 @@ class api_god_info(tornado_bz.BaseHandler):
         god_name = parm.get('god_name')
 
         god_info = oper.getGodInfo(god_name, self.current_user)
-        self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'god_info': god_info}, cls=json_bz.ExtEncoder))
 
 
 class user_info(tornado_bz.BaseHandler):
@@ -807,7 +807,7 @@ class user_info(tornado_bz.BaseHandler):
         god_info = list(public_db.getGodInfoFollow(self.current_user, god_name))
         if god_info:
             god_info = god_info[0]
-        self.write(json.dumps({'error': '0', 'user_info': god_info}, cls=public_bz.ExtEncoder))
+        self.write(json.dumps({'error': '0', 'user_info': god_info}, cls=json_bz.ExtEncoder))
 
 
 class Changelog(tornado_bz.BaseHandler):
@@ -853,6 +853,7 @@ class NoCacheHtmlStaticFileHandler(tornado.web.StaticFileHandler):
         if path == '':
             # self.set_header("Cache-control", "no-cache")
             self.set_header("Cache-control", "no-store, no-cache, must-revalidate, max-age=0")
+
 
 if __name__ == "__main__":
 

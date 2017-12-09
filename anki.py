@@ -47,9 +47,10 @@ def getMidAndCsrfTokenHolder(user_id, reset_cookie=False):
     sql = '''
     select * from anki where user_id='%s'
     ''' % user_id
-    datas = pg.query(sql)
+    datas = pg.query(sql).list()
     if(len(datas) == 0):
         raise Exception('你还没有配置Anki信息')
+    print(datas)
     data = datas[0]
     if data.mid is not None and not reset_cookie:
         return data.mid, data.csrf_token, data.cookie
@@ -117,6 +118,6 @@ def addCard(front, user_id, not_try=None):
             raise Exception('error: %s' % r.text)
 
 if __name__ == '__main__':
-    addCard('fuck', 404)
+    addCard('fuck', 1)
     # test('haha')
     # getCsrfToken()
